@@ -15,6 +15,7 @@ import net.stormdev.mario.tracks.TrackCreator;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -66,11 +67,11 @@ public class AdminCommandExecutor implements CommandExecutor {
 					sender.sendMessage(MarioKart.colors.getError() + msg);
 					return true;
 				}
-				int id = MarioKart.config.getInt("setup.create.wand");
+				Material item = Material.getMaterial(MarioKart.config.getString("setup.create.wand"));
 				@SuppressWarnings("deprecation")
-				ItemStack named = new ItemStack(id);
+				ItemStack named = new ItemStack(item);
 				String start = MarioKart.msgs.get("setup.create.start");
-				start = start.replaceAll(Pattern.quote("%id%"), "" + id);
+				start = start.replaceAll(Pattern.quote("%id%"), "" + item.name());
 				start = start.replaceAll(Pattern.quote("%name%"), named
 						.getType().name().toLowerCase());
 				sender.sendMessage(MarioKart.colors.getInfo() + start);

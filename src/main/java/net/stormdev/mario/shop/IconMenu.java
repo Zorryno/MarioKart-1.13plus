@@ -99,7 +99,7 @@ public class IconMenu implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	void onInventoryClick(InventoryClickEvent event) {
-		if (event.getInventory().getTitle().equals(name) && enabled
+		if (event.getView().getTitle().equals(name) && enabled
 				&& event.getWhoClicked().hasMetadata(metaData)) {
 			event.setCancelled(true);
 			int slot = event.getRawSlot();

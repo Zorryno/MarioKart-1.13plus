@@ -97,7 +97,7 @@ public class PowPowerup extends PowerupBase {
 												pl.getWorld()
 														.playSound(
 																pl.getLocation(),
-																Sound.STEP_WOOD,
+																Sound.BLOCK_WOOD_STEP,
 																1f,
 																0.25f);
 												pl.sendMessage(ChatColor.RED

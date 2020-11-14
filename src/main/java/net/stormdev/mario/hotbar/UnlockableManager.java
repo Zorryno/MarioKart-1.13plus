@@ -477,7 +477,7 @@ public class UnlockableManager implements Listener {
 			upgrades.set("upgrades.speedBurstII.id", "ab");
 			upgrades.set("upgrades.speedBurstII.type",
 					HotBarUpgrade.SPEED_BOOST.name().toUpperCase());
-			upgrades.set("upgrades.speedBurstII.item", Material.CARROT_ITEM
+			upgrades.set("upgrades.speedBurstII.item", Material.CARROT
 					.name().toUpperCase());
 			upgrades.set("upgrades.speedBurstII.length", 10000l);
 			upgrades.set("upgrades.speedBurstII.power", 13d);
@@ -498,7 +498,7 @@ public class UnlockableManager implements Listener {
 			upgrades.set("upgrades.immunityII.id", "ad");
 			upgrades.set("upgrades.immunityII.type", HotBarUpgrade.IMMUNITY
 					.name().toUpperCase());
-			upgrades.set("upgrades.immunityII.item", Material.GOLD_HELMET
+			upgrades.set("upgrades.immunityII.item", Material.GOLDEN_HELMET
 					.name().toUpperCase());
 			upgrades.set("upgrades.immunityII.length", 10000l);
 			upgrades.set("upgrades.immunityII.useItem", true);

@@ -148,7 +148,7 @@ public class VoteHandler {
 						
 						player.setLevel(rem);
 						if(rem < 20){
-							player.playSound(player.getLocation(), Sound.NOTE_PLING, 1f, Integer.MAX_VALUE);
+							player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, Integer.MAX_VALUE);
 						}
 					}});
 				return;

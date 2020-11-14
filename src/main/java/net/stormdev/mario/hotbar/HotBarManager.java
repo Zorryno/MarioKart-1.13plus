@@ -62,7 +62,7 @@ public class HotBarManager {
 		ArrayList<HotBarItem> defaultItems = new ArrayList<HotBarItem>();
 		ArrayList<HotBarItem> unlockedItems = new ArrayList<HotBarItem>();
 		HotBarItem exit_door = new HotBarItem(
-				new ItemStack(Material.WOOD_DOOR), ChatColor.GREEN
+				new ItemStack(Material.LEGACY_WOOD_DOOR), ChatColor.GREEN
 						+ "Leave Race", 1, HotBarUpgrade.LEAVE,
 				new HashMap<String, Object>(), "null");
 		defaultItems.add(exit_door);
@@ -176,7 +176,7 @@ public class HotBarManager {
 									veh.removeMetadata("kart.immune",
 											MarioKart.plugin);
 									player.getWorld().playSound(
-											player.getLocation(), Sound.CLICK,
+											player.getLocation(), Sound.UI_BUTTON_CLICK,
 											0.5f, 3f);
 								} catch (Exception e) {
 									// Player or vehicle are gone
@@ -184,7 +184,7 @@ public class HotBarManager {
 								return;
 							}
 						}, (long) (lengthMS * 0.020));
-				player.getWorld().playSound(player.getLocation(), Sound.DRINK,
+				player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_DRINK,
 						0.5f, 3f);
 			}
 		}

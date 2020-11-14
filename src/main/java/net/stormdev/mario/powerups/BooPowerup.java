@@ -61,7 +61,7 @@ public class BooPowerup extends PowerupBase {
 						PotionEffectType.CONFUSION, 240, 10);
 				pl.addPotionEffect(nausea, true);
 				pl.getWorld().playSound(pl.getLocation(),
-						Sound.AMBIENCE_CAVE, 1, 1);
+						Sound.AMBIENT_CAVE, 1, 1);
 				pl.updateInventory();
 				String msg = MarioKart.msgs.get("mario.hit");
 				msg = msg.replaceAll("%name%", "ghost");

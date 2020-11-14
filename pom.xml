@@ -28,8 +28,8 @@
                 <version>2.3.2</version>
                 <configuration>
                 	<minimizeJar>true</minimizeJar>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -44,7 +44,7 @@
         	  	 <stylesheetfile>https://dl.dropboxusercontent.com/u/50672767/ucars/doc/stylesheet.css</stylesheetfile>
       		  </configuration>
      		 </plugin>
-     		 <!-- 
+     		 <!--
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
@@ -73,7 +73,7 @@
         </extensions>
     </build>
     <repositories>
-    <!--  
+    <!--
         <repository>
             <id>bukkit-repo</id>
             <url>http://repo.bukkit.org/content/groups/public/</url>
@@ -98,11 +98,11 @@
 		</repository>
     </repositories>
     <dependencies>
-    <!-- 
+    <!--
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.7.9-R0.1</version>
+            <version>1.13.2-R0.1</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
@@ -120,14 +120,14 @@
 	   <dependency>
             <groupId>com.useful</groupId>
             <artifactId>uCars</artifactId>
-            <version>18</version>
+            <version>21</version>
         </dependency>
         <dependency>
 			<groupId>me.confuser</groupId>
 			<artifactId>BarAPI</artifactId>
 			<version>3.1</version>
 		</dependency>
-		<!-- 
+		<!--
 				<dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>craftbukkit</artifactId>

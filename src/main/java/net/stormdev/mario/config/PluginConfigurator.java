@@ -15,7 +15,7 @@ public class PluginConfigurator {
 		System.out.println("Reading config...");
 		// Setup the config
 		if (!config.contains("setup.create.wand")) {
-			config.set("setup.create.wand", 280);
+			config.set("setup.create.wand", "STICK");
 		}
 		else{
 			//Config has been generated before
@@ -162,22 +162,22 @@ public class PluginConfigurator {
 			config.set("mariokart.enable", true);
 		}
 		if (!config.contains("mariokart.redShell")) {
-			config.set("mariokart.redShell", "INK_SACK:1");
+			config.set("mariokart.redShell", "RED_DYE");
 		}
 		if (!config.contains("mariokart.greenShell")) {
-			config.set("mariokart.greenShell", "INK_SACK:2");
+			config.set("mariokart.greenShell", "GREEN_DYE");
 		}
 		if (!config.contains("mariokart.blueShell")) {
-			config.set("mariokart.blueShell", "INK_SACK:12");
+			config.set("mariokart.blueShell", "LIGHT_BLUE_DYE");
 		}
 		if (!config.contains("mariokart.banana")) {
-			config.set("mariokart.banana", "INK_SACK:11");
+			config.set("mariokart.banana", "YELLOW_DYE");
 		}
 		if (!config.contains("mariokart.star")) {
-			config.set("mariokart.star", "NETHER_STAR:0");
+			config.set("mariokart.star", "NETHER_STAR");
 		}
 		if (!config.contains("mariokart.lightning")) {
-			config.set("mariokart.lightning", "INK_SACK:7");
+			config.set("mariokart.lightning", "LIGHT_GRAY_DYE");
 		}
 		if (!config.contains("mariokart.bomb")) {
 			config.set("mariokart.bomb", "TNT:0");
@@ -189,7 +189,7 @@ public class PluginConfigurator {
 			config.set("mariokart.pow", "ICE");
 		}
 		if (!config.contains("mariokart.random")) {
-			config.set("mariokart.random", "STAINED_CLAY:4");
+			config.set("mariokart.random", "YELLOW_TERRACOTTA");
 		}
 		if (!config.contains("mariokart.mushroom")) {
 			config.set("mariokart.mushroom", "RED_MUSHROOM");

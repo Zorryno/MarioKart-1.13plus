@@ -70,7 +70,7 @@ public class InputMenu implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	void onInventoryClick(InventoryClickEvent event) {
-		if (event.getView().getTopInventory().getTitle().equals(name)) {
+		if (event.getView().getTitle().equals(name)) {
 			int slot = event.getRawSlot();
 			Boolean place = false;
 			if (event.getAction() == InventoryAction.PLACE_ALL

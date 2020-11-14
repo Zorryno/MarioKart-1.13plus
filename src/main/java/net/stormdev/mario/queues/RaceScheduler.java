@@ -529,7 +529,7 @@ public class RaceScheduler {
 														Object o = p.getMetadata("ucars.smooth").get(0).value();
 														if((o instanceof SmoothMeta)){
 															SmoothMeta sm = (SmoothMeta) o;
-															if(sm.getFactor() > 0.2){
+															if(sm.getFactor(sm.getDirection()) > 0.2){
 																//They started accelerating already
 																p.setMetadata("mk.failStart", new MetaValue(null, MarioKart.plugin));
 															}
@@ -577,14 +577,14 @@ public class RaceScheduler {
 										if(pl.hasMetadata("mk.failStart")){
 											pl.removeMetadata("mk.failStart", MarioKart.plugin);
 											sm.resetAcel(); //Kill acceleration
-											pl.playSound(pl.getLocation(), Sound.CREEPER_DEATH, 1f, 1f);
+											pl.playSound(pl.getLocation(), Sound.ENTITY_CREEPER_DEATH, 1f, 1f);
 										}
-										else if(sm.getFactor() > 0.2) {
+										else if(sm.getFactor(sm.getDirection()) > 0.2) {
 											//Boosting already
 											//Give them a boost
 											ucars.listener.carBoost(pl.getName(), 5, 3000,
 													ucars.config.getDouble("general.cars.defSpeed"));
-											pl.playSound(pl.getLocation(), Sound.FIZZ, 1f, 1f);
+											pl.playSound(pl.getLocation(), Sound.BLOCK_LAVA_EXTINGUISH, 1f, 1f);
 										}
 									}
 								}

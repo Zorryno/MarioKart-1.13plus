@@ -87,7 +87,7 @@ public class StarPowerup extends PowerupBase {
 									.getWorld()
 									.playSound(
 											player.getLocation(),
-											Sound.BURP, 3, 1);
+											Sound.ENTITY_PLAYER_BURP, 3, 1);
 								}
 							}
 							try {

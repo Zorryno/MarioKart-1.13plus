@@ -32,8 +32,8 @@ public class TrackEventsListener implements Listener {
 		TrackCreator creator = TrackCreator.trackCreators.get(player.getName());
 		Boolean wand = false;
 		@SuppressWarnings("deprecation")
-		int handid = player.getItemInHand().getTypeId();
-		if (handid == MarioKart.config.getInt("setup.create.wand")) {
+		String handItem = player.getInventory().getItemInMainHand().getType().name();
+		if (handItem.equals(MarioKart.config.getString("setup.create.wand"))) {
 			wand = true;
 		}
 		creator.set(wand);

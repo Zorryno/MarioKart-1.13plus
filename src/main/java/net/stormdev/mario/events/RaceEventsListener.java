@@ -87,12 +87,15 @@ public class RaceEventsListener implements Listener {
 		}
 		final Location loc = event.getVehicle().getLocation();
 		final Block block = loc.getBlock();
-		Entity passenger = event.getVehicle().getPassenger();
+		if(event.getVehicle().getPassengers().size() == 0) {
+			return;
+		}
+		Entity passenger = event.getVehicle().getPassengers().get(0);
 		if(passenger == null || !(passenger instanceof Player)){
 			return;
 		}
 		final Player player = (Player) passenger;
-		if(lavaDamage && (block.getType().equals(Material.LAVA) || block.getType().equals(Material.STATIONARY_LAVA))){
+		if(lavaDamage && (block.getType().equals(Material.LAVA) || block.getType().equals(Material.LEGACY_STATIONARY_LAVA))){
 			Bukkit.getScheduler().runTaskAsynchronously(MarioKart.plugin, new Runnable(){
 
 				@Override
@@ -114,7 +117,7 @@ public class RaceEventsListener implements Listener {
 					}
 				}});
 		}
-		if(waterDamage && (block.getType().equals(Material.WATER) || block.getType().equals(Material.STATIONARY_WATER))){
+		if(waterDamage && (block.getType().equals(Material.WATER) || block.getType().equals(Material.LEGACY_STATIONARY_WATER))){
 			Bukkit.getScheduler().runTaskAsynchronously(MarioKart.plugin, new Runnable(){
 
 				@Override
