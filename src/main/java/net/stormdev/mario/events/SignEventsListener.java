@@ -34,7 +34,7 @@ public class SignEventsListener implements Listener {
 		}
 		final Sign sign = (Sign) event.getClickedBlock().getState();
 		String[] lines = sign.getLines();
-		MarioKart.plugin.getServer().getScheduler().runTaskAsynchronously(MarioKart.plugin, new BukkitRunnable(){
+		MarioKart.plugin.getServer().getScheduler().runTaskAsynchronously(MarioKart.plugin, new Runnable(){
 
 			@Override
 			public void run() {
@@ -156,7 +156,7 @@ public class SignEventsListener implements Listener {
 				//Tell the player it was registered successfully
 				event.getPlayer().sendMessage(MarioKart.colors.getSuccess()+MarioKart.msgs.get("setup.create.queueSign"));
 				final String t = track;
-				MarioKart.plugin.getServer().getScheduler().runTaskLater(plugin, new BukkitRunnable(){
+				MarioKart.plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable(){
 
 					@Override
 					public void run() {

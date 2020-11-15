@@ -11,7 +11,6 @@ import net.stormdev.mario.queues.RaceQueue;
 import net.stormdev.mario.races.Race;
 import net.stormdev.mario.races.RaceType;
 import net.stormdev.mario.server.FullServerManager;
-import net.stormdev.mario.server.SpectatorMode;
 import net.stormdev.mario.shop.Shop;
 import net.stormdev.mario.tracks.RaceTrack;
 

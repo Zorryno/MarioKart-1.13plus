@@ -47,7 +47,7 @@ public class RaceExecutor {
 		}
 		MarioKart.plugin.raceScheduler.recalculateQueues();
 		MarioKartRaceEndEvent evt = new MarioKartRaceEndEvent(game);
-		Bukkit.getPluginManager().callEvent(evt);
+		Bukkit.getScheduler().runTask(MarioKart.plugin, () -> Bukkit.getPluginManager().callEvent(evt)); //MARK
 		return;
 	}
 
@@ -122,8 +122,9 @@ public class RaceExecutor {
 						}
 						if (pl.isOnline()) {
 							pl.getInventory().clear();
-
 							pl.getInventory().setContents(user.getOldInventory());
+							player.setScoreboard(MarioKart.plugin.getServer()
+									.getScoreboardManager().getMainScoreboard());
 							pl.setGameMode(user.getOldGameMode());
 						}
 						return;
@@ -167,7 +168,7 @@ public class RaceExecutor {
 										+ checkpoints + distance;
 
 								try {
-									if (game.getWinner().equals(u)) {
+									if (game.getWinner().equals(u.getPlayerName())) {
 										score = score + 1;
 									}
 								} catch (Exception e) {
@@ -330,7 +331,6 @@ public class RaceExecutor {
 					}
 					return;
 				}}, 2l);
-			
 			return;
 		} catch (Exception e) {
 			// Player has left
@@ -380,7 +380,6 @@ public class RaceExecutor {
 			return;
 		}
 		if (!game.ending
-				&& !game.ending
 				&& MarioKart.config.getBoolean("general.race.enableTimeLimit")
 				&& ((System.currentTimeMillis() - game.startTimeMS) * 0.001) > game.timeLimitS) {
 			game.broadcast(MarioKart.msgs.get("race.end.timeLimit"));
@@ -522,7 +521,7 @@ public class RaceExecutor {
 
 			@Override
 			public void run() {
-				ParticleEffects.sendToLocation(ParticleEffects.REDSTONE_DUST, pl.getLocation(), 0, 0, 0, 2, 5);
+				ParticleEffects.sendToLocation(ParticleEffects.REDSTONE_DUST, pl.getLocation(), 0, 0.5f, 0, 2, 30);
 				return;
 			}});
 		
@@ -534,7 +533,7 @@ public class RaceExecutor {
 			public void run() {
 				MarioKart.plugin.musicManager.playCustomSound(pl, MarioKartSound.PENALTY_END);
 				car.removeMetadata("car.frozen", MarioKart.plugin);
-				ParticleEffects.sendToLocation(ParticleEffects.GREEN_SPARKLE, car.getLocation(), 0, 0, 0, 2, 5);
+				ParticleEffects.sendToLocation(ParticleEffects.GREEN_SPARKLE, car.getLocation(), 0, 0.5f, 0, 2, 15);
 			}
 		}, (long)(time * 20l));
 		return;

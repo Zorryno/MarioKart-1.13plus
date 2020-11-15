@@ -115,7 +115,7 @@ public class HotBarManager {
 		}
 		if (type == HotBarUpgrade.LEAVE) {
 			// Make the player leave the race
-			MarioKart.plugin.raceCommandExecutor.urace(player, new String[] { "leave" }, player);
+			player.performCommand("race leave");
 			return;
 		} else if (type == HotBarUpgrade.SPEED_BOOST) {
 			long lengthMS = 5000;

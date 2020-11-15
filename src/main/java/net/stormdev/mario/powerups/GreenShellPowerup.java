@@ -190,7 +190,7 @@ public class GreenShellPowerup extends ShellPowerup {
 		super.setCooldown(3); //No cooldown for tracking shells
 		super.setExpiry(50); //Expire after moving 33 times
 		
-		task = Bukkit.getScheduler().runTaskAsynchronously(MarioKart.plugin, new BukkitRunnable(){
+		task = Bukkit.getScheduler().runTaskAsynchronously(MarioKart.plugin, new Runnable(){
 
 			@Override
 			public void run() {

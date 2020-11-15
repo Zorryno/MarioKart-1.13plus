@@ -68,7 +68,6 @@ public class AdminCommandExecutor implements CommandExecutor {
 					return true;
 				}
 				Material item = Material.getMaterial(MarioKart.config.getString("setup.create.wand"));
-				@SuppressWarnings("deprecation")
 				ItemStack named = new ItemStack(item);
 				String start = MarioKart.msgs.get("setup.create.start");
 				start = start.replaceAll(Pattern.quote("%id%"), "" + item.name());

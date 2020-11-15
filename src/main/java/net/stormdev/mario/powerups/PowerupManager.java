@@ -46,7 +46,7 @@ public class PowerupManager {
 		this.respawn.setItemMeta(meta);
 	}
 
-	@SuppressWarnings("deprecation")
+//	@SuppressWarnings("deprecation")
 	public void calculate(final Player player, Event event) {
 		if (!enabled) {
 			return;
@@ -78,7 +78,7 @@ public class PowerupManager {
 			if ((evt.getAction() == org.bukkit.event.block.Action.LEFT_CLICK_AIR || evt
 					.getAction() == org.bukkit.event.block.Action.LEFT_CLICK_BLOCK)
 					&& !timed) {
-				ItemStack inHand = evt.getPlayer().getItemInHand();
+				ItemStack inHand = evt.getPlayer().getInventory().getItemInMainHand();
 				// If green shell, throw forward
 				if(GreenShellPowerup.isItemSimilar(inHand)){
 					GreenShellPowerup shell = new GreenShellPowerup();
@@ -90,7 +90,7 @@ public class PowerupManager {
 					.getAction() == org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK)) {
 				return;
 			}
-			final ItemStack inHand = evt.getPlayer().getItemInHand();
+			final ItemStack inHand = evt.getPlayer().getInventory().getItemInMainHand();
 			Player ply = evt.getPlayer();
 			if (inHand.equals(this.respawn)) {
 				if (!car.hasMetadata("car.frozen")) {
@@ -155,10 +155,10 @@ public class PowerupManager {
 				powerup.setOwner(player.getName());
 				powerup.doRightClickAction(race.getUser(player), player, car, car.getLocation(), race, inHand);
 			}
-			evt.getPlayer().setItemInHand(inHand);
+			evt.getPlayer().getInventory().setItemInMainHand(inHand);
 			evt.getPlayer().updateInventory(); // Fix 1.6 bug with inventory not
 												// updating
-		} else if (event instanceof ucarUpdateEvent) {
+		} else if (event instanceof ucarUpdateEvent) { //MARK
 			ucarUpdateEvent evt = (ucarUpdateEvent) event;
 			Minecart car = (Minecart) evt.getVehicle();
 			Block under = car.getLocation().add(0, -1, 0).getBlock();

@@ -28,6 +28,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Vehicle;
 
 import com.useful.uCarsAPI.uCarsAPI;
 import com.useful.ucars.SmoothMeta;
@@ -432,18 +433,17 @@ public class RaceScheduler {
 					p.teleport(loc.add(0, 2, 0));
 					final Minecart car = (Minecart) loc.getWorld().spawnEntity(
 							loc.add(0, 0.2, 0), EntityType.MINECART);
-					car.setMetadata("car.frozen", new StatValue(null,
-							MarioKart.plugin));
-					car.setMetadata("kart.racing", new StatValue(null,
-							MarioKart.plugin));
+					car.setMetadata("car.frozen", new StatValue(null, MarioKart.plugin));
+					car.setMetadata("kart.racing", new StatValue(null, MarioKart.plugin));
 					
 					final Player pl = p;
+					final Vehicle brumm = car;
 					
 					Bukkit.getScheduler().runTaskLater(MarioKart.plugin, new Runnable(){
 
 						@Override
 						public void run() {
-							car.setPassenger(pl);
+							brumm.addPassenger(pl);
 							pl.setMetadata("car.stayIn",
 									new StatValue(null, MarioKart.plugin));
 							return;
@@ -593,6 +593,10 @@ public class RaceScheduler {
 							}
 						}
 						race.start();
+
+						if(race.getUsersIn().size() < 1) {
+							stopRace(race);
+						}
 						return;
 					}
 				});

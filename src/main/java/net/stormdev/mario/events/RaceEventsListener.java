@@ -87,7 +87,7 @@ public class RaceEventsListener implements Listener {
 		}
 		final Location loc = event.getVehicle().getLocation();
 		final Block block = loc.getBlock();
-		if(event.getVehicle().getPassengers().size() == 0) {
+		if(event.getVehicle().isEmpty()) {
 			return;
 		}
 		Entity passenger = event.getVehicle().getPassengers().get(0);
@@ -181,13 +181,13 @@ public class RaceEventsListener implements Listener {
 	void vehDestroy(VehicleDamageEvent event) { // Stops player's cars being
 		// broken in a race.
 		Vehicle veh = event.getVehicle();
-		if (veh.getPassenger() == null) {
+		if (veh.isEmpty()) {
 			return;
 		}
-		Entity e = veh.getPassenger();
+		Entity e = veh.getPassengers().get(0);
 		if (!(e instanceof Player)) {
-			while(!(e instanceof Player) && e.getPassenger() != null){
-				e = e.getPassenger();
+			while(!(e instanceof Player) && !e.isEmpty()){
+				e = e.getPassengers().get(0);
 			}
 			if(!(e instanceof Player)){
 				return;
@@ -244,8 +244,8 @@ public class RaceEventsListener implements Listener {
 		Minecart car = (Minecart) v;
 		Entity e = event.getExited();
 		if (!(e instanceof Player)) {
-			while(e!=null && !(e instanceof Player) && e.getPassenger() != null){
-				e = e.getPassenger();
+			while(e!=null && !(e instanceof Player) && !e.isEmpty()){
+				e = e.getPassengers().get(0);
 			}
 			if(e==null || !(e instanceof Player)){
 				return;
@@ -259,6 +259,8 @@ public class RaceEventsListener implements Listener {
 			return;
 		}
 		//System.out.println("Cancelling car exit...");
+		final Vehicle brumm = car;
+		brumm.addPassenger(player);
 		event.setCancelled(true);
 	}
 	
@@ -276,7 +278,7 @@ public class RaceEventsListener implements Listener {
 		}
 		try {
 			if (plugin.raceMethods.inAGame(((Player) event.getEntity()
-					.getPassenger()), false) == null
+					.getPassengers().get(0)), false) == null
 					&& !(event.getEntity().hasMetadata("kart.immune"))) {
 				return;
 			}
@@ -319,10 +321,10 @@ public class RaceEventsListener implements Listener {
 				if (type == EntityType.MINECART) {
 					if (ucars.listener.isACar((Minecart) listent)) {
 						Minecart car = ((Minecart) listent);
-						Entity e = car.getPassenger();
+						Entity e = car.getPassengers().get(0);
 						while(e!=null && !(e instanceof Player)
-								&& e.getPassenger() != null){
-							e = e.getPassenger();
+								&& !e.isEmpty()){
+							e = e.getPassengers().get(0);
 						}
 						try {
 							car.setDamage(0);
@@ -389,7 +391,7 @@ public class RaceEventsListener implements Listener {
 		}
 		try {
 			if (plugin.raceMethods.inAGame(((Player) event.getVehicle()
-					.getPassenger()), false) == null) {
+					.getPassengers().get(0)), false) == null) {
 				return;
 			}
 		} catch (Exception e) {
@@ -488,7 +490,8 @@ public class RaceEventsListener implements Listener {
 				Minecart cart = (Minecart) loc.getWorld().spawnEntity(loc,
 						EntityType.MINECART);
 				cart.setMetadata("kart.racing", new StatValue(null, MarioKart.plugin));
-				cart.setPassenger(player);
+				final Vehicle brumm = cart;
+				brumm.addPassenger(player);
 				if(fairCars){
 					uCarsAPI.getAPI().setUseRaceControls(cart.getUniqueId(), plugin);
 				}
@@ -539,10 +542,13 @@ public class RaceEventsListener implements Listener {
 			return;
 		}
 		Minecart car = (Minecart) veh;
-		Entity pass = car.getPassenger();
+		if(car.isEmpty()) {
+			return;
+		}
+		Entity pass = car.getPassengers().get(0);
 		if (!(pass instanceof Player)) {
-			while(pass != null && !(pass instanceof Player) && pass.getPassenger() != null){
-				pass = pass.getPassenger();
+			while(pass != null && !(pass instanceof Player) && !pass.isEmpty()){
+				pass = pass.getPassengers().get(0);
 			}
 			if(!(pass instanceof Player)){
 				return;
@@ -564,6 +570,9 @@ public class RaceEventsListener implements Listener {
 		float xpBar = (float) (speed / 100);
 		if (xpBar >= 1) {
 			xpBar = 0.999f;
+		}
+		if (xpBar < 0) {
+			xpBar = 0.001f;
 		}
 		player.setExp(xpBar);
 		return;

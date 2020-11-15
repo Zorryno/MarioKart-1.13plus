@@ -75,16 +75,15 @@ public class Race {
 
 			@Override
 			public void run() {
-				board = MarioKart.plugin.getServer().getScoreboardManager()
-						.getNewScoreboard();
-				scores = board.registerNewObjective("", "dummy");
+				board = MarioKart.plugin.getServer().getScoreboardManager().getNewScoreboard();
+				scores = board.registerNewObjective(" ", "dummy"," ");
 				scores.setDisplaySlot(DisplaySlot.BELOW_NAME);
 				if (type != RaceType.TIME_TRIAL) {
 					scoresBoard = board.registerNewObjective(ChatColor.GOLD
-							+ "Race Positions", "dummy");
+							+ "Race Positions", "dummy","Race Positions");
 				} else { // Time Trial
 					scoresBoard = board.registerNewObjective(ChatColor.GOLD
-							+ "Race Time(s)", "dummy");
+							+ "Race Time(s)", "dummy","Race Time(s)");
 				}
 				scoresBoard.setDisplaySlot(DisplaySlot.SIDEBAR);
 				return;
@@ -230,8 +229,8 @@ public class Race {
 		}
 		if (quit) {
 			if (player != null) {
-				scoresBoard.getScore(player).setScore(0);
-				this.board.resetScores(player);
+				scoresBoard.getScore(player.getDisplayName()).setScore(0);
+				this.board.resetScores(player.getDisplayName());
 				player.getInventory().clear();
 				if (player.getVehicle() != null) {
 					Vehicle veh = (Vehicle) player.getVehicle();
@@ -240,10 +239,10 @@ public class Race {
 				}
 				player.removeMetadata("car.stayIn", MarioKart.plugin);
 				player.getInventory().setContents(user.getOldInventory());
-				player.setGameMode(GameMode.SURVIVAL);
+				player.setGameMode(user.getOldGameMode());
 				try {
 					player.teleport(this.track.getExit(MarioKart.plugin.getServer()));
-					Bukkit.getScheduler().runTaskLater(MarioKart.plugin, new BukkitRunnable(){
+					Bukkit.getScheduler().runTaskLater(MarioKart.plugin, new Runnable(){
 
 						@Override
 						public void run() {
@@ -474,12 +473,12 @@ public class Race {
 								int pos = i + 1;
 								String pname = (String) keys[i];
 								User u = getUser(pname);
-								try {
+								try { //MARK
 									Player pl = u.getPlayer();
 									if(pl != null){
-										game.scores.getScore(pl).setScore(pos);
-										game.scoresBoard.getScore(pl)
-											.setScore(-pos);
+										game.scores.getScore(pl.getDisplayName()).setScore(pos);
+										game.scoresBoard.getScore(pl.getDisplayName())
+											.setScore(pos);
 									}
 								} catch (IllegalStateException e) {
 									e.printStackTrace();
@@ -506,8 +505,8 @@ public class Race {
 									long time = System.currentTimeMillis()
 											- startTimeMS;
 									time = time / 1000; // In s
-									game.scores.getScore(pl).setScore((int) time);
-									game.scoresBoard.getScore(pl).setScore(
+									game.scores.getScore(pl.getDisplayName()).setScore((int) time);
+									game.scoresBoard.getScore(pl.getDisplayName()).setScore(
 											(int) time);
 								}
 							} catch (Exception e) {
@@ -638,11 +637,26 @@ public class Race {
 			try {
 				player = user.getPlayer();
                 if(player != null){
+                	Vehicle cart = ((Vehicle)player.getVehicle());
+                	cart.remove();
+                	
+                	final Player pl = player;
+                	
+                	Bukkit.getScheduler().runTaskLater(MarioKart.plugin, new Runnable(){
+
+						@Override
+						public void run() {
+							//Combat uCarsTrade's safeExit
+							pl.teleport(track.getExit(MarioKart.plugin.getServer()));
+							return;
+						}}, 4l);
+                	
                 	player.setScoreboard(MarioKart.plugin.getServer()
     						.getScoreboardManager().getMainScoreboard());
-
+                	player.removeMetadata("car.stayIn", MarioKart.plugin);
+    				player.getInventory().setContents(user.getOldInventory());
+    				player.setGameMode(user.getOldGameMode());
     				player.setLevel(user.getOldLevel());
-
     				player.setExp(user.getOldExp());
                 }
 			} catch (PlayerQuitException e) {

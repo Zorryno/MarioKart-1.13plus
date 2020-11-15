@@ -28,8 +28,8 @@
                 <version>2.3.2</version>
                 <configuration>
                 	<minimizeJar>true</minimizeJar>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -73,6 +73,10 @@
         </extensions>
     </build>
     <repositories>
+        <repository>
+         <id>spigot-repo</id>
+         <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+       </repository>
     <!--
         <repository>
             <id>bukkit-repo</id>
@@ -89,8 +93,8 @@
 	       <url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
         </repository>
         <repository>
-	       <id>stormdev-repo</id>
-	       <url>http://repository-storm345dev.forge.cloudbees.com/release</url>
+	       <id>jitpack.io</id>
+	       <url>https://jitpack.io</url>
         </repository>
 		<repository>
 			<id>confuser-repo</id>
@@ -98,6 +102,12 @@
 		</repository>
     </repositories>
     <dependencies>
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot</artifactId>
+            <version>1.13.2-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
     <!--
         <dependency>
             <groupId>org.bukkit</groupId>
@@ -118,14 +128,14 @@
             <version>LATEST</version>
         </dependency>
 	   <dependency>
-            <groupId>com.useful</groupId>
-            <artifactId>uCars</artifactId>
-            <version>21</version>
+            <groupId>com.github.Jakllp</groupId>
+            <artifactId>ucars</artifactId>
+            <version>v1.0</version>
         </dependency>
         <dependency>
-			<groupId>me.confuser</groupId>
+			<groupId>com.github.confuser</groupId>
 			<artifactId>BarAPI</artifactId>
-			<version>3.1</version>
+			<version>v3.5</version>
 		</dependency>
 		<!--
 				<dependency>

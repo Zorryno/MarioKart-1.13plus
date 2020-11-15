@@ -81,7 +81,7 @@ public class ServerListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	void interact(PlayerInteractEvent event){
 		Player player = event.getPlayer();
-		if(player.getItemInHand().getType().equals(Material.EGG)){
+		if(player.getInventory().getItemInMainHand().getType().equals(Material.EGG)){
 			event.setCancelled(true);
 			return;
 		}
@@ -139,7 +139,7 @@ public class ServerListener implements Listener {
 	@EventHandler
 	void useLobbyTP(PlayerInteractEvent event){
 		Player player = event.getPlayer();
-		ItemStack inHand = player.getItemInHand();
+		ItemStack inHand = player.getInventory().getItemInMainHand();
 		if(!fsm.getStage().equals(ServerStage.WAITING)){
 			return;
 			

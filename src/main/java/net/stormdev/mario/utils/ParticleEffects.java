@@ -1,14 +1,8 @@
 package net.stormdev.mario.utils;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
-import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
-import org.bukkit.World;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 
@@ -33,56 +27,6 @@ public enum ParticleEffects {
 			Particle.VILLAGER_HAPPY, 32), ICONCRACK(Particle.BLOCK_CRACK, 33), TILECRACK(
 			Particle.BLOCK_CRACK, 34);
 
-	@Deprecated
-	private static Object createPacket(ParticleEffects effect,
-			Location location, float offsetX, float offsetY, float offsetZ,
-			float speed, int count) throws Exception {
-		if (count <= 0) {
-			count = 1;
-		}
-		
-		/*Constructor<?>[] cc = PacketPlayOutWorldParticles.class.getDeclaredConstructors();
-		for(Constructor<?> c:cc){
-			Class<?>[] classes = c.getParameterTypes();
-			StringBuilder sb = new StringBuilder();
-			for(Class<?> cl:classes){
-				sb.append("[").append(cl.getName()).append("]");
-			}
-			System.out.println(sb.toString());
-		}*/
-		
-		//[Enum Particle (NMS)] [Boolean] [Float] [Float] [Float] [Float] [Float] [Float] [Float] [Float] [int] [int...]
-		PacketPlayOutWorldParticles pp = new PacketPlayOutWorldParticles(effect.get(), true, (float) location.getX(), (float) location.getY(),
-				(float) location.getZ(), offsetX, offsetY, offsetZ, speed,
-				count);
-		return pp;
-	}
-	
-	@Deprecated
-	private static Object createPacket(Particle effect,
-			Location location, float offsetX, float offsetY, float offsetZ,
-			float speed, int count) throws Exception {
-		if (count <= 0) {
-			count = 1;
-		}
-		
-		Constructor<?>[] cc = PacketPlayOutWorldParticles.class.getDeclaredConstructors();
-		for(Constructor<?> c:cc){
-			Class<?>[] classes = c.getParameterTypes();
-			StringBuilder sb = new StringBuilder();
-			for(Class<?> cl:classes){
-				sb.append("[").append(cl.getName()).append("]");
-			}
-			System.out.println(sb.toString());
-		}
-		
-		//[Enum Particle (NMS)] [Boolean] [Float] [Float] [Float] [Float] [Float] [Float] [Float] [Float] [int] [int...]
-		PacketPlayOutWorldParticles pp = new PacketPlayOutWorldParticles(effect, true, (float) location.getX(), (float) location.getY(),
-				(float) location.getZ(), offsetX, offsetY, offsetZ, speed,
-				count);
-		return pp;
-	}
-
 	/*private static Class<?> getCraftClass(String name) {
 		String version = getVersion() + ".";
 		String className = "net.minecraft.server." + version + name;
@@ -95,35 +39,10 @@ public enum ParticleEffects {
 		return clazz;
 	}*/
 
-	private static Object getHandle(Entity entity) {
-		try {
-			Method entity_getHandle = entity.getClass().getMethod("getHandle");
-			Object nms_entity = entity_getHandle.invoke(entity);
-			return nms_entity;
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			return null;
-		}
-	}
-
 	/*private static String getVersion() {
 		return Bukkit.getServer().getClass().getPackage().getName()
 				.replace(".", ",").split(",")[3];
 	}*/
-
-	
-	private static void sendPacket(Player p, Object packet) throws Exception {
-		Object eplayer = getHandle(p);
-		Field playerConnectionField = eplayer.getClass().getField(
-				"playerConnection");
-		Object playerConnection = playerConnectionField.get(eplayer);
-		for (Method m : playerConnection.getClass().getMethods()) {
-			if (m.getName().equalsIgnoreCase("sendPacket")) {
-				m.invoke(playerConnection, packet);
-				return;
-			}
-		}
-	}
 
 	/**
 	 * Send a particle effect to all players
@@ -153,7 +72,12 @@ public enum ParticleEffects {
 			//for (Player player : Bukkit.getOnlinePlayers()) {
 			//	sendPacket(player, packet);
 			//}
-			location.getWorld().spawnParticle(effect.get(), location, count, offsetX, offsetY, offsetZ, speed);
+			if(effect.get() == Particle.REDSTONE) {
+				Particle.DustOptions dust = new Particle.DustOptions(Color.RED, 5);
+				location.getWorld().spawnParticle(Particle.REDSTONE, location, count, offsetX, offsetY, offsetZ, speed, dust);
+			} else {
+				location.getWorld().spawnParticle(effect.get(), location, count, offsetX, offsetY, offsetZ, speed);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -168,6 +92,12 @@ public enum ParticleEffects {
 			//for (Player player : Bukkit.getOnlinePlayers()) {
 			//	sendPacket(player, packet);
 			//}
+			if(effect == Particle.REDSTONE) {
+				Particle.DustOptions dust = new Particle.DustOptions(Color.RED, 5);
+				location.getWorld().spawnParticle(Particle.REDSTONE, location, count, offsetX, offsetY, offsetZ, speed, dust);
+			} else {
+				location.getWorld().spawnParticle(effect, location, count, offsetX, offsetY, offsetZ, speed);
+			}
 			location.getWorld().spawnParticle(effect, location, count, offsetX, offsetY, offsetZ, speed);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -202,7 +132,12 @@ public enum ParticleEffects {
 			//Object packet = createPacket(effect, location, offsetX, offsetY,
 			//		offsetZ, speed, count);
 			//sendPacket(player, packet);
-			player.spawnParticle(effect.get(), location, count, offsetX, offsetY, offsetZ, speed);
+			if(effect.get() == Particle.REDSTONE) {
+				Particle.DustOptions dust = new Particle.DustOptions(Color.RED, 5);
+				player.spawnParticle(effect.get(), location, count, offsetX, offsetY, offsetZ, speed, dust);
+			} else {
+				player.spawnParticle(effect.get(), location, count, offsetX, offsetY, offsetZ, speed);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
