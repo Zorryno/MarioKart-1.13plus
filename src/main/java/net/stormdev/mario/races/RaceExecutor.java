@@ -226,7 +226,7 @@ public class RaceExecutor {
 												}
 												msg = msg.replaceAll("%position%", "" + pos);
 												final MarioKartRaceFinishEvent evt = new MarioKartRaceFinishEvent(
-														player, (i + 1), pos, game.getTrack().getRewardConfig());
+														player, (i + 1), pos, game.getTrack().getRewardConfig(), game);
 												Bukkit.getScheduler().runTaskLater(MarioKart.plugin, new Runnable(){
 
 													@Override
@@ -289,7 +289,7 @@ public class RaceExecutor {
 										} catch (Exception e) {
 										}
 										final MarioKartRaceFinishEvent evt = new MarioKartRaceFinishEvent(
-												player, position, pos, game.getTrack().getRewardConfig());
+												player, position, pos, game.getTrack().getRewardConfig(), game);
 										Bukkit.getScheduler().runTaskLater(MarioKart.plugin, new Runnable(){
 
 											@Override
@@ -516,6 +516,11 @@ public class RaceExecutor {
 		
 		car.setMetadata("car.frozen", new StatValue(time, MarioKart.plugin));
 		
+		car.setMetadata("kart.immune",
+				new StatValue(2000, MarioKart.plugin));
+		player.setMetadata("kart.immune",
+				new StatValue(2000, MarioKart.plugin));
+			
 		final Player pl = player;
 		Bukkit.getScheduler().runTask(MarioKart.plugin, new Runnable(){
 
@@ -531,6 +536,14 @@ public class RaceExecutor {
 
 			@Override
 			public void run() {
+				Player pl = MarioKart.plugin.getServer().getPlayer(
+						player.getName());
+				if (pl != null) {
+					pl.removeMetadata("kart.immune", MarioKart.plugin);
+					car.removeMetadata("kart.immune",
+							MarioKart.plugin);
+				}
+				
 				MarioKart.plugin.musicManager.playCustomSound(pl, MarioKartSound.PENALTY_END);
 				car.removeMetadata("car.frozen", MarioKart.plugin);
 				ParticleEffects.sendToLocation(ParticleEffects.GREEN_SPARKLE, car.getLocation(), 0, 0.5f, 0, 2, 15);

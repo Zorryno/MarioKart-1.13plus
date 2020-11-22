@@ -8,6 +8,7 @@ import net.stormdev.mario.mariokart.MarioKart;
 import net.stormdev.mario.players.User;
 import net.stormdev.mario.races.Race;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
@@ -32,7 +33,15 @@ public class BoxPowerup extends PowerupBase {
 				}
 			}
 		}
-		player.getInventory().addItem(give);
+		
+		final ItemStack gve = give;
+		Bukkit.getServer().getScheduler().runTaskAsynchronously(MarioKart.plugin, new Runnable() {
+
+			@Override
+			public void run() {
+				player.getInventory().addItem(gve);
+			}
+		});
 	}
 
 	@Override

@@ -8,7 +8,6 @@ public abstract class PowerupBase implements Powerup {
 
 	@Override
 	public ItemStack getNewItem() {
-		//Shells can be between 1 and 3 in quantity
 		ItemStack s = stack.clone();
 		
 		return s;

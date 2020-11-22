@@ -26,13 +26,16 @@ public class HotbarEventsListener implements Listener {
 	@EventHandler
 	public void hotBarScrolling(VehicleUpdateEvent event) { //Let people change their hotbar upgrade selection
 		Vehicle car = event.getVehicle();
-		Entity e = car.getPassenger();
+		if(car.isEmpty()) {
+			return;
+		}
+		Entity e = car.getPassengers().get(0);
 		if(event instanceof ucarUpdateEvent){
 			e = ((ucarUpdateEvent) event).getPlayer();
 		}
 		else{
-			while(e!=null && !(e instanceof Player) && e.getPassenger() != null){
-				e = e.getPassenger();
+			while(e!=null && !(e instanceof Player) && !e.isEmpty()){
+				e = e.getPassengers().get(0);
 			}
 			if(!(e instanceof Player)){
 				return;

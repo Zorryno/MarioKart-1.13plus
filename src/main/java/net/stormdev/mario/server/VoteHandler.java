@@ -1,16 +1,12 @@
 package net.stormdev.mario.server;
 
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import net.stormdev.mario.mariokart.MarioKart;
-import net.stormdev.mario.tracks.RaceTrack;
-import net.stormdev.mario.utils.MetaValue;
-import net.stormdev.mario.utils.ObjectWrapper;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -23,9 +19,14 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 
+import net.stormdev.mario.mariokart.MarioKart;
+import net.stormdev.mario.tracks.RaceTrack;
+import net.stormdev.mario.utils.MetaValue;
+import net.stormdev.mario.utils.ObjectWrapper;
+
 public class VoteHandler {
 	
-	private final String VOTE_META;
+	private  String VOTE_META;
 	private final String VOTE_META_KEY = "mariokart.vote";
 	private final String VOTE_MESSAGE = ChatColor.GOLD+"Use \"/mvote <TrackName>\" to cast your vote!";
 	private static final int VOTE_TIME = 120;

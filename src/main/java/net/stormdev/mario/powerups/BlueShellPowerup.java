@@ -17,7 +17,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public class BlueShellPowerup extends TrackingShellPowerup {
-	
 	public BlueShellPowerup(){
 		super.setItemStack(getBaseItem());
 	}
@@ -49,13 +48,19 @@ public class BlueShellPowerup extends TrackingShellPowerup {
 	@Override
 	public void doRightClickAction(User user, Player player, Minecart car,
 			Location carLoc, Race race, ItemStack inHand) {
-		if(user.isFinished()){
+		if(user.isFinished() || user.getPlayerName().equals(race.winning)){
 			return;
 		}
 		SortedMap<String, Double> sorted = race.getRaceOrder();
 		Set<String> keys = sorted.keySet();
 		Object[] pls = keys.toArray();
 		if(pls.length < 1){
+			return;
+		}
+		
+		final Player pla = MarioKart.plugin.getServer().getPlayer(
+				(String) pls[0]);
+		if(race.getUser(pla).isFinished()) {
 			return;
 		}
 		

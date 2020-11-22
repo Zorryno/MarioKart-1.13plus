@@ -86,8 +86,8 @@ public class MarioKart extends JavaPlugin {
 	public Random random = null;
 	public static PowerupManager powerupManager = null;
 	public RaceTimes raceTimes = null;
-	public String packUrl = "http://www.curseforge.com/media/files/774/770/MarioKart-latest.zip";
-	public String fullPackUrl = "http://www.curseforge.com/media/files/774/770/MarioKart-latest.zip";
+	public String packUrl = "https://www.dropbox.com/s/fwo3eppmednqzeh/MarioKart-latest.zip?dl=1";
+	public String fullPackUrl = "https://www.dropbox.com/s/fwo3eppmednqzeh/MarioKart-latest.zip?dl=1";
 	public HotBarManager hotBarManager = null;
 	public double checkpointRadiusSquared = 10.0;
 	public List<String> resourcedPlayers = new ArrayList<String>();

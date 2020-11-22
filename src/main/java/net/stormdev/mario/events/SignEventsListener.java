@@ -1,16 +1,17 @@
 package net.stormdev.mario.events;
 
-import net.stormdev.mario.mariokart.MarioKart;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.scheduler.BukkitRunnable;
+
+import net.stormdev.mario.mariokart.MarioKart;
 
 public class SignEventsListener implements Listener {
 	private MarioKart plugin;
@@ -77,7 +78,28 @@ public class SignEventsListener implements Listener {
 			MarioKart.plugin.raceCommandExecutor.urace(event.getPlayer(), new String[] { "shop" },
 					event.getPlayer());
 		}
+		event.setCancelled(true);
 		return;
+	}
+	
+	@EventHandler
+	void signPlacer(BlockPlaceEvent event) {
+		if(event.getBlockPlaced().getState() instanceof Sign) {
+			Sign sign = (Sign) event.getBlockPlaced().getState();
+			String[] lines = sign.getLines();
+			
+			if (ChatColor.stripColor(lines[0]).equalsIgnoreCase("[MarioKart]")) {
+				if (ChatColor.stripColor(lines[1]).toLowerCase().contains("items")) {
+					lines[1] = "items";
+					event.getPlayer().sendMessage("Creating item box...");
+					MarioKart.powerupManager.spawnItemPickupBox(event.getBlock().getLocation());
+				}
+			} else {
+				return;
+			}
+		} else {
+			return;
+		}
 	}
 
 	@EventHandler

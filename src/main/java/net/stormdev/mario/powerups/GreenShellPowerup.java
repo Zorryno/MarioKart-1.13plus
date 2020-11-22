@@ -22,7 +22,6 @@ import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
@@ -59,7 +58,6 @@ public class GreenShellPowerup extends ShellPowerup {
 		return i;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void doRightClickAction(User user, Player player, Minecart car,
 			Location carLoc, Race race, ItemStack inHand) {
@@ -67,11 +65,13 @@ public class GreenShellPowerup extends ShellPowerup {
 		if(inHand.getAmount() <= 0){
 			inHand.setType(Material.AIR);
 		}
-		player.setItemInHand(inHand);
+		player.getInventory().setItemInMainHand(inHand);
 		player.updateInventory();
-		Location loc = player.getLocation();
+		Location loc = player.getLocation().add(
+				player.getLocation().getDirection().setY(0)
+						.multiply(-2));
 		
-		spawn(loc, player);
+		spawn(loc.add(0,1,0), player);
 		
 		Vector direction = player.getEyeLocation()
 				.getDirection(); //The direction to fire the shell
@@ -102,7 +102,6 @@ public class GreenShellPowerup extends ShellPowerup {
 		start();
 	}
 	
-	@SuppressWarnings("deprecation")
 	@Override
 	public void doLeftClickAction(User user, Player player, Minecart car,
 			Location carLoc, Race race, ItemStack inHand){
@@ -110,11 +109,11 @@ public class GreenShellPowerup extends ShellPowerup {
 		if(inHand.getAmount() <= 0){
 			inHand.setType(Material.AIR);
 		}
-		player.setItemInHand(inHand);
+		player.getInventory().setItemInMainHand(inHand);
 		player.updateInventory();
 		Location loc = player.getLocation().add(
 				player.getLocation().getDirection().setY(0)
-						.multiply(4));
+						.multiply(1.5));
 		
 		spawn(loc, player);
 		
@@ -162,13 +161,36 @@ public class GreenShellPowerup extends ShellPowerup {
 		item.setTicksLived(1);
 		item.setPickupDelay(Integer.MAX_VALUE);
 		
-		Location loc = item.getLocation();
-		Block toHit = loc.add(direction).getBlock();
+		Vector dir = direction.clone();
+		dir.setY(0);
+		if(Math.abs(dir.getX()) > 1) {
+			dir.setX(dir.getX()/Math.abs(dir.getX()));
+		}
+		if(Math.abs(dir.getZ()) > 1) {
+			dir.setZ(dir.getZ()/Math.abs(dir.getZ()));
+		}
 		
+		Location loc = item.getLocation();
+		Block toHit = loc.add(dir).getBlock();
 		if(!toHit.isEmpty() && !toHit.isLiquid()){
-			item.setVelocity(direction.clone().multiply(-1));
+			if(toHit.getType().name().toLowerCase().contains("slab")) { //GreenShells need to climb up steps
+				item.setVelocity(direction.setY(0.55));
+			} else {
+				toHit = item.getLocation().add(dir.setX(0)).getBlock();
+				if(!toHit.isEmpty() && !toHit.isLiquid()) {
+					item.setVelocity(direction.setZ(direction.getZ()*-1));
+				} else {
+					item.setVelocity(direction.setX(direction.getX()*-1));
+				}
+			}
 		}
 		else {
+			if(item.getVelocity().getY() > 0.0) { //Straighten up!
+				item.setVelocity(direction.setY(0));
+			}
+			if(item.getLocation().subtract(0,1,0).getBlock().isEmpty()) {
+				item.setVelocity(direction.setY(-0.4));
+			}
 			item.setVelocity(direction);
 		}
 	}
@@ -201,13 +223,20 @@ public class GreenShellPowerup extends ShellPowerup {
 					
 					//Move the item
 					move();
+				
+					Bukkit.getScheduler().runTaskLater(MarioKart.plugin, new Runnable(){
+
+						@Override
+						public void run() {
+							List<Entity> near = item.getNearbyEntities(1, 2, 1);
+							for(Entity e:near){
+								if(e instanceof Player){
+									collide((Player) e);
+								}
+							}
+							return;
+						}}, 4l);
 					
-					List<Entity> nearby = item.getNearbyEntities(1, 2, 1);
-					for(Entity e:nearby){
-						if(e instanceof Player){
-							collide((Player) e);
-						}
-					}
 					
 					//Decrease the cooldown and expiry
 					decrementCooldown();
@@ -224,11 +253,7 @@ public class GreenShellPowerup extends ShellPowerup {
 	}
 
 	@Override
-	public void collide(Player target) {
-		if(isOwner(target.getName())){
-			return;
-		}
-		
+	public void collide(Player target) {		
 		String msg = MarioKart.msgs.get("mario.hit");
 		msg = msg.replaceAll(Pattern.quote("%name%"), "tracking shell");
 		MarioKart.plugin.musicManager.playCustomSound(target, MarioKartSound.SHELL_HIT);
@@ -248,7 +273,7 @@ public class GreenShellPowerup extends ShellPowerup {
 		
 		MarioKart.plugin.raceMethods.createExplode(cart.getLocation(), 1);
 		
-		RaceExecutor.penalty(target, ((Minecart) cart), 4);
+		RaceExecutor.penalty(target, ((Minecart) cart), 3);
 		setExpiry(0);
 		return;
 	}

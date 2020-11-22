@@ -130,7 +130,7 @@
 	   <dependency>
             <groupId>com.github.Jakllp</groupId>
             <artifactId>ucars</artifactId>
-            <version>v1.0</version>
+            <version>v1.5</version>
         </dependency>
         <dependency>
 			<groupId>com.github.confuser</groupId>

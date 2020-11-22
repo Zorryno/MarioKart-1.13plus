@@ -16,7 +16,6 @@ import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public class MusicManager {
 	private MarioKart plugin;
@@ -60,16 +59,15 @@ public class MusicManager {
 		
 		MarioKart.logger.info("Loaded "+songs.size()+" songs!");
 	}
-	
 	public void playMusic(final Race race){
-		Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new BukkitRunnable(){
+		Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable(){
 
 			@Override
 			public void run() {
 				if(!musicEnabled){
 					return;
 				}
-				MarioKartSound song = getBestSong(race);
+				MarioKartSound song = getBestSong(race);				
 				if(song == null){
 					return;
 				}
@@ -85,7 +83,7 @@ public class MusicManager {
 					}
 				}
 				return;
-			}}, 60l);
+			}}, 30l);
 	}
 	
 	//Song chooser
@@ -112,10 +110,9 @@ public class MusicManager {
 	
 	//Sound player
 	
-	@SuppressWarnings("deprecation")
 	public Boolean playCustomSound(final Player recipient, final Location location, 
 			final String soundPath, final float volume, final float pitch){
-		MarioKart.plugin.getServer().getScheduler().runTaskAsynchronously(MarioKart.plugin, new BukkitRunnable(){
+		MarioKart.plugin.getServer().getScheduler().runTaskAsynchronously(MarioKart.plugin, new Runnable(){
 
 			@Override
 			public void run() {

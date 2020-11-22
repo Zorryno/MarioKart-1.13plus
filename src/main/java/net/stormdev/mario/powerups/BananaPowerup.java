@@ -25,10 +25,12 @@ public class BananaPowerup extends PowerupBase {
 		//Shells can be between 1 and 3 in quantity
 				ItemStack s = super.stack.clone();
 				
-				int rand = MarioKart.plugin.random.nextInt(6); //Between 0 and 5
-				rand -= 2; //Between -2 and 3
-				if(rand < 1)
+				int rand = MarioKart.plugin.random.nextInt(6); //Between 0 and 6
+				if(rand < 4) {
 					rand = 1;
+				} else {
+					rand = 3;
+				}
 				
 				s.setAmount(rand);
 				
@@ -38,9 +40,9 @@ public class BananaPowerup extends PowerupBase {
 	@Override
 	public void doRightClickAction(User user, Player player, Minecart car,
 			Location carLoc, Race race, ItemStack inHand) {
-		Location loc = player.getLocation().add(
-				player.getEyeLocation().getDirection().multiply(-1));
-		loc.getWorld().dropItem(loc, getNewItem());
+		Location loc = player.getLocation().add(player.getEyeLocation().getDirection().multiply(-2));
+		loc.add(0,1,0);
+		loc.getWorld().dropItem(loc, super.stack.clone());
 		inHand.setAmount(inHand.getAmount()-1);
 	}
 

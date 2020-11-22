@@ -27,7 +27,6 @@ public class BooPowerup extends PowerupBase {
 		super.setItemStack(getBaseItem());
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void doRightClickAction(User user, Player player, Minecart car,
 			Location carLoc, final Race race, ItemStack inHand) {
@@ -49,44 +48,44 @@ public class BooPowerup extends PowerupBase {
 		}
 		int pos = pppos - 1;
 		if (!(pos < 0)) {
-			final Player pl = MarioKart.plugin.getServer().getPlayer(
+			final Player pla = MarioKart.plugin.getServer().getPlayer(
 					(String) pls[pos]);
-			if(!MarioKart.powerupManager.isPlayerImmune(pl)){
-				pl.setMetadata("kart.rolling", new StatValue(true, MarioKart.plugin));
-				pl.getInventory().clear();
-				MarioKart.plugin.hotBarManager.updateHotBar(pl);
-				pl.getInventory().addItem(
+			if(!MarioKart.powerupManager.isPlayerImmune(pla) && !race.getUser(pla).isFinished()){ //Only players in cars
+				pla.setMetadata("kart.rolling", new StatValue(true, MarioKart.plugin));
+				pla.getInventory().clear();
+				MarioKart.plugin.hotBarManager.updateHotBar(pla);
+				pla.getInventory().addItem(
 						getNewItem());
 				PotionEffect nausea = new PotionEffect(
 						PotionEffectType.CONFUSION, 240, 10);
-				pl.addPotionEffect(nausea, true);
-				pl.getWorld().playSound(pl.getLocation(),
+				pla.addPotionEffect(nausea);
+				pla.getWorld().playSound(pla.getLocation(),
 						Sound.AMBIENT_CAVE, 1, 1);
-				pl.updateInventory();
+				pla.updateInventory();
 				String msg = MarioKart.msgs.get("mario.hit");
 				msg = msg.replaceAll("%name%", "ghost");
-				pl.sendMessage(MarioKart.colors.getInfo() + msg);
+				pla.sendMessage(MarioKart.colors.getInfo() + msg);
 				MarioKart.plugin.getServer().getScheduler()
 						.runTaskLater(MarioKart.plugin, new Runnable() {
 
 							@Override
 							public void run() {
-								User u = race.getUser(pl.getName());
+								User u = race.getUser(pla.getName());
 								if(u != null && u.isInRace()){
-									pl.removeMetadata("kart.rolling", MarioKart.plugin);
-									pl.getInventory().clear();
-									MarioKart.plugin.hotBarManager.updateHotBar(pl);
-									pl.updateInventory();
+									pla.removeMetadata("kart.rolling", MarioKart.plugin);
+									pla.getInventory().clear();
+									MarioKart.plugin.hotBarManager.updateHotBar(pla);
+									pla.updateInventory();
 								}
 								else{ //They've already finished the race
-									pl.removeMetadata("kart.rolling", MarioKart.plugin);
-									pl.updateInventory();
+									pla.removeMetadata("kart.rolling", MarioKart.plugin);
+									pla.updateInventory();
 								}
 							}
 						}, 240l);
 			}
 		}
-		player.addPotionEffect(effect, true);
+		player.addPotionEffect(effect);
 	}
 
 	@Override

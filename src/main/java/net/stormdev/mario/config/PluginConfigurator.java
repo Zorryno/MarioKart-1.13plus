@@ -154,6 +154,8 @@ public class PluginConfigurator {
 				) {
 			//https://dl.dropboxusercontent.com/u/147363358/MarioKart/Resource/MarioKart-latest.zip
 			//http://storm345.hj.cx/Uploads/Bukkit/MarioKart/MarioKart-latest.zip
+			//http://www.curseforge.com/media/files/774/770/MarioKart-latest.zip
+			//https://www.curseforge.com/minecraft/texture-packs/mariokart-resourcepack/download/3119588/file
 			config.set(
 					"mariokart.resourcePack",
 					"DEFAULT_CURSEFORGE_PACK");

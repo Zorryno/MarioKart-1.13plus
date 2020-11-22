@@ -2,6 +2,7 @@ package net.stormdev.mario.powerups;
 
 import net.stormdev.mario.mariokart.MarioKart;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -23,10 +24,12 @@ public abstract class ShellPowerup implements Powerup, Shell {
 		//Shells can be between 1 and 3 in quantity
 		ItemStack s = stack.clone();
 		
-		int rand = MarioKart.plugin.random.nextInt(6); //Between 0 and 5
-		rand -= 2; //Between -2 and 3
-		if(rand < 1)
+		int rand = MarioKart.plugin.random.nextInt(4); //Between 0 and 4
+		if(rand != 0 || s.getType().name().equalsIgnoreCase("Light_Blue_Dye")) {
 			rand = 1;
+		} else {
+			rand = 3;
+		}
 		
 		s.setAmount(rand);
 		
@@ -61,6 +64,12 @@ public abstract class ShellPowerup implements Powerup, Shell {
 		this.owner = owner.getName(); //Set owner
 		
 		//Spawn in a shell
+		if(stack.getType().name().equalsIgnoreCase("Light_Blue_Dye")) {
+			loc.add(0,2,0);
+		} else {
+			loc.add(0,1,0);
+		}
+
 		item = loc.getWorld().dropItem(loc, stack);
 	}
 	

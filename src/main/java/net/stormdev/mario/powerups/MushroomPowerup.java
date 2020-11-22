@@ -27,10 +27,12 @@ public class MushroomPowerup extends PowerupBase {
 		//Shells can be between 1 and 3 in quantity
 				ItemStack s = super.stack.clone();
 				
-				int rand = MarioKart.plugin.random.nextInt(6); //Between 0 and 5
-				rand -= 2; //Between -2 and 3
-				if(rand < 1)
+				int rand = MarioKart.plugin.random.nextInt(6); //Between 0 and 6
+				if(rand < 5) {
 					rand = 1;
+				} else {
+					rand = 3;
+				}
 				
 				s.setAmount(rand);
 				
@@ -41,7 +43,7 @@ public class MushroomPowerup extends PowerupBase {
 	public void doRightClickAction(User user, Player player, Minecart car,
 			Location carLoc, Race race, ItemStack inHand) {
 		inHand.setAmount(inHand.getAmount() - 1);
-		ucars.listener.carBoost(player.getName(), 19, 9000,
+		ucars.listener.carBoost(player.getName(), 19, 2000,
 				ucars.config.getDouble("general.cars.defSpeed")); // Apply
 																	// speed
 																	// boost

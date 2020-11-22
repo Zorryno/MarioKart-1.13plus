@@ -32,10 +32,10 @@ public class StarPowerup extends PowerupBase {
 			Location carLoc, Race race, ItemStack inHand) {
 		inHand.setAmount(inHand.getAmount()-1);
 		car.setMetadata("kart.immune",
-				new StatValue(15000, MarioKart.plugin)); // Value =
+				new StatValue(7500, MarioKart.plugin)); // Value =
 													// length(millis)
 		player.setMetadata("kart.immune",
-				new StatValue(15000, MarioKart.plugin));
+				new StatValue(7500, MarioKart.plugin));
 		final String pname = player.getName();
 		MarioKart.plugin.getServer().getScheduler()
 				.runTaskLater(MarioKart.plugin, new Runnable() {
@@ -50,12 +50,12 @@ public class StarPowerup extends PowerupBase {
 									MarioKart.plugin);
 						}
 					}
-				}, 300l);
+				}, 150l);
 		MarioKart.plugin.getServer().getScheduler().runTaskAsynchronously(MarioKart.plugin, new Runnable(){
 
 			@Override
 			public void run() {
-				int amount = 15;
+				int amount = 7;
 				
 				while(amount >= 0){
 					Bukkit.getScheduler().runTask(MarioKart.plugin, new Runnable(){
@@ -79,7 +79,7 @@ public class StarPowerup extends PowerupBase {
 
 					@Override
 					public void run() {
-						int amount = 5;
+						int amount = 2;
 						while (amount > 0) {
 							if (ucars.listener.inACar(player)) {
 								if(!MarioKart.plugin.musicManager.playCustomSound(player, MarioKartSound.STAR_RIFF)){
@@ -99,7 +99,7 @@ public class StarPowerup extends PowerupBase {
 						return;
 					}
 				});
-		ucars.listener.carBoost(player.getName(), 32, 10000,
+		ucars.listener.carBoost(player.getName(), 32, 7500,
 				ucars.config.getDouble("general.cars.defSpeed")); // Apply
 																	// speed
 																	// boost

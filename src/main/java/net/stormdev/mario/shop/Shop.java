@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.milkbowl.vault.economy.EconomyResponse;
 import net.stormdev.mario.hotbar.Unlockable;
 import net.stormdev.mario.hotbar.Upgrade;
 import net.stormdev.mario.mariokart.MKLang;
@@ -19,7 +18,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public class Shop {
 

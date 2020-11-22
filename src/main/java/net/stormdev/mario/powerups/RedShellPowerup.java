@@ -68,6 +68,11 @@ public class RedShellPowerup extends TrackingShellPowerup {
 				return;
 			}
 		}
+		final Player pla = MarioKart.plugin.getServer().getPlayer(
+				(String) pls[tpos]);
+		if(race.getUser(pla).isFinished()) {
+			return;
+		}
 		
 		setTarget((String) pls[tpos]);
 		inHand.setAmount(inHand.getAmount() - 1);
@@ -79,5 +84,4 @@ public class RedShellPowerup extends TrackingShellPowerup {
 	public PowerupType getType() {
 		return PowerupType.RED_SHELL;
 	}
-	
 }

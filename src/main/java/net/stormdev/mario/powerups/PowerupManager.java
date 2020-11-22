@@ -3,13 +3,6 @@ package net.stormdev.mario.powerups;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.stormdev.mario.hotbar.HotBarSlot;
-import net.stormdev.mario.hotbar.MarioHotBar;
-import net.stormdev.mario.mariokart.MarioKart;
-import net.stormdev.mario.races.Race;
-import net.stormdev.mario.races.RaceType;
-import net.stormdev.mario.sound.MarioKartSound;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
@@ -25,12 +18,20 @@ import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.vehicle.VehicleUpdateEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.useful.ucars.ucarUpdateEvent;
 import com.useful.ucars.ucars;
 import com.useful.ucarsCommon.StatValue;
+
+import net.stormdev.mario.hotbar.HotBarSlot;
+import net.stormdev.mario.hotbar.MarioHotBar;
+import net.stormdev.mario.mariokart.MarioKart;
+import net.stormdev.mario.races.Race;
+import net.stormdev.mario.races.RaceType;
+import net.stormdev.mario.sound.MarioKartSound;
 
 public class PowerupManager {
 	MarioKart plugin = null;
@@ -46,7 +47,6 @@ public class PowerupManager {
 		this.respawn.setItemMeta(meta);
 	}
 
-//	@SuppressWarnings("deprecation")
 	public void calculate(final Player player, Event event) {
 		if (!enabled) {
 			return;
@@ -158,8 +158,8 @@ public class PowerupManager {
 			evt.getPlayer().getInventory().setItemInMainHand(inHand);
 			evt.getPlayer().updateInventory(); // Fix 1.6 bug with inventory not
 												// updating
-		} else if (event instanceof ucarUpdateEvent) { //MARK
-			ucarUpdateEvent evt = (ucarUpdateEvent) event;
+		} else if (event instanceof VehicleUpdateEvent) {
+			VehicleUpdateEvent evt = (VehicleUpdateEvent) event;
 			Minecart car = (Minecart) evt.getVehicle();
 			Block under = car.getLocation().add(0, -1, 0).getBlock();
 			if (timed) {
@@ -246,6 +246,11 @@ public class PowerupManager {
 						 * if(ChatColor.stripColor(lines[3]).equalsIgnoreCase("wait"
 						 * )){ return; }
 						 */
+												
+						if (player.getInventory().getStorageContents()[0] != null) {
+							return; // Has item already
+						}
+						
 						if (player.getInventory().getContents().length > 0) {
 							player.getInventory().clear();
 							MarioKart.plugin.hotBarManager.updateHotBar(player);
@@ -262,7 +267,7 @@ public class PowerupManager {
 							} else {
 								give = a;
 							}
-							Player ply = evt.getPlayer();
+							Player ply = (Player) evt.getVehicle().getPassengers().get(0);
 							if (race != null) {
 								if (ply.getName().equals(race.winning)) {
 									while (BlueShellPowerup.isItemSimilar(give)) {
@@ -272,7 +277,7 @@ public class PowerupManager {
 							}
 						} else {
 							// Give mario items
-							Player ply = evt.getPlayer();
+							Player ply = (Player) evt.getVehicle().getPassengers().get(0);
 							give = this.getRandomPowerup();
 							if (race != null) {
 								if (ply.getName().equals(race.winning)) {
@@ -282,7 +287,7 @@ public class PowerupManager {
 								}
 							}
 						}
-						final Player ply = evt.getPlayer();
+						final Player ply = (Player) evt.getVehicle().getPassengers().get(0);
 						ply.setMetadata("kart.rolling", new StatValue(true,
 								plugin));
 						final ItemStack get = give;
@@ -297,19 +302,21 @@ public class PowerupManager {
 										int z = plugin.random
 												.nextInt(max - min) + min;
 										for (int i = 0; i <= z; i++) {
-											ply.getInventory().clear();
-											MarioKart.plugin.hotBarManager.updateHotBar(player);
-											ply.getInventory().addItem(
-													getRandomPowerup());
-											ply.updateInventory();
-											MarioKart.plugin.musicManager.playCustomSound(ply, MarioKartSound.ITEM_SELECT_BEEP);
-											try {
-												Thread.sleep(delay);
-											} catch (InterruptedException e) {
-											}
-											delay = delay + (z / 100 * i);
-											if (delay > 1000) {
-												delay = 1000;
+											if(!race.getUser(ply).isFinished()) {
+												ply.getInventory().clear();
+												MarioKart.plugin.hotBarManager.updateHotBar(player);
+												ply.getInventory().addItem(
+														getRandomPowerup());
+												ply.updateInventory();
+												MarioKart.plugin.musicManager.playCustomSound(ply, MarioKartSound.ITEM_SELECT_BEEP);
+												try {
+													Thread.sleep(delay);
+												} catch (InterruptedException e) {
+												}
+												delay = delay + (z / 100 * i);
+												if (delay > 1000) {
+													delay = 1000;
+												}
 											}
 										}
 										ply.getInventory().clear();
@@ -416,6 +423,36 @@ public class PowerupManager {
 		return i;
 	}
 	
+	public ItemStack getPowerup(String wanted) {
+		List<Class<? extends Powerup>> pows = new ArrayList<Class<? extends Powerup>>();
+		pows.add(RedShellPowerup.class);
+		pows.add(BlueShellPowerup.class);
+		pows.add(GreenShellPowerup.class);
+		pows.add(BananaPowerup.class);
+		pows.add(BombPowerup.class);
+		pows.add(BooPowerup.class);
+		pows.add(BoxPowerup.class);
+		pows.add(LightningPowerup.class);
+		pows.add(MushroomPowerup.class);
+		pows.add(PowPowerup.class);
+		pows.add(StarPowerup.class);
+		
+		Powerup power = null;
+		for(Class<? extends Powerup> pow : pows) {
+			if(pow.getName().toLowerCase().contains(wanted)) {
+				try {
+					power = pow.newInstance();
+				} catch (Exception e) {
+					e.printStackTrace();
+					return new ItemStack(Material.STONE);
+				}
+			}
+		}
+		ItemStack i = power.getNewItem();
+		
+		return i;
+	}
+	
 	
 	public Boolean isPlayerImmune(Player player){
 		return player.hasMetadata("kart.immune");
@@ -426,12 +463,19 @@ public class PowerupManager {
 	}
 	
 	public boolean spawnItemPickupBox(Location location){
-		location.getChunk().load(true); //Make sure it's loaded
+		Bukkit.getScheduler().runTaskLater(MarioKart.plugin, new Runnable(){
+			@Override
+			public void run() {
+				location.getChunk().load(true); //Make sure it's loaded
+				return;
+			}
+		}, 4l);
+		
 		Location signLoc = location.clone();
 		boolean foundSign = false;
 		
 		for(int i=5; i>0 && !foundSign; i--){
-			if(signLoc.getBlock().getState() instanceof Sign){
+			if(signLoc.getBlock().getType().name().toLowerCase().contains("sign")){
 				foundSign = true;
 				continue;
 			}
@@ -439,55 +483,55 @@ public class PowerupManager {
 			Location l = signLoc.clone();
 			
 			signLoc = signLoc.getBlock().getRelative(BlockFace.NORTH).getLocation();
-			if(signLoc.getBlock().getState() instanceof Sign){
+			if(signLoc.getBlock().getType().name().toLowerCase().contains("sign")){
 				foundSign = true;
 				continue;
 			}
 			
 			signLoc = signLoc.getBlock().getRelative(BlockFace.EAST).getLocation();
-			if(signLoc.getBlock().getState() instanceof Sign){
+			if(signLoc.getBlock().getType().name().toLowerCase().contains("sign")){
 				foundSign = true;
 				continue;
 			}
 			
 			signLoc = signLoc.getBlock().getRelative(BlockFace.SOUTH).getLocation();
-			if(signLoc.getBlock().getState() instanceof Sign){
+			if(signLoc.getBlock().getType().name().toLowerCase().contains("sign")){
 				foundSign = true;
 				continue;
 			}
 			
 			signLoc = signLoc.getBlock().getRelative(BlockFace.SOUTH).getLocation();
-			if(signLoc.getBlock().getState() instanceof Sign){
+			if(signLoc.getBlock().getType().name().toLowerCase().contains("sign")){
 				foundSign = true;
 				continue;
 			}
 			
 			signLoc = signLoc.getBlock().getRelative(BlockFace.WEST).getLocation();
-			if(signLoc.getBlock().getState() instanceof Sign){
+			if(signLoc.getBlock().getType().name().toLowerCase().contains("sign")){
 				foundSign = true;
 				continue;
 			}
 			
 			signLoc = signLoc.getBlock().getRelative(BlockFace.WEST).getLocation();
-			if(signLoc.getBlock().getState() instanceof Sign){
+			if(signLoc.getBlock().getType().name().toLowerCase().contains("sign")){
 				foundSign = true;
 				continue;
 			}
 			
 			signLoc = signLoc.getBlock().getRelative(BlockFace.NORTH).getLocation();
-			if(signLoc.getBlock().getState() instanceof Sign){
+			if(signLoc.getBlock().getType().name().toLowerCase().contains("sign")){
 				foundSign = true;
 				continue;
 			}
 			
 			signLoc = signLoc.getBlock().getRelative(BlockFace.NORTH).getLocation();
-			if(signLoc.getBlock().getState() instanceof Sign){
+			if(signLoc.getBlock().getType().name().toLowerCase().contains("sign")){
 				foundSign = true;
 				continue;
 			}
 			
 			signLoc = signLoc.getBlock().getRelative(BlockFace.EAST).getLocation();
-			if(signLoc.getBlock().getState() instanceof Sign){
+			if(signLoc.getBlock().getType().name().toLowerCase().contains("sign")){
 				foundSign = true;
 				continue;
 			}
@@ -500,28 +544,39 @@ public class PowerupManager {
 			return false; //No sign, so remove it
 		}
 		
-		signLoc.getChunk().load();
-		
-		Location above = signLoc.add(0, 1.8, 0);
-		EnderCrystal newC = (EnderCrystal) above.getWorld().spawnEntity(above,
-				EntityType.ENDER_CRYSTAL);
-		
-		List<Entity> previous = newC.getNearbyEntities(0.3, 3, 0.3);
-		for(Entity e:previous){ //Remove old item boxes
-			if(e.getType().equals(EntityType.ENDER_CRYSTAL) && !e.equals(newC)){
-				e.remove();
+		final Location sgnLoc = signLoc;
+		Bukkit.getScheduler().runTaskLater(MarioKart.plugin, new Runnable(){
+			@Override
+			public void run() {
+				sgnLoc.getChunk().load(); //Make sure it's loaded
+				
+
+				Location above = sgnLoc.add(0, 2.05, 0);
+				EnderCrystal newC = (EnderCrystal) above.getWorld().spawnEntity(above,
+						EntityType.ENDER_CRYSTAL);
+				newC.setShowingBottom(false);
+				
+				List<Entity> previous = newC.getNearbyEntities(0.3, 3, 0.3);
+				for(Entity e:previous){ //Remove old item boxes
+					if(e.getType().equals(EntityType.ENDER_CRYSTAL) && !e.equals(newC)){
+						e.remove();
+					}
+				}
+				
+				above.subtract(0, 0.25, 0);
+				above.getBlock().setType(Material.COAL_BLOCK);
+				above.getBlock().getRelative(BlockFace.WEST)
+						.setType(Material.COAL_BLOCK);
+				above.getBlock().getRelative(BlockFace.NORTH)
+						.setType(Material.COAL_BLOCK);
+				above.getBlock().getRelative(BlockFace.NORTH_WEST)
+						.setType(Material.COAL_BLOCK);
+				newC.setFireTicks(0);
+				newC.setMetadata("race.pickup", new StatValue(true, plugin));
+				
+				return;
 			}
-		}
-		
-		above.getBlock().setType(Material.COAL_BLOCK);
-		above.getBlock().getRelative(BlockFace.WEST)
-				.setType(Material.COAL_BLOCK);
-		above.getBlock().getRelative(BlockFace.NORTH)
-				.setType(Material.COAL_BLOCK);
-		above.getBlock().getRelative(BlockFace.NORTH_WEST)
-				.setType(Material.COAL_BLOCK);
-		newC.setFireTicks(0);
-		newC.setMetadata("race.pickup", new StatValue(true, plugin));
+		}, 4l);
 		return true;
 	}
 	
@@ -570,5 +625,4 @@ public class PowerupManager {
 		newC.setMetadata("race.pickup", new StatValue(true, plugin));
 	}
 	*/
-
 }

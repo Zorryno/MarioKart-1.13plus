@@ -10,8 +10,14 @@ import net.stormdev.mario.utils.ParticleEffects;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
+//import org.bukkit.Material;
 import org.bukkit.Sound;
+//import org.bukkit.block.data.type.Jigsaw;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
+
+import com.useful.ucarsCommon.StatValue;
 
 public class RaceMethods {
 	@SuppressWarnings("unused")
@@ -86,5 +92,57 @@ public class RaceMethods {
 			}
 		}
 		return null;
+	}
+	
+	public synchronized Minecart spawnKart(Location loc) {
+		Minecart car = (Minecart) loc.getWorld().spawnEntity(
+				loc, EntityType.MINECART);
+		car.setMetadata("kart.racing", new StatValue(null, MarioKart.plugin));
+		/* 1.16+ Jigsaw-Fun
+		Jigsaw saw = (Jigsaw) Material.JIGSAW.createBlockData();
+		
+		int rand = MarioKart.plugin.random.nextInt(11); // 0-11 random
+		switch(rand) {
+			case 0:
+				saw.setOrientation(Jigsaw.Orientation.UP_EAST);
+				break;
+			case 1:
+				saw.setOrientation(Jigsaw.Orientation.DOWN_EAST);
+				break;
+			case 2:
+				saw.setOrientation(Jigsaw.Orientation.UP_NORTH);
+				break;
+			case 3:
+				saw.setOrientation(Jigsaw.Orientation.DOWN_NORTH);
+				break;
+			case 4:
+				saw.setOrientation(Jigsaw.Orientation.UP_WEST);
+				break;
+			case 5:
+				saw.setOrientation(Jigsaw.Orientation.DOWN_WEST);
+				break;
+			case 6:
+				saw.setOrientation(Jigsaw.Orientation.UP_SOUTH);
+				break;
+			case 7:
+				saw.setOrientation(Jigsaw.Orientation.DOWN_SOUTH);
+				break;
+			case 8:
+				saw.setOrientation(Jigsaw.Orientation.NORTH_UP);
+				break;
+			case 9:
+				saw.setOrientation(Jigsaw.Orientation.WEST_UP);
+				break;
+			case 10:
+				saw.setOrientation(Jigsaw.Orientation.EAST_UP);
+				break;
+			case 11:
+				saw.setOrientation(Jigsaw.Orientation.SOUTH_UP);
+				break;
+		}
+		car.setDisplayBlockData(saw);
+		car.setDisplayBlockOffset(0); */
+		
+		return car;
 	}
 }

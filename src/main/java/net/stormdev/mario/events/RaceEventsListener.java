@@ -5,15 +5,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.stormdev.mario.mariokart.MarioKart;
-import net.stormdev.mario.players.User;
-import net.stormdev.mario.powerups.BananaPowerup;
-import net.stormdev.mario.races.MarioKartRaceFinishEvent;
-import net.stormdev.mario.races.Race;
-import net.stormdev.mario.races.RaceExecutor;
-import net.stormdev.mario.rewards.RewardConfiguration;
-import net.stormdev.mario.sound.MarioKartSound;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
@@ -37,9 +28,10 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.entity.ItemMergeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
@@ -54,6 +46,15 @@ import com.useful.uCarsAPI.uCarsAPI;
 import com.useful.ucars.ucarUpdateEvent;
 import com.useful.ucars.ucars;
 import com.useful.ucarsCommon.StatValue;
+
+import net.stormdev.mario.mariokart.MarioKart;
+import net.stormdev.mario.players.User;
+import net.stormdev.mario.powerups.BananaPowerup;
+import net.stormdev.mario.races.MarioKartRaceFinishEvent;
+import net.stormdev.mario.races.Race;
+import net.stormdev.mario.races.RaceExecutor;
+import net.stormdev.mario.rewards.RewardConfiguration;
+import net.stormdev.mario.sound.MarioKartSound;
 
 public class RaceEventsListener implements Listener {
 	private MarioKart plugin;
@@ -142,17 +143,33 @@ public class RaceEventsListener implements Listener {
 	}
 	
 	@EventHandler
-	void bananas(PlayerPickupItemEvent event) {
+	void bananas(EntityPickupItemEvent event) {
 		Item item = event.getItem();
 		ItemStack stack = item.getItemStack();
-		Player player = event.getPlayer();
+		Player player = null;
+		if(event.getEntity() instanceof Player) {
+			player = (Player) event.getEntity();			
+		} else {
+			return;
+		}
 		if (!ucars.listener.inACar(player)) {
 			return;
 		}
 		if (plugin.raceMethods.inAGame(player, false) == null) {
 			return;
 		}
+		
 		if (BananaPowerup.isItemSimilar(stack)) {
+			Location banLoc = item.getLocation();
+			Location targetLoc = player.getLocation();
+			double x = targetLoc.getX() - banLoc.getX();
+			double z = targetLoc.getZ() - banLoc.getZ();
+			double px = Math.abs(x);
+			double pz = Math.abs(z);
+			if (pz > 0.04 && px > 0.04) {
+				event.setCancelled(true);
+				return;
+			}
 			if(!MarioKart.powerupManager.isPlayerImmune(player)){
 				MarioKart.plugin.musicManager.playCustomSound(player, MarioKartSound.BANANA_HIT);
 				item.remove();
@@ -218,8 +235,17 @@ public class RaceEventsListener implements Listener {
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR)
-	void powerups(final ucarUpdateEvent event) { //Tell powerup manager when a car moves (Item Boxes)
-		final Player player = event.getPlayer();
+	void powerups(final VehicleUpdateEvent event) { //Tell powerup manager when a car moves (Item Boxes)
+		if(event.getVehicle().isEmpty() ||
+				event instanceof ucarUpdateEvent || !event.getVehicle().getType().name().equalsIgnoreCase("minecart")) {
+			return;
+		}
+		
+		if(!(event.getVehicle().getPassengers().get(0) instanceof Player)) {
+			return;
+		}
+		
+		final Player player = (Player) event.getVehicle().getPassengers().get(0);
 		try {
 			if (plugin.raceMethods.inAGame(player, false) == null) {
 				return;
@@ -413,6 +439,14 @@ public class RaceEventsListener implements Listener {
 			return;
 		}
 		if (!(player.getVehicle() == null)) {
+			List<MetadataValue> metas = null;
+			if (player.hasMetadata("car.stayIn")) {
+				metas = player.getMetadata("car.stayIn");
+				for (MetadataValue val : metas) {
+					player.removeMetadata("car.stayIn", val.getOwningPlugin());
+				}
+			}
+			
 			Entity e = player.getVehicle();
 			List<Entity> stack = new ArrayList<Entity>();
 			while(e != null){
@@ -422,13 +456,6 @@ public class RaceEventsListener implements Listener {
 			for(Entity e1:stack){
 				e1.eject();
 				e1.remove();
-			}
-		}
-		List<MetadataValue> metas = null;
-		if (player.hasMetadata("car.stayIn")) {
-			metas = player.getMetadata("car.stayIn");
-			for (MetadataValue val : metas) {
-				player.removeMetadata("car.stayIn", val.getOwningPlugin());
 			}
 		}
 		return;
@@ -471,9 +498,9 @@ public class RaceEventsListener implements Listener {
 			@Override
 			public void run() {
 				final Race race = plugin.raceMethods.inAGame(player, false);
-				User u = race.updateUser(player);
+				User u = race.updateUser(player);				
 				int checkpoint = u.getCheckpoint();
-				//race.updateUser(u);
+				//race.updateUser(u);				
 				Location loc = race.getTrack().getCheckpoint(checkpoint)
 						.getLocation(plugin.getServer()).clone().add(0, 2, 0);
 				player.teleport(loc.clone().add(0, 2, 0));
@@ -487,17 +514,19 @@ public class RaceEventsListener implements Listener {
 					l.getChunk(); // Load the chunk
 					player.teleport(l);
 				}
-				Minecart cart = (Minecart) loc.getWorld().spawnEntity(loc,
-						EntityType.MINECART);
-				cart.setMetadata("kart.racing", new StatValue(null, MarioKart.plugin));
+				
+				Minecart cart = plugin.raceMethods.spawnKart(loc);
+				
 				final Vehicle brumm = cart;
 				brumm.addPassenger(player);
 				if(fairCars){
 					uCarsAPI.getAPI().setUseRaceControls(cart.getUniqueId(), plugin);
 				}
 				player.setMetadata("car.stayIn", new StatValue(null, plugin));
+				
 				plugin.hotBarManager.updateHotBar(player);
 				player.updateInventory();
+				
 				player.setScoreboard(race.board);
 				Bukkit.getScheduler().runTaskAsynchronously(MarioKart.plugin, new Runnable(){
 
@@ -558,13 +587,19 @@ public class RaceEventsListener implements Listener {
 		if (plugin.raceMethods.inAGame(player, false) == null) {
 			return;
 		}
+		
 		Vector Velocity = car.getVelocity();
-		double speed = (Math.abs(Velocity.getX()) + Math.abs(Velocity.getZ())) * 40;
+		Double X = Math.abs(Velocity.getX());
+		Double Z = Math.abs(Velocity.getZ());
+		double speed = (Math.sqrt(Math.pow(X,2) + Math.pow(Z,2))) * 40;
 		if (speed < 1) {
 			speed = Velocity.getY();
 		}
 		if (speed > 100) {
 			speed = 100;
+		}
+		if (speed < 0) {
+			speed = 0;
 		}
 		player.setLevel((int) speed);
 		float xpBar = (float) (speed / 100);
@@ -581,6 +616,8 @@ public class RaceEventsListener implements Listener {
 	@EventHandler
 	void raceFinish(final MarioKartRaceFinishEvent event) { //Handle rewards after players finish a race
 		final Player player = event.getPlayer();
+		event.getRace().setFinished(player, true);
+					
 		try {
 			MarioKart.plugin.hotBarManager.clearHotBar(player.getName());
 		}
@@ -712,6 +749,14 @@ public class RaceEventsListener implements Listener {
 				&& MarioKart.plugin.raceMethods.inAGame(
 						((Player) event.getEntity()), false) != null) {
 			event.setDamage(0);
+			event.setCancelled(true);
+		}
+		return;
+	}
+	
+	@EventHandler
+	void merge(ItemMergeEvent event) {
+		if(event.getEntity().getItemStack().getItemMeta().getDisplayName().contains("Banana")) {
 			event.setCancelled(true);
 		}
 		return;

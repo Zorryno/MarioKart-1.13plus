@@ -52,7 +52,7 @@ public class RaceTimeCommandExecutor implements CommandExecutor {
 				if(pos <= d){
 					String name = (String) o;
 					sender.sendMessage(MarioKart.colors.getTitle() + pos + ")"
-							+ MarioKart.colors.getInfo() + name + "- " + times.get(name)
+							+ MarioKart.colors.getInfo() + name + " - " + times.get(name)
 							+ "s");
 					pos++;
 				}

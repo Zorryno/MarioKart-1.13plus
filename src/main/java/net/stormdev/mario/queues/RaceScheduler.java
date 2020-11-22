@@ -8,6 +8,20 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Sound;
+import org.bukkit.entity.Minecart;
+import org.bukkit.entity.Player;
+
+import com.useful.uCarsAPI.uCarsAPI;
+import com.useful.ucars.SmoothMeta;
+import com.useful.ucars.ucars;
+import com.useful.ucarsCommon.StatValue;
+
 import net.stormdev.mario.lesslag.DynamicLagReducer;
 import net.stormdev.mario.mariokart.MarioKart;
 import net.stormdev.mario.players.PlayerQuitException;
@@ -18,22 +32,6 @@ import net.stormdev.mario.sound.MarioKartSound;
 import net.stormdev.mario.tracks.RaceTrack;
 import net.stormdev.mario.utils.MetaValue;
 import net.stormdev.mario.utils.SerializableLocation;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Sound;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Minecart;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Vehicle;
-
-import com.useful.uCarsAPI.uCarsAPI;
-import com.useful.ucars.SmoothMeta;
-import com.useful.ucars.ucars;
-import com.useful.ucarsCommon.StatValue;
 
 public class RaceScheduler {
 	private HashMap<UUID, Race> races = new HashMap<UUID, Race>();
@@ -200,7 +198,7 @@ public class RaceScheduler {
 		if(!MarioKart.plugin.resourcedPlayers.contains(player.getName()) 
 				&& MarioKart.plugin.fullPackUrl != null
 				&& MarioKart.plugin.fullPackUrl.length() > 0){
-			player.setTexturePack(MarioKart.plugin.fullPackUrl);
+			player.setResourcePack(MarioKart.plugin.fullPackUrl);
 			MarioKart.plugin.resourcedPlayers.add(player.getName());
 		}
 		return;
@@ -431,19 +429,17 @@ public class RaceScheduler {
 						c.load(true);
 					}
 					p.teleport(loc.add(0, 2, 0));
-					final Minecart car = (Minecart) loc.getWorld().spawnEntity(
-							loc.add(0, 0.2, 0), EntityType.MINECART);
+					final Minecart car = MarioKart.plugin.raceMethods.spawnKart(loc.add(0,0.2,0));
+					
 					car.setMetadata("car.frozen", new StatValue(null, MarioKart.plugin));
-					car.setMetadata("kart.racing", new StatValue(null, MarioKart.plugin));
 					
 					final Player pl = p;
-					final Vehicle brumm = car;
 					
 					Bukkit.getScheduler().runTaskLater(MarioKart.plugin, new Runnable(){
 
 						@Override
 						public void run() {
-							brumm.addPassenger(pl);
+							car.addPassenger(pl);
 							pl.setMetadata("car.stayIn",
 									new StatValue(null, MarioKart.plugin));
 							return;

@@ -11,6 +11,7 @@ import net.stormdev.mario.players.User;
 import net.stormdev.mario.races.Race;
 import net.stormdev.mario.races.RaceExecutor;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
@@ -42,7 +43,7 @@ public class LightningPowerup extends PowerupBase {
 			Player pla = MarioKart.plugin.getServer().getPlayer(
 					name);
 			if(!name.equals(player.getName())
-					&& !MarioKart.powerupManager.isPlayerImmune(pla)){
+					&& !MarioKart.powerupManager.isPlayerImmune(pla) && !race.getUser(pla).isFinished()){
 				Entity c = pla.getVehicle();
 				while(c!=null && !(c instanceof Minecart) && c.getVehicle() != null){
 					c = c.getVehicle();
@@ -60,7 +61,7 @@ public class LightningPowerup extends PowerupBase {
 						.carBoost(
 								pla.getName(),
 								power,
-								8000,
+								4000,
 								ucars.config
 										.getDouble("general.cars.defSpeed"));
 			}

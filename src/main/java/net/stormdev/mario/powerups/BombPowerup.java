@@ -32,7 +32,7 @@ public class BombPowerup extends PowerupBase {
 		final Vector vel = player.getEyeLocation().getDirection();
 		final TNTPrimed tnt = (TNTPrimed) car.getLocation().getWorld()
 				.spawnEntity(car.getLocation(), EntityType.PRIMED_TNT);
-		tnt.setFuseTicks(80);
+		tnt.setFuseTicks(60);
 		tnt.setMetadata("explosion.none", new StatValue(null, MarioKart.plugin));
 		vel.setY(0.2); // Distance to throw it
 		tnt.setVelocity(vel);

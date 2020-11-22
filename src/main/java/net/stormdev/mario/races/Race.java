@@ -124,6 +124,10 @@ public class Race {
 		}
 		return null;
 	}
+	
+	public synchronized void setFinished(Player player, Boolean bool) {
+		getUser(player).setFinished(bool);
+	}
 
 	public synchronized User getUser(String playerName) {
 		for (User user : users) {
@@ -478,7 +482,7 @@ public class Race {
 									if(pl != null){
 										game.scores.getScore(pl.getDisplayName()).setScore(pos);
 										game.scoresBoard.getScore(pl.getDisplayName())
-											.setScore(pos);
+											.setScore(-pos);
 									}
 								} catch (IllegalStateException e) {
 									e.printStackTrace();
@@ -648,6 +652,7 @@ public class Race {
 						public void run() {
 							//Combat uCarsTrade's safeExit
 							pl.teleport(track.getExit(MarioKart.plugin.getServer()));
+	    					pl.setGameMode(user.getOldGameMode());
 							return;
 						}}, 4l);
                 	
@@ -655,7 +660,6 @@ public class Race {
     						.getScoreboardManager().getMainScoreboard());
                 	player.removeMetadata("car.stayIn", MarioKart.plugin);
     				player.getInventory().setContents(user.getOldInventory());
-    				player.setGameMode(user.getOldGameMode());
     				player.setLevel(user.getOldLevel());
     				player.setExp(user.getOldExp());
                 }

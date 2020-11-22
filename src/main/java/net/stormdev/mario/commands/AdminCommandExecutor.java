@@ -6,6 +6,7 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 import net.stormdev.mario.mariokart.MarioKart;
+import net.stormdev.mario.powerups.BlueShellPowerup;
 import net.stormdev.mario.races.Race;
 import net.stormdev.mario.rewards.RewardConfiguration;
 import net.stormdev.mario.server.FullServerManager;
@@ -13,6 +14,7 @@ import net.stormdev.mario.server.ServerStage;
 import net.stormdev.mario.tracks.RaceTrack;
 import net.stormdev.mario.tracks.TrackCreator;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -342,6 +344,29 @@ public class AdminCommandExecutor implements CommandExecutor {
 				}
 				
 				sender.sendMessage(ChatColor.YELLOW+"Toggled full server: "+toggle);
+				return true;
+			} else if (command.equalsIgnoreCase("item")) {
+				if(player.isInsideVehicle()) {
+					ItemStack give = MarioKart.powerupManager.getPowerup(args[1]);
+					
+					final ItemStack gve = give;
+					final Player pla = player;
+					Bukkit.getServer().getScheduler().runTaskAsynchronously(MarioKart.plugin, new Runnable() {
+
+						@Override
+						public void run() {
+							if(args.length > 2) {
+								for(int i = 0; i < Integer.parseInt(args[2]); i++) {
+									pla.getInventory().addItem(gve); 
+								}
+							} else {
+								pla.getInventory().addItem(gve);
+							}
+						}
+					});
+				} else {
+					sender.sendMessage(ChatColor.RED+"NOPE");
+				}
 				return true;
 			}
 			return false;
