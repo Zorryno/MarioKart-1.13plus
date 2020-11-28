@@ -10,7 +10,7 @@ import net.stormdev.mario.mariokart.MarioKart;
 
 public class RPManager {
 	
-	private static final String fallbackURL = "https://www.curseforge.com/minecraft/texture-packs/mariokart-resourcepack/download/3119588/file"; //Current one at time of writing
+	private static final String fallbackURL = "https://media.forgecdn.net/files/3119/588/mariocart.zip"; //Current one at time of writing
 	//http://minecraft.curseforge.com/texture-packs/74301-mario-kart-resource-pack/files/774770/download
 	/*
 	 * Get's the latest RP url from CurseForge... (I wish they extended their API to include RPs...)
@@ -46,7 +46,7 @@ public class RPManager {
 		MarioKart.logger.info("Attempting to resolve resource pack URL... (This may take a while)");
 		
 		//Follow the server's redirect until we reach the .zip file
-		URLConnection c = new URL("https://www.curseforge.com/minecraft/texture-packs/mariokart-resourcepack/download/3119588/file").openConnection();
+		URLConnection c = new URL("https://media.forgecdn.net/files/3119/588/mariocart.zip").openConnection();
 		c.connect();
 		InputStream is = c.getInputStream();
 		String rURL = c.getURL().toExternalForm();
