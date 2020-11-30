@@ -166,7 +166,7 @@ public class RaceEventsListener implements Listener {
 			double z = targetLoc.getZ() - banLoc.getZ();
 			double px = Math.abs(x);
 			double pz = Math.abs(z);
-			if (pz > 0.04 && px > 0.04) {
+			if (pz > 0.07 && px > 0.07) {
 				event.setCancelled(true);
 				return;
 			}
