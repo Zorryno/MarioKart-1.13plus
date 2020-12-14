@@ -173,7 +173,7 @@ public class RaceEventsListener implements Listener {
 			if(!MarioKart.powerupManager.isPlayerImmune(player)){
 				MarioKart.plugin.musicManager.playCustomSound(player, MarioKartSound.BANANA_HIT);
 				item.remove();
-				RaceExecutor.penalty(player, ((Minecart) player.getVehicle()), 0.5f);
+				RaceExecutor.penalty(player, ((Minecart) player.getVehicle()), 0.5f, 0.5);
 			}
 			event.setCancelled(true);
 			return;
@@ -286,6 +286,7 @@ public class RaceEventsListener implements Listener {
 		}
 		//System.out.println("Cancelling car exit...");
 		final Vehicle brumm = car;
+		brumm.eject();
 		brumm.addPassenger(player);
 		event.setCancelled(true);
 	}
@@ -355,7 +356,7 @@ public class RaceEventsListener implements Listener {
 						try {
 							car.setDamage(0);
 							if(e != null && e instanceof Player){
-								RaceExecutor.penalty((Player) e, car, 4);
+								RaceExecutor.penalty((Player) e, car, 4, 1.5);
 							}
 							
 						} catch (Exception e1) {
@@ -432,7 +433,7 @@ public class RaceEventsListener implements Listener {
 	}
 	
 	@EventHandler
-	void playerPreDeathEvent(PlayerDeathEvent event) { //Remove cars before respawn in races
+	void playerPreDeathEvent(PlayerDeathEvent event) { //Remove cars before respawn in races - NOT USED ANYMORE, HERE FOR LEGACY PURPOSES
 		Player player = event.getEntity();
 		Race r = plugin.raceMethods.inAGame(player, false);
 		if (r == null) {
@@ -462,7 +463,7 @@ public class RaceEventsListener implements Listener {
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
-	void playerRespawnEvent(PlayerRespawnEvent event) { //Handle respawns during races
+	void playerRespawnEvent(PlayerRespawnEvent event) { //Handle respawns during races - NOT USED ANYMORE, HERE FOR LEGACY PURPOSES
 		final Player player = event.getPlayer();
 		if (plugin.raceMethods.inAGame(player, false) == null) {
 			return;
@@ -488,7 +489,7 @@ public class RaceEventsListener implements Listener {
 	
 	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.MONITOR)
-	void postRespawn(PlayerRespawnEvent event) { //Handle post respawns in races
+	void postRespawn(PlayerRespawnEvent event) { //Handle post respawns in races - NOT USED ANYMORE, HERE FOR LEGACY PURPOSES
 		final Player player = event.getPlayer();
 		if (plugin.raceMethods.inAGame(player, true) == null) {
 			return;

@@ -490,18 +490,13 @@ public class RaceExecutor {
 		return;
 	}
 	
-	public static void penalty(final Player player, final Minecart car, float time) {
+	public static void penalty(final Player player, final Minecart car, float time, double power) {
 		if (car == null) {
 			return;
 		}
 		if (car.hasMetadata("kart.immune")) {
 			return;
-		}
-		double power = (time / 2);
-		if (power < 1) {
-			power = 1;
-		}
-		
+		}		
 		try {
 			if(player.hasMetadata("ucars.smooth")){
 				Object o = player.getMetadata("ucars.smooth").get(0).value();
@@ -515,6 +510,7 @@ public class RaceExecutor {
 		}
 		
 		car.setMetadata("car.frozen", new StatValue(time, MarioKart.plugin));
+		car.setMetadata("car.inertialYAxis", new StatValue(time, MarioKart.plugin));
 		
 		car.setMetadata("kart.immune",
 				new StatValue(2000, MarioKart.plugin));
@@ -546,6 +542,7 @@ public class RaceExecutor {
 				
 				MarioKart.plugin.musicManager.playCustomSound(pl, MarioKartSound.PENALTY_END);
 				car.removeMetadata("car.frozen", MarioKart.plugin);
+				car.removeMetadata("car.inertialYAxis", MarioKart.plugin);
 				ParticleEffects.sendToLocation(ParticleEffects.GREEN_SPARKLE, car.getLocation(), 0, 0.5f, 0, 2, 15);
 			}
 		}, (long)(time * 20l));

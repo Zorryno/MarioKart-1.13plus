@@ -1,30 +1,42 @@
 package net.stormdev.mario.races;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import net.stormdev.mario.mariokart.MarioKart;
+import net.stormdev.mario.players.User;
 import net.stormdev.mario.queues.RaceQueue;
 import net.stormdev.mario.utils.ParticleEffects;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Effect;
 import org.bukkit.Location;
-//import org.bukkit.Material;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 //import org.bukkit.block.data.type.Jigsaw;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Vehicle;
+import org.bukkit.metadata.MetadataValue;
 
+import com.useful.uCarsAPI.CarRespawnReason;
+import com.useful.uCarsAPI.uCarRespawnEvent;
+import com.useful.uCarsAPI.uCarsAPI;
+import com.useful.ucars.ucars;
+import com.useful.ucars.util.UEntityMeta;
 import com.useful.ucarsCommon.StatValue;
 
 public class RaceMethods {
 	@SuppressWarnings("unused")
 	private MarioKart plugin = null;
+	private boolean fairCars = true;
 
 	public RaceMethods() {
 		this.plugin = MarioKart.plugin;
+		fairCars = MarioKart.config.getBoolean("general.ensureEqualCarSpeed");
 	}
 	
 	public void createExplode(final Location loc){
@@ -48,6 +60,70 @@ public class RaceMethods {
 		else {
 			Bukkit.getScheduler().runTask(MarioKart.plugin, run);
 		}
+	}
+	
+	public void playerRespawn(Player player, Minecart car) {
+		List<MetadataValue> metas = null;
+		if (player.hasMetadata("car.stayIn")) {
+			metas = player.getMetadata("car.stayIn");
+			for (MetadataValue val : metas) {
+				player.removeMetadata("car.stayIn", val.getOwningPlugin());
+			}
+		}
+		
+		car.eject();
+		
+		UUID carId = car.getUniqueId();
+		
+		car.remove();
+		
+		final Race race = plugin.raceMethods.inAGame(player, false);
+		User u = race.updateUser(player);				
+		int checkpoint = u.getCheckpoint();
+		//race.updateUser(u);				
+		Location toTele = race.getTrack().getCheckpoint(checkpoint)
+				.getLocation(plugin.getServer()).clone().add(0, 2, 0);
+		
+		Chunk ch = toTele.getChunk();
+		if (ch.isLoaded()) {
+			ch.load(true);
+		}
+		car = (Minecart) car.getWorld().spawnEntity(toTele, EntityType.MINECART);
+		uCarRespawnEvent evnt = new uCarRespawnEvent(car, carId, car.getUniqueId(),
+				CarRespawnReason.TELEPORT);
+		plugin.getServer().getPluginManager().callEvent(evnt);
+		if(evnt.isCancelled()){
+			car.remove();
+		}
+		else{
+			final Vehicle ucar = car;
+			Bukkit.getScheduler().runTaskLater(plugin, new Runnable(){
+				@Override
+				public void run() {
+					ucar.addPassenger(player); //For the sake of uCarsTrade
+					return;
+				}}, 2l);
+			uCarsAPI.getAPI().updateUcarMeta(carId,
+					car.getUniqueId());
+		}
+		
+		if(fairCars){
+			uCarsAPI.getAPI().setUseRaceControls(car.getUniqueId(), MarioKart.plugin);
+		}
+		
+		plugin.hotBarManager.updateHotBar(player);
+		player.updateInventory();
+		
+		player.setScoreboard(race.board);
+		car.addPassenger(player);
+		player.setMetadata("car.stayIn", new StatValue(null, MarioKart.plugin));
+		Bukkit.getScheduler().runTaskAsynchronously(MarioKart.plugin, new Runnable(){
+
+			@Override
+			public void run() {
+				MarioKart.plugin.raceScheduler.updateRace(race);
+				return;
+			}});
 	}
 	
 	public void createExplode(final Location loc, final int size){

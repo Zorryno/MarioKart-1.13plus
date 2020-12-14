@@ -104,9 +104,7 @@ public class PowPowerup extends PowerupBase {
 														+ msg);
 												
 												ParticleEffects.sendToLocation(ParticleEffects.CLOUD, cart.getLocation(), 0, 0, 0, 1, 5);
-												RaceExecutor.penalty(pl, 
-																cart,
-																2);
+												RaceExecutor.penalty(pl, cart, 2, 1);
 											}
 										}
 										return;

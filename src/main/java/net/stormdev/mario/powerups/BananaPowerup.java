@@ -9,10 +9,12 @@ import net.stormdev.mario.players.User;
 import net.stormdev.mario.races.Race;
 
 import org.bukkit.Location;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.util.Vector;
 
 public class BananaPowerup extends PowerupBase {
 	
@@ -49,7 +51,14 @@ public class BananaPowerup extends PowerupBase {
 	@Override
 	public void doLeftClickAction(User user, Player player, Minecart car,
 			Location carLoc, Race race, ItemStack inHand) {
-		return; //Do nothing
+		Location loc = player.getLocation();
+		loc.add(0,1,0);
+		Item item = loc.getWorld().dropItem(loc, super.stack.clone());
+		
+		final Vector vel = player.getEyeLocation().getDirection();
+		vel.setY(0.5);
+		item.setVelocity(vel);
+		inHand.setAmount(inHand.getAmount()-1);
 	}
 	
 	private static final ItemStack getBaseItem(){
@@ -59,6 +68,7 @@ public class BananaPowerup extends PowerupBase {
 		List<String> lore = new ArrayList<String>();
 		lore.add("+Slows players down");
 		lore.add("*Right click to deploy");
+		lore.add("*Left click to throw forwards");
 		
 		ItemMeta im = i.getItemMeta();
 		im.setLore(lore);

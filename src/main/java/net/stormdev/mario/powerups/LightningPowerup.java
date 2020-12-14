@@ -54,8 +54,7 @@ public class LightningPowerup extends PowerupBase {
 				Minecart cart = (Minecart) c;
 				pla.getWorld().strikeLightningEffect(pla.getLocation());
 				if(cart != null){
-					RaceExecutor.penalty(pla,
-							cart, (long) 1);
+					RaceExecutor.penalty(pla, cart, 1, 0.5);
 				}
 				ucars.listener
 						.carBoost(

@@ -34,7 +34,7 @@ public class BombPowerup extends PowerupBase {
 				.spawnEntity(car.getLocation(), EntityType.PRIMED_TNT);
 		tnt.setFuseTicks(60);
 		tnt.setMetadata("explosion.none", new StatValue(null, MarioKart.plugin));
-		vel.setY(0.2); // Distance to throw it
+		vel.setY(0.5); // Distance to throw it
 		tnt.setVelocity(vel);
 		MarioKart.plugin.getServer().getScheduler()
 				.runTaskAsynchronously(MarioKart.plugin, new Runnable() {
@@ -60,7 +60,29 @@ public class BombPowerup extends PowerupBase {
 	@Override
 	public void doLeftClickAction(User user, Player player, Minecart car,
 			Location carLoc, Race race, ItemStack inHand) {
-		return; //Do nothing
+		inHand.setAmount(inHand.getAmount() - 1);
+		final TNTPrimed tnt = (TNTPrimed) car.getLocation().getWorld()
+				.spawnEntity(car.getLocation(), EntityType.PRIMED_TNT);
+		tnt.setFuseTicks(60);
+		tnt.setMetadata("explosion.none", new StatValue(null, MarioKart.plugin));
+		MarioKart.plugin.getServer().getScheduler()
+				.runTaskAsynchronously(MarioKart.plugin, new Runnable() {
+					@Override
+					public void run() {
+						int count = 12;
+						if (count > 0) {
+							count--;
+							tnt.setMetadata("explosion.none",
+									new StatValue(null, MarioKart.plugin));
+							try {
+								Thread.sleep(50);
+							} catch (InterruptedException e) {
+							}
+						} else {
+							return;
+						}
+					}
+				});
 	}
 	
 	private static final ItemStack getBaseItem(){
@@ -70,6 +92,7 @@ public class BombPowerup extends PowerupBase {
 		List<String> lore = new ArrayList<String>();
 		lore.add("+Throws an ignited bomb");
 		lore.add("*Right click to deploy");
+		lore.add("*Left click to plant behind you");
 		
 		ItemMeta im = i.getItemMeta();
 		im.setLore(lore);

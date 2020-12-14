@@ -79,11 +79,19 @@ public class PowerupManager {
 					.getAction() == org.bukkit.event.block.Action.LEFT_CLICK_BLOCK)
 					&& !timed) {
 				ItemStack inHand = evt.getPlayer().getInventory().getItemInMainHand();
-				// If green shell, throw forward
+				// Secondary use			
+				Powerup powerup = null;
 				if(GreenShellPowerup.isItemSimilar(inHand)){
-					GreenShellPowerup shell = new GreenShellPowerup();
-					shell.setOwner(player.getName());
-					shell.doLeftClickAction(race.getUser(player), player, car, car.getLocation(), race, inHand);
+					powerup = new GreenShellPowerup();
+				} else if(BananaPowerup.isItemSimilar(inHand)){
+					powerup = new BananaPowerup();
+				} else if(BombPowerup.isItemSimilar(inHand)) {
+					powerup = new BombPowerup();
+				}
+				
+				if(powerup != null){
+					powerup.setOwner(player.getName());
+					powerup.doLeftClickAction(race.getUser(player), player, car, car.getLocation(), race, inHand);
 				}
 			}
 			if (!(evt.getAction() == org.bukkit.event.block.Action.RIGHT_CLICK_AIR || evt
@@ -95,7 +103,7 @@ public class PowerupManager {
 			if (inHand.equals(this.respawn)) {
 				if (!car.hasMetadata("car.frozen")) {
 					player.sendMessage(ChatColor.GREEN + "Respawning...");
-					player.setHealth(0);
+					plugin.raceMethods.playerRespawn(player,car);
 					evt.setCancelled(true);
 				}
 				return;

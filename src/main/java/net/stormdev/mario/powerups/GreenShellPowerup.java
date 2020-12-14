@@ -47,8 +47,8 @@ public class GreenShellPowerup extends ShellPowerup {
 		
 		List<String> lore = new ArrayList<String>();
 		lore.add("+Slows down the victim");
-		lore.add("*Left click to throw forwards");
-		lore.add("*Right click to throw backwards");
+		lore.add("*Right click to throw forwards");
+		lore.add("*Left click to throw backwards");
 		
 		ItemMeta im = i.getItemMeta();
 		im.setLore(lore);
@@ -59,7 +59,7 @@ public class GreenShellPowerup extends ShellPowerup {
 	}
 
 	@Override
-	public void doRightClickAction(User user, Player player, Minecart car,
+	public void doLeftClickAction(User user, Player player, Minecart car,
 			Location carLoc, Race race, ItemStack inHand) {
 		inHand.setAmount(inHand.getAmount() - 1);
 		if(inHand.getAmount() <= 0){
@@ -103,7 +103,7 @@ public class GreenShellPowerup extends ShellPowerup {
 	}
 	
 	@Override
-	public void doLeftClickAction(User user, Player player, Minecart car,
+	public void doRightClickAction(User user, Player player, Minecart car,
 			Location carLoc, Race race, ItemStack inHand){
 		inHand.setAmount(inHand.getAmount() - 1);
 		if(inHand.getAmount() <= 0){
@@ -273,7 +273,7 @@ public class GreenShellPowerup extends ShellPowerup {
 		
 		MarioKart.plugin.raceMethods.createExplode(cart.getLocation(), 1);
 		
-		RaceExecutor.penalty(target, ((Minecart) cart), 3);
+		RaceExecutor.penalty(target, ((Minecart) cart), 2, 1);
 		setExpiry(0);
 		return;
 	}
