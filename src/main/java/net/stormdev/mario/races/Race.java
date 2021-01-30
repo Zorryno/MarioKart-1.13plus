@@ -176,6 +176,8 @@ public class Race {
 		}
 		if(player != null){
 			player.setLevel(user.getOldLevel());
+			player.setResourcePack("https://www.google.de");
+			MarioKart.plugin.resourcedPlayers.remove(player.getName());
 			player.setExp(user.getOldExp());
 		}
 		return;

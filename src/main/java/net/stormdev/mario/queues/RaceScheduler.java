@@ -205,6 +205,8 @@ public class RaceScheduler {
 	}
 
 	public synchronized void leaveQueue(Player player, RaceQueue queue) {
+		player.setResourcePack("https://www.google.de");
+		MarioKart.plugin.resourcedPlayers.remove(player.getName());
 		queue.removePlayer(player);
 		return;
 	}

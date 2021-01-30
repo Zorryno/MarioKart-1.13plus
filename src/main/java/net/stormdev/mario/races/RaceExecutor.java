@@ -89,6 +89,8 @@ public class RaceExecutor {
 				}
 			}
 			final Player player = pla;
+			pla.setResourcePack("https://www.google.de");
+			MarioKart.plugin.resourcedPlayers.remove(player.getName());
 			if (pla != null) {
 				pla.removeMetadata("car.stayIn", MarioKart.plugin);
 				pla.setCustomName(ChatColor.stripColor(player

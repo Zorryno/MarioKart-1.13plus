@@ -1,18 +1,10 @@
 package net.stormdev.mario.commands;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.regex.Pattern;
-
-import net.stormdev.mario.mariokart.MarioKart;
-import net.stormdev.mario.powerups.BlueShellPowerup;
-import net.stormdev.mario.races.Race;
-import net.stormdev.mario.rewards.RewardConfiguration;
-import net.stormdev.mario.server.FullServerManager;
-import net.stormdev.mario.server.ServerStage;
-import net.stormdev.mario.tracks.RaceTrack;
-import net.stormdev.mario.tracks.TrackCreator;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -21,10 +13,21 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
+
+import net.stormdev.mario.events.RaceEventsListener;
+import net.stormdev.mario.mariokart.MKLang;
+import net.stormdev.mario.mariokart.MarioKart;
+import net.stormdev.mario.races.Race;
+import net.stormdev.mario.rewards.RewardConfiguration;
+import net.stormdev.mario.server.FullServerManager;
+import net.stormdev.mario.server.ServerStage;
+import net.stormdev.mario.tracks.RaceTrack;
+import net.stormdev.mario.tracks.TrackCreator;
 
 public class AdminCommandExecutor implements CommandExecutor {
 	private MarioKart plugin;
@@ -349,6 +352,11 @@ public class AdminCommandExecutor implements CommandExecutor {
 				if(player.isInsideVehicle()) {
 					ItemStack give = MarioKart.powerupManager.getPowerup(args[1]);
 					
+					if(give == null) {
+						sender.sendMessage(ChatColor.RED+"NOPE");
+						return true;
+					}
+					
 					final ItemStack gve = give;
 					final Player pla = player;
 					Bukkit.getServer().getScheduler().runTaskAsynchronously(MarioKart.plugin, new Runnable() {
@@ -367,6 +375,14 @@ public class AdminCommandExecutor implements CommandExecutor {
 				} else {
 					sender.sendMessage(ChatColor.RED+"NOPE");
 				}
+				return true;
+			} else if (command.equalsIgnoreCase("reload")) {
+				MarioKart.config = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder()
+						+ File.separator + "config.yml"));
+				((RaceEventsListener)MarioKart.plugin.listeners.get(2)).reloadRaceListener();
+				MarioKart.msgs = new MKLang(MarioKart.plugin);
+				
+				sender.sendMessage(ChatColor.YELLOW+"Configs reloaded");
 				return true;
 			}
 			return false;

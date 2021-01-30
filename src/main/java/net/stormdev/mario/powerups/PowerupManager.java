@@ -456,6 +456,10 @@ public class PowerupManager {
 				}
 			}
 		}
+		if(power == null) {
+			return null;
+		}
+		
 		ItemStack i = power.getNewItem();
 		
 		return i;

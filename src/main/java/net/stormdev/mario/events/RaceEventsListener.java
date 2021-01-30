@@ -762,4 +762,8 @@ public class RaceEventsListener implements Listener {
 		}
 		return;
 	}
+	
+	public void reloadRaceListener() {
+		fairCars = MarioKart.config.getBoolean("general.ensureEqualCarSpeed");
+	}
 }
