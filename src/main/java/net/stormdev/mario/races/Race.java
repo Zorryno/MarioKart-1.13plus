@@ -9,6 +9,23 @@ import java.util.TreeMap;
 import java.util.UUID;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Server;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Item;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Vehicle;
+import org.bukkit.metadata.MetadataValue;
+import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Scoreboard;
+
+import com.useful.ucarsCommon.StatValue;
+
 import net.stormdev.mario.lesslag.DynamicLagReducer;
 import net.stormdev.mario.mariokart.MarioKart;
 import net.stormdev.mario.players.PlayerQuitException;
@@ -16,22 +33,6 @@ import net.stormdev.mario.players.User;
 import net.stormdev.mario.server.FullServerManager;
 import net.stormdev.mario.tracks.RaceTrack;
 import net.stormdev.mario.utils.DoubleValueComparator;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Server;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Vehicle;
-import org.bukkit.metadata.MetadataValue;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Scoreboard;
-
-import com.useful.ucarsCommon.StatValue;
 
 public class Race {
 	public List<String> finished = new ArrayList<String>();
@@ -291,6 +292,19 @@ public class Race {
 			this.running = false;
 			this.ended = true;
 			this.ending = true;
+			
+			for(int i = 0; i < checkLocs.size(); i++) { //Clearing PowerUps on Track
+				Location loc = checkLocs.get(i);
+				Entity point = loc.getWorld().spawnEntity(loc, EntityType.ARROW);
+				List<Entity> near = point.getNearbyEntities(25, 25, 25);
+				for(Entity e : near) {
+					if(e.getType() == EntityType.DROPPED_ITEM && MarioKart.powerupManager.isPowerup(((Item)e).getItemStack())) {
+						e.remove();
+					}
+				}
+				point.remove();
+			}
+			
 			try {
 				end();
 			} catch (Exception e) {
@@ -605,6 +619,7 @@ public class Race {
 		}
 		this.running = false;
 		ended = true;
+		
 		for (Location l : ((List<Location>) this.reloadingItemBoxes.clone())) {
 			if(MarioKart.powerupManager.spawnItemPickupBox(l)){
 				this.reloadingItemBoxes.remove(l);
@@ -690,7 +705,6 @@ public class Race {
 			e.printStackTrace();
 			//Race Voided
 		}
-		
 		System.gc();
 		return;
 	}

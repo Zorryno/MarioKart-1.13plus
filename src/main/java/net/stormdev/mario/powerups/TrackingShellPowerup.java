@@ -29,18 +29,18 @@ public abstract class TrackingShellPowerup extends ShellPowerup implements Track
 	private String target;
 	private int currentCheckpoint = 0;
 	private BukkitTask task = null;
-	
+
 	@Override
-	public void doLeftClickAction(User user, Player player, Minecart car, 
+	public void doLeftClickAction(User user, Player player, Minecart car,
 			Location carLoc, Race race, ItemStack inHand){
 		return; //Don't do anything
 	}
-	
+
 	@Override
 	public void setCurrentCheckpoint(int check) {
 		this.currentCheckpoint = check;
 	}
-	
+
 	@Override
 	public void move() {
 		if(!isFired()){
@@ -74,10 +74,10 @@ public abstract class TrackingShellPowerup extends ShellPowerup implements Track
 			shell.removeMetadata("shell.sound", MarioKart.plugin);
 			shell.setMetadata("shell.sound", new StatValue(sound, MarioKart.plugin));
 		}
-		
+
 		Vector v = calculateVelocity();
 		shell.setVelocity(v); //Move the shell
-		
+
 	}
 
 	@Override
@@ -98,7 +98,7 @@ public abstract class TrackingShellPowerup extends ShellPowerup implements Track
 				return;
 			}
 		}
-		
+
 		MarioKart.plugin.raceMethods.createExplode(cart.getLocation(), 1);
 		if(getFiredItem().getItemStack().getItemMeta().getDisplayName().equals("Blue shell")) {
 			RaceExecutor.penalty(target, ((Minecart) cart), 4, 1.5);
@@ -129,7 +129,7 @@ public abstract class TrackingShellPowerup extends ShellPowerup implements Track
 		}
 		final Player target = MarioKart.plugin.getServer().getPlayer(getTarget());
 		Race game = MarioKart.plugin.raceMethods.inAGame(target, false);
-		
+
 		Location targetLoc = null;
 		boolean goToCheck = false;
 		
@@ -137,7 +137,7 @@ public abstract class TrackingShellPowerup extends ShellPowerup implements Track
 			setExpiry(0);
 			return new Vector(0,0,0);
 		}
-		
+
 		if(this.currentCheckpoint != game.getUser(target).getCheckpoint()) {		//Better Tracking: First to same Checkpoint, then old tracking
 			if(game.getTrack().getCheckpoint(this.currentCheckpoint + 1) != null) {
 				targetLoc = SerializableLocation.returnLocation(game.getTrack().getCheckpoint(this.currentCheckpoint + 1)); //Where to go
@@ -158,7 +158,7 @@ public abstract class TrackingShellPowerup extends ShellPowerup implements Track
 		} else {
 			targetLoc = target.getLocation();
 		}
-		
+
 		double x = targetLoc.getX() - shellLoc.getX();
 		double z = targetLoc.getZ() - shellLoc.getZ();
 		Boolean ux = true;
@@ -178,8 +178,8 @@ public abstract class TrackingShellPowerup extends ShellPowerup implements Track
 			x = (x / px) * speed;
 			z = (z / px) * speed;
 		}
-		
-		
+
+
 		if (!goToCheck && !isBlue && pz < 1.1 && px < 1.1) {
 			collide(target);
 		} else if (!goToCheck && isBlue && pz < 1.5 && px < 1.5) {
@@ -189,7 +189,7 @@ public abstract class TrackingShellPowerup extends ShellPowerup implements Track
 		}
 
 		Location loc = getFiredItem().getLocation();
-			
+
 		//Bouncing off walls
 		Vector dir = new Vector(x,0,z);
 		if(Math.abs(dir.getX()) > 1) {
@@ -199,7 +199,7 @@ public abstract class TrackingShellPowerup extends ShellPowerup implements Track
 			dir.setZ(dir.getZ()/Math.abs(dir.getZ()));
 		}
 		Block toHit = loc.add(dir).getBlock();
-		Vector vel = null;		
+		Vector vel = null;
 		if(!toHit.isEmpty() && !toHit.isLiquid()){
 			if(toHit.getType().name().toLowerCase().contains("slab")) { //RedShells need to climb up steps
 				vel = new Vector(x,0.5,z);
@@ -212,9 +212,9 @@ public abstract class TrackingShellPowerup extends ShellPowerup implements Track
 				}
 			}
 		} else {
-			vel = new Vector(x, 0, z); 
+			vel = new Vector(x, 0, z);
 		}
-						
+
 		//Y-Course (move with track on Y-Axis)
 		int height = getHeight(loc);
 		if(getFiredItem().getItemStack().getItemMeta().getDisplayName().contains("Blue")) {
@@ -232,12 +232,12 @@ public abstract class TrackingShellPowerup extends ShellPowerup implements Track
 			}
 		} else {
 			if(height > 1) {
-				vel.subtract(new Vector(0,0.5,0));				
+				vel.subtract(new Vector(0,0.5,0));
 			}
 		}
 		return vel;
 	}
-	
+
 	static int getHeight(Location loc) {
 		boolean blockFound = false;
 		int height = 0;
@@ -257,14 +257,14 @@ public abstract class TrackingShellPowerup extends ShellPowerup implements Track
 		if(!isFired()){
 			return;
 		}
-		
+
 		Race game = MarioKart.plugin.raceMethods.inAGame(Bukkit.getPlayer(owner), false);
 		User user = game.getUser(owner);
-		
+
 		this.setCurrentCheckpoint(user.getCheckpoint());
 		super.setCooldown(0); //No cooldown for tracking shells
 		super.setExpiry(200); //Expire after moving 33 times
-		
+
 		task = Bukkit.getScheduler().runTaskAsynchronously(MarioKart.plugin, new Runnable(){
 
 			@Override
@@ -273,14 +273,14 @@ public abstract class TrackingShellPowerup extends ShellPowerup implements Track
 					Item item = getFiredItem();
 					item.setTicksLived(1);
 					item.setPickupDelay(Integer.MAX_VALUE);
-					
+
 					//Move the item
 					move();
-					
+
 					//Decrease the cooldown and expiry
 					decrementCooldown();
 					decrementExpiry();
-					
+
 					try {
 						Thread.sleep(150);
 					} catch (InterruptedException e) {
@@ -290,7 +290,7 @@ public abstract class TrackingShellPowerup extends ShellPowerup implements Track
 				return;
 			}});
 	}
-	
+
 	@Override
 	public boolean remove(){
 		if(!super.isExpired()){

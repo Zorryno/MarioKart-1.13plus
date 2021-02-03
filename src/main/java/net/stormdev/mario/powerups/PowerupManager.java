@@ -46,6 +46,43 @@ public class PowerupManager {
 		meta.setDisplayName(ChatColor.GREEN + "Respawn");
 		this.respawn.setItemMeta(meta);
 	}
+	
+	public boolean isPowerup(ItemStack stack) {
+		if(BananaPowerup.isItemSimilar(stack)){
+			return true;
+		}
+		else if(BlueShellPowerup.isItemSimilar(stack)){
+			return true;
+		}
+		else if(BombPowerup.isItemSimilar(stack)){
+			return true;
+		}
+		else if(BooPowerup.isItemSimilar(stack)){
+			return true;
+		}
+		else if(BoxPowerup.isItemSimilar(stack)){
+			return true;
+		}
+		else if(GreenShellPowerup.isItemSimilar(stack)){
+			return true;
+		}
+		else if(LightningPowerup.isItemSimilar(stack)){
+			return true;
+		}
+		else if(MushroomPowerup.isItemSimilar(stack)){
+			return true;
+		}
+		else if(PowPowerup.isItemSimilar(stack)){
+			return true;
+		}
+		else if(RedShellPowerup.isItemSimilar(stack)){
+			return true;
+		}
+		else if(StarPowerup.isItemSimilar(stack)){
+			return true;
+		}
+		return false;
+	}
 
 	public void calculate(final Player player, Event event) {
 		if (!enabled) {
