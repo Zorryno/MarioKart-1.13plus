@@ -195,7 +195,7 @@ public class RaceScheduler {
 		player.sendMessage(MarioKart.colors.getInfo() + msg);
 		player.sendMessage(rl); //new line
 		//TODO Use setResourePack, but would remove old version support
-		if(!MarioKart.plugin.resourcedPlayers.contains(player.getName()) 
+		if(!MarioKart.plugin.resourcedPlayers.contains(player.getName())
 				&& MarioKart.plugin.fullPackUrl != null
 				&& MarioKart.plugin.fullPackUrl.length() > 0){
 			player.setResourcePack(MarioKart.plugin.fullPackUrl);
@@ -371,7 +371,7 @@ public class RaceScheduler {
 	private synchronized void putRace(Race race){
 		this.races.put(race.getGameId(), race);
 	}
-	
+
 	public void startRace(String trackName, final Race race) {
 		putRace(race);
 		final List<User> users = race.getUsers();
@@ -432,11 +432,12 @@ public class RaceScheduler {
 					}
 					p.teleport(loc.add(0, 2, 0));
 					final Minecart car = MarioKart.plugin.raceMethods.spawnKart(loc.add(0,0.2,0));
-					
+
 					car.setMetadata("car.frozen", new StatValue(null, MarioKart.plugin));
-					
+					car.setMetadata("car.inertialYAxis", new StatValue(null, MarioKart.plugin));
+
 					final Player pl = p;
-					
+
 					Bukkit.getScheduler().runTaskLater(MarioKart.plugin, new Runnable(){
 
 						@Override
@@ -446,7 +447,7 @@ public class RaceScheduler {
 									new StatValue(null, MarioKart.plugin));
 							return;
 						}}, 2l);
-					
+
 					cars.add(car);
 					if(fairCars){
 						uCarsAPI.getAPI().setUseRaceControls(car.getUniqueId(), MarioKart.plugin);
@@ -561,6 +562,7 @@ public class RaceScheduler {
 						}
 						for (Minecart car : cars) {
 							car.removeMetadata("car.frozen", MarioKart.plugin);
+							car.removeMetadata("car.inertialYAxis", MarioKart.plugin);
 						}
 						for (User user : users2) {
 							try {
@@ -628,7 +630,7 @@ public class RaceScheduler {
 			this.races.put(race.getGameId(), race);
 		}
 	}
-	
+
 	public synchronized void lockdown(){
 		//Running out of system memory!
 		this.lockdown = true;
@@ -636,11 +638,11 @@ public class RaceScheduler {
 				+ "and may start to terminate races if condition persists!");
 		return;
 	}
-	
+
 	public boolean isLockedDown(){
 		return this.lockdown;
 	}
-	
+
 	public synchronized void unlockDown(){
 		//System regained necessary memory
 		this.lockdown = false;
@@ -687,7 +689,7 @@ public class RaceScheduler {
 		}
 		return null;
 	}
-	
+
 	public synchronized void endAll(){
 		for (UUID id : races.keySet()) {
 			races.get(id).end(); // End the race
