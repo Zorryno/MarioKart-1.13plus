@@ -132,8 +132,8 @@ public abstract class TrackingShellPowerup extends ShellPowerup implements Track
 
 		Location targetLoc = null;
 		boolean goToCheck = false;
-		
-		if(game.getUser(target) == null) {
+
+		if(game == null || game.getUser(target) == null) {
 			setExpiry(0);
 			return new Vector(0,0,0);
 		}

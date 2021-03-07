@@ -79,8 +79,10 @@ public class TrackCreator {
 	}
 
 	public void finishGrid() {
-		player.sendMessage(MarioKart.colors.getInfo()
-				+ MarioKart.msgs.get("setup.create.checkpoints"));
+		String msg = MarioKart.colors.getInfo()
+				+ MarioKart.msgs.get("setup.create.checkpoints");
+		msg = msg.replaceAll(Pattern.quote("%num%"), MarioKart.config.getDouble("general.checkpointRadius") + "");
+		player.sendMessage(msg);
 		stage = 3;
 		return;
 	}

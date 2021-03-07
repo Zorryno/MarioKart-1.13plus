@@ -10,6 +10,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
@@ -59,15 +60,15 @@ import net.stormdev.mario.sound.MarioKartSound;
 public class RaceEventsListener implements Listener {
 	private MarioKart plugin;
 	private boolean fairCars = true;
-	
+
 	private boolean lavaDamage;
 	private boolean waterDamage;
 	private List<String> wdTracks;
 	private List<String> ldTracks;
-	
+
 	private boolean commandRewards;
 	private String rewardCommand;
-	
+
 	public RaceEventsListener(MarioKart plugin){
 		this.plugin = plugin;
 		Bukkit.getPluginManager().registerEvents(this, plugin);
@@ -79,7 +80,7 @@ public class RaceEventsListener implements Listener {
 		commandRewards = MarioKart.config.getBoolean("general.race.rewards.command.enable");
 		rewardCommand = MarioKart.config.getString("general.race.rewards.command.command");
 	}
-	
+
 	@EventHandler
 	void inLiquid(VehicleUpdateEvent event){
 		if(!lavaDamage && !waterDamage){
@@ -141,14 +142,45 @@ public class RaceEventsListener implements Listener {
 				}});
 		}
 	}
-	
+
+	@EventHandler
+	void newPlayerDeath(EntityDamageEvent event) { //Handle respawning
+		if(!(event.getEntity() instanceof Player)) {
+			return;
+		}
+
+		Player player = (Player) event.getEntity();
+		Race r = plugin.raceMethods.inAGame(player, false);
+		if(player.getHealth() < event.getDamage() && r != null) {
+			Minecart car = (Minecart) player.getVehicle();
+			plugin.raceMethods.playerRespawn(player,car);
+
+			for (PotionEffect effect : player.getActivePotionEffects()) {
+				player.removePotionEffect(effect.getType());
+			}
+			player.getInventory().clear();
+			player.setRemainingAir(player.getMaximumAir());
+			player.setHealth(20);
+			player.setFoodLevel(20);
+			player.setSaturation(20);
+			player.setExhaustion(0);
+			player.setFallDistance(0);
+			player.setFireTicks(0);
+			event.setDamage(0);
+			event.setCancelled(true);
+			return;
+		} else {
+			return;
+		}
+	}
+
 	@EventHandler
 	void bananas(EntityPickupItemEvent event) {
 		Item item = event.getItem();
 		ItemStack stack = item.getItemStack();
 		Player player = null;
 		if(event.getEntity() instanceof Player) {
-			player = (Player) event.getEntity();			
+			player = (Player) event.getEntity();
 		} else {
 			return;
 		}
@@ -158,7 +190,7 @@ public class RaceEventsListener implements Listener {
 		if (plugin.raceMethods.inAGame(player, false) == null) {
 			return;
 		}
-		
+
 		if (BananaPowerup.isItemSimilar(stack)) {
 			Location banLoc = item.getLocation();
 			Location targetLoc = player.getLocation();
@@ -180,9 +212,9 @@ public class RaceEventsListener implements Listener {
 		}
 		return;
 	}
-	
+
 	@EventHandler
-	void playerDeath(PlayerDeathEvent event) {
+	void playerDeath(PlayerDeathEvent event) { //Shouldn't be active anymore
 		Race r = plugin.raceMethods.inAGame(event.getEntity(), false);
 		if (r == null) {
 			return;
@@ -193,7 +225,7 @@ public class RaceEventsListener implements Listener {
 		event.getDrops().clear();
 		return;
 	}
-	
+
 	@EventHandler(priority = EventPriority.LOWEST)
 	void vehDestroy(VehicleDamageEvent event) { // Stops player's cars being
 		// broken in a race.
@@ -217,7 +249,7 @@ public class RaceEventsListener implements Listener {
 		event.setCancelled(true);
 		return;
 	}
-	
+
 	@EventHandler
 	void invClick(InventoryClickEvent event) { //Stop people moving stuff in their inventory during a race
 		HumanEntity player = event.getWhoClicked();
@@ -233,18 +265,18 @@ public class RaceEventsListener implements Listener {
 		event.setCancelled(true);
 		return;
 	}
-	
+
 	@EventHandler(priority = EventPriority.MONITOR)
 	void powerups(final VehicleUpdateEvent event) { //Tell powerup manager when a car moves (Item Boxes)
 		if(event.getVehicle().isEmpty() ||
 				event instanceof ucarUpdateEvent || !event.getVehicle().getType().name().equalsIgnoreCase("minecart")) {
 			return;
 		}
-		
+
 		if(!(event.getVehicle().getPassengers().get(0) instanceof Player)) {
 			return;
 		}
-		
+
 		final Player player = (Player) event.getVehicle().getPassengers().get(0);
 		try {
 			if (plugin.raceMethods.inAGame(player, false) == null) {
@@ -256,7 +288,7 @@ public class RaceEventsListener implements Listener {
 	    MarioKart.powerupManager.calculate(player, event);
 		return;
 	}
-	
+
 	@EventHandler
 	void stayInCar(VehicleExitEvent event) { //Keep players inside their cars during a race
 		Entity v = event.getVehicle();
@@ -290,7 +322,7 @@ public class RaceEventsListener implements Listener {
 		brumm.addPassenger(player);
 		event.setCancelled(true);
 	}
-	
+
 	@EventHandler
 	void damage(EntityDamageEvent event) { //Block damage of cars during a race
 		if (!(event.getEntityType() == EntityType.MINECART)) {
@@ -315,7 +347,7 @@ public class RaceEventsListener implements Listener {
 		event.setDamage(0);
 		event.setCancelled(true);
 	}
-	
+
 	@EventHandler
 	void exploder(EntityExplodeEvent event) { //Stop bombs blowing up terrain
 		if (!MarioKart.config.getBoolean("mariokart.enable")) {
@@ -326,9 +358,9 @@ public class RaceEventsListener implements Listener {
 		}
 		if (event.getEntity().hasMetadata("explosion.none")) {
 			Location loc = event.getEntity().getLocation().clone();
-			
+
 			plugin.raceMethods.createExplode(loc);
-			
+
 			event.setCancelled(true);
 			double radius = 6;
 			//loc.getWorld().createExplosion(loc, 0);
@@ -358,7 +390,7 @@ public class RaceEventsListener implements Listener {
 							if(e != null && e instanceof Player){
 								RaceExecutor.penalty((Player) e, car, 4, 1.5);
 							}
-							
+
 						} catch (Exception e1) {
 						}
 					}
@@ -367,7 +399,7 @@ public class RaceEventsListener implements Listener {
 
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.MONITOR)
 	void playerProtection(EntityDamageEvent event) { //Protection during races against fire and entity attacks
 		try {
@@ -407,7 +439,7 @@ public class RaceEventsListener implements Listener {
 			return;
 		}
 	}
-	
+
 	@EventHandler
 	void carDamage(VehicleDamageEvent event) { //Stop vehicles getting damaged in races
 		if (!(event.getVehicle() instanceof Minecart)) {
@@ -431,7 +463,7 @@ public class RaceEventsListener implements Listener {
 		event.setCancelled(true);
 		return;
 	}
-	
+
 	@EventHandler
 	void playerPreDeathEvent(PlayerDeathEvent event) { //Remove cars before respawn in races - NOT USED ANYMORE, HERE FOR LEGACY PURPOSES
 		Player player = event.getEntity();
@@ -447,7 +479,7 @@ public class RaceEventsListener implements Listener {
 					player.removeMetadata("car.stayIn", val.getOwningPlugin());
 				}
 			}
-			
+
 			Entity e = player.getVehicle();
 			List<Entity> stack = new ArrayList<Entity>();
 			while(e != null){
@@ -461,7 +493,7 @@ public class RaceEventsListener implements Listener {
 		}
 		return;
 	}
-	
+
 	@EventHandler(priority = EventPriority.HIGHEST)
 	void playerRespawnEvent(PlayerRespawnEvent event) { //Handle respawns during races - NOT USED ANYMORE, HERE FOR LEGACY PURPOSES
 		final Player player = event.getPlayer();
@@ -486,7 +518,7 @@ public class RaceEventsListener implements Listener {
 		event.setRespawnLocation(loc);
 		return;
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.MONITOR)
 	void postRespawn(PlayerRespawnEvent event) { //Handle post respawns in races - NOT USED ANYMORE, HERE FOR LEGACY PURPOSES
@@ -499,9 +531,9 @@ public class RaceEventsListener implements Listener {
 			@Override
 			public void run() {
 				final Race race = plugin.raceMethods.inAGame(player, false);
-				User u = race.updateUser(player);				
+				User u = race.updateUser(player);
 				int checkpoint = u.getCheckpoint();
-				//race.updateUser(u);				
+				//race.updateUser(u);
 				Location loc = race.getTrack().getCheckpoint(checkpoint)
 						.getLocation(plugin.getServer()).clone().add(0, 2, 0);
 				player.teleport(loc.clone().add(0, 2, 0));
@@ -515,19 +547,19 @@ public class RaceEventsListener implements Listener {
 					l.getChunk(); // Load the chunk
 					player.teleport(l);
 				}
-				
+
 				Minecart cart = plugin.raceMethods.spawnKart(loc);
-				
+
 				final Vehicle brumm = cart;
 				brumm.addPassenger(player);
 				if(fairCars){
 					uCarsAPI.getAPI().setUseRaceControls(cart.getUniqueId(), plugin);
 				}
 				player.setMetadata("car.stayIn", new StatValue(null, plugin));
-				
+
 				plugin.hotBarManager.updateHotBar(player);
 				player.updateInventory();
-				
+
 				player.setScoreboard(race.board);
 				Bukkit.getScheduler().runTaskAsynchronously(MarioKart.plugin, new Runnable(){
 
@@ -538,10 +570,10 @@ public class RaceEventsListener implements Listener {
 					}});
 				return;
 			}}, 2l);
-		
+
 		return;
 	}
-	
+
 	@EventHandler
 	void blockBreak(BlockBreakEvent event) { //Stop griefing during races
 		Player player = event.getPlayer();
@@ -561,7 +593,7 @@ public class RaceEventsListener implements Listener {
 		event.setCancelled(true);
 		return;
 	}
-	
+
 	@EventHandler(priority = EventPriority.MONITOR)
 	void speedo(VehicleUpdateEvent event) { //Draw the speedo onto hotbars during races
 		Entity veh = event.getVehicle();
@@ -588,7 +620,7 @@ public class RaceEventsListener implements Listener {
 		if (plugin.raceMethods.inAGame(player, false) == null) {
 			return;
 		}
-		
+
 		Vector Velocity = car.getVelocity();
 		Double X = Math.abs(Velocity.getX());
 		Double Z = Math.abs(Velocity.getZ());
@@ -613,12 +645,12 @@ public class RaceEventsListener implements Listener {
 		player.setExp(xpBar);
 		return;
 	}
-	
+
 	@EventHandler
 	void raceFinish(final MarioKartRaceFinishEvent event) { //Handle rewards after players finish a race
 		final Player player = event.getPlayer();
 		event.getRace().setFinished(player, true);
-					
+
 		try {
 			MarioKart.plugin.hotBarManager.clearHotBar(player.getName());
 		}
@@ -642,7 +674,7 @@ public class RaceEventsListener implements Listener {
 		}
 		int pos = event.getFinishPosition();
 		RewardConfiguration rewards = event.getRewardConfig();
-		
+
 		final double reward;
 		switch (pos) {
 		case 1: {
@@ -672,7 +704,7 @@ public class RaceEventsListener implements Listener {
 			else {
 				cmd = cmd.replaceAll(Pattern.quote("<amount>"), Matcher.quoteReplacement(reward+""));
 			}
-			
+
 			cmd = cmd.replaceAll(Pattern.quote("<position>"), Matcher.quoteReplacement(pos+""));
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
 			if(MarioKart.config.getBoolean("general.race.rewards.command.say")){
@@ -731,7 +763,7 @@ public class RaceEventsListener implements Listener {
 			}});
 		return;
 	}
-	
+
 	@EventHandler(priority = EventPriority.LOWEST)
 	void pvp(EntityDamageEvent event) { //Stop PVP in races
 		if (event.getEntity() instanceof Player
@@ -754,7 +786,7 @@ public class RaceEventsListener implements Listener {
 		}
 		return;
 	}
-	
+
 	@EventHandler
 	void merge(ItemMergeEvent event) {
 		if(event.getEntity().getItemStack().getItemMeta().getDisplayName().contains("Banana")) {
@@ -762,7 +794,7 @@ public class RaceEventsListener implements Listener {
 		}
 		return;
 	}
-	
+
 	public void reloadRaceListener() {
 		fairCars = MarioKart.config.getBoolean("general.ensureEqualCarSpeed");
 	}

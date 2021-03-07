@@ -2,11 +2,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.stormdev</groupId>
     <artifactId>MarioKart</artifactId>
-    <name>MarioKart</name>
-    <url>https://github.com/storm345dev/MarioKart</url>
+    <name>MarioKart-1.13+</name>
+    <url>https://github.com/Jakllp/MarioKart-1.13plus</url>
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/storm345dev/MarioKart/issues</url>
+        <url>https://github.com/Jakllp/MarioKart-1.13plus/issues</url>
     </issueManagement>
     <build>
         <finalName>MarioKart</finalName>
@@ -103,8 +103,13 @@
     </repositories>
     <dependencies>
         <dependency>
+          <groupId>mysql</groupId>
+          <artifactId>mysql-connector-java</artifactId>
+          <version>5.1.41</version>
+        </dependency>
+        <dependency>
             <groupId>org.spigotmc</groupId>
-            <artifactId>spigot</artifactId>
+            <artifactId>spigot-api</artifactId>
             <version>1.13.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
