@@ -384,6 +384,9 @@ public class AdminCommandExecutor implements CommandExecutor {
 				
 				sender.sendMessage(ChatColor.YELLOW+"Configs reloaded");
 				return true;
+			} else if (command.equalsIgnoreCase("version")) {
+				sender.sendMessage(ChatColor.YELLOW+"You are running MarioKart 1.16+ "+plugin.getDescription().getVersion());
+				return true;
 			}
 			return false;
 		}

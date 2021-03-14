@@ -117,7 +117,6 @@ public class RaceMethods {
 		player.updateInventory();
 
 		player.setScoreboard(race.board);
-		car.addPassenger(player);
 		player.setMetadata("car.stayIn", new StatValue(null, MarioKart.plugin));
 		Bukkit.getScheduler().runTaskAsynchronously(MarioKart.plugin, new Runnable(){
 
