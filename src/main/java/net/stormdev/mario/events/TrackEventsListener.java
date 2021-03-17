@@ -23,11 +23,11 @@ public class TrackEventsListener implements Listener {
 
 	@EventHandler (priority = EventPriority.HIGHEST)
 	public void onWandClickEvent(PlayerInteractEvent event) {
-		if(event.getHand().equals(EquipmentSlot.OFF_HAND)){
-			return;
-		}
 		if (!event.getAction().equals(Action.RIGHT_CLICK_AIR)
 				&& !event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+			return;
+		}
+		if(event.getHand().equals(EquipmentSlot.OFF_HAND)){
 			return;
 		}
 		Player player = event.getPlayer();
