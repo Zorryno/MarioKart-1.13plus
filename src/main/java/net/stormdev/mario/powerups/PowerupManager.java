@@ -399,7 +399,7 @@ public class PowerupManager {
 													// respawned
 										}
 										Chunk c = loc.getChunk();
-										if (c.isLoaded()) {
+										if (!c.isLoaded()) {
 											c.load(true);
 										}
 										r.reloadingItemBoxes.remove(signLoc);

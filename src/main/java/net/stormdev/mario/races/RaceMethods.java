@@ -85,7 +85,7 @@ public class RaceMethods {
 				.getLocation(plugin.getServer()).clone().add(0, 2, 0);
 
 		Chunk ch = toTele.getChunk();
-		if (ch.isLoaded()) {
+		if (!ch.isLoaded()) {
 			ch.load(true);
 		}
 		car = (Minecart) car.getWorld().spawnEntity(toTele, EntityType.MINECART);

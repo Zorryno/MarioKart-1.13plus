@@ -22,13 +22,13 @@ public class MKLang {
 		val = Colors.colorise(val);
 		return val;
 	}
-
+	
 	public static String getStr(String key) {
 		String val = getRawStr(key);
 		val = Colors.colorise(val);
 		return val;
 	}
-
+	
 	public static String getRawStr(String key) {
 		if (!lang.contains(key)) {
 			return key;
@@ -42,7 +42,7 @@ public class MKLang {
 		}
 		return lang.getString(key);
 	}
-
+	
 	private void load(){
 		File langFile = new File(plugin.getDataFolder().getAbsolutePath()
 				+ File.separator + "lang.yml");
@@ -111,6 +111,14 @@ public class MKLang {
 			lang.set("general.cmd.setMinPlayers.success",
 					"Successfully set the minimum players for track %name%!");
 		}
+		if (!lang.contains("general.cmd.setLobby.success")) {
+			lang.set("general.cmd.setLobby.success",
+					"Successfully set the Lobby for track %name%!");
+		}
+		if (!lang.contains("general.cmd.setExit.success")) {
+			lang.set("general.cmd.setExit.success",
+					"Successfully set the Exit for track %name%!");
+		}
 		if (!lang.contains("general.cmd.setRewards.success")) {
 			lang.set("general.cmd.setRewards.success",
 					"Successfully set the rewards for track %name%!");
@@ -168,7 +176,7 @@ public class MKLang {
 					"setup.create.grid",
 					"Stand where you want a car to start the race and right click anywhere (Without the wand). Repeat for all the starting positions. When done, right click anywhere with the wand");
 		}
-		if (!lang.contains("setup.create.checkpoints")  || !((String)lang.get("setup.create.checkpoints")).contains("%num%")) {
+		if (!lang.contains("setup.create.checkpoints") || !((String)lang.get("setup.create.checkpoints")).contains("%num%")) {
 			lang.set(
 					"setup.create.checkpoints",
 					"Stand at each checkpoint along the track (Checkpoint radius: %num%) and right click anywhere (Without the wand). Repeat for all checkpoints. When done, right click anywhere with the wand");
@@ -176,7 +184,7 @@ public class MKLang {
 		if (!lang.contains("setup.create.notEnoughCheckpoints")) {
 			lang.set("setup.create.notEnoughCheckpoints",
 					"You must have at least 3 checkpoints! You only have: %num%");
-		}
+		} 
 		if (!lang.contains("setup.create.line1")) {
 			lang.set(
 					"setup.create.line1",
@@ -328,7 +336,7 @@ public class MKLang {
 		if(!lang.contains("mario.shop.delete")){
 			lang.set("mario.shop.delete", "Click to delete");
 		}
-
+		
 		try {
 			lang.save(langFile);
 		} catch (IOException e1) {

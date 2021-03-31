@@ -1,6 +1,6 @@
 name: MarioKart
 main: net.stormdev.mario.mariokart.MarioKart
-version: 11.4
+version: 12
 api-version: 1.13
 softdepend: [Vault, BarAPI]
 depend: [uCars]
@@ -8,7 +8,7 @@ commands:
    marioRaceAdmin:
         aliases: [mra, marioadmin]
         description: This is the setup of racetracks and admin commands
-        usage: /<command> [Create <TrackName> <Laps> (MinPlayers)] [Delete <TrackName>] [List (Page)] [Races (Page)] [End <RaceTrack>/Endall] [setLaps <TrackName> <Laps>] [setMinPlayers <TrackName> <Num>] [setRewards <TrackName> <1st> <2nd> <3rd>] [ShopVillager] [ToggleServer]
+        usage: /<command> [Create <TrackName> <Laps> (MinPlayers)] [Delete <TrackName>] [List (Page)] [Races (Page)] [End <RaceTrack>/Endall] [setLaps <TrackName> <Laps>] [setMinPlayers <TrackName> <Num>] [setRewards <TrackName> <1st> <2nd> <3rd>] [setLobby <TrackName>] [setExit <TrackName>] [ShopVillager] [ToggleServer]
         permission: mariokart.raceadmin
         permission-message: You don't have access to this command
         default: op

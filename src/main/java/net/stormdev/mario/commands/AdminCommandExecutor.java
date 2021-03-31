@@ -25,6 +25,7 @@ import net.stormdev.mario.mariokart.MarioKart;
 import net.stormdev.mario.races.Race;
 import net.stormdev.mario.rewards.RewardConfiguration;
 import net.stormdev.mario.server.FullServerManager;
+import net.stormdev.mario.server.PlayerServerSender;
 import net.stormdev.mario.server.ServerStage;
 import net.stormdev.mario.tracks.RaceTrack;
 import net.stormdev.mario.tracks.TrackCreator;
@@ -278,6 +279,42 @@ public class AdminCommandExecutor implements CommandExecutor {
 				plugin.trackManager.getRaceTrack(trackname).setMinPlayers(min);
 				plugin.trackManager.save();
 				String msg = MarioKart.msgs.get("general.cmd.setMinPlayers.success");
+				msg = msg.replaceAll(Pattern.quote("%name%"),
+						plugin.trackManager.getRaceTrack(trackname)
+								.getTrackName());
+				sender.sendMessage(MarioKart.colors.getSuccess() + msg);
+				return true;
+			} else if (command.equalsIgnoreCase("setLobby")) {
+				if (args.length < 2) {
+					return false;
+				}
+				String trackname = args[1];
+				if (!plugin.trackManager.raceTrackExists(trackname)) {
+					sender.sendMessage(MarioKart.colors.getError()
+							+ MarioKart.msgs.get("general.cmd.delete.exists"));
+					return true;
+				}
+				plugin.trackManager.getRaceTrack(trackname).setLobby(player.getLocation());
+				plugin.trackManager.save();
+				String msg = MarioKart.msgs.get("general.cmd.setLobby.success");
+				msg = msg.replaceAll(Pattern.quote("%name%"),
+						plugin.trackManager.getRaceTrack(trackname)
+								.getTrackName());
+				sender.sendMessage(MarioKart.colors.getSuccess() + msg);
+				return true;
+			} else if (command.equalsIgnoreCase("setExit")) {
+				if (args.length < 2) {
+					return false;
+				}
+				String trackname = args[1];
+				if (!plugin.trackManager.raceTrackExists(trackname)) {
+					sender.sendMessage(MarioKart.colors.getError()
+							+ MarioKart.msgs.get("general.cmd.delete.exists"));
+					return true;
+				}
+				plugin.trackManager.getRaceTrack(trackname).setExit(player.getLocation());
+				plugin.trackManager.save();
+				String msg = MarioKart.msgs.get("general.cmd.setExit.success");
 				msg = msg.replaceAll(Pattern.quote("%name%"),
 						plugin.trackManager.getRaceTrack(trackname)
 								.getTrackName());
