@@ -82,13 +82,13 @@
               <configuration>
                 <artifactSet>
                   <includes>
-                    <include>org.bstats:bstats-bukkit</include>
+                    <include>org.bstats</include>
                   </includes>
                 </artifactSet>
                 <minimizeJar>true</minimizeJar>
                 <relocations>
                   <relocation>
-                    <pattern>org.bstats.bukkit</pattern>
+                    <pattern>org.bstats</pattern>
                     <shadedPattern>net.stormdev.mario.metrics</shadedPattern>
                   </relocation>
                 </relocations>
