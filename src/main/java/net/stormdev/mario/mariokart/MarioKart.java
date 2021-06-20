@@ -16,6 +16,24 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
+import org.bstats.bukkit.Metrics;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
+
+import com.rosaloves.bitlyj.Bitly;
+import com.rosaloves.bitlyj.Url;
+import com.useful.uCarsAPI.uCarsAPI;
+import com.useful.ucars.Colors;
+import com.useful.ucars.ucars;
+
 import net.milkbowl.vault.economy.Economy;
 import net.stormdev.RPManager.RPManager;
 import net.stormdev.mario.commands.AdminCommandExecutor;
@@ -48,23 +66,6 @@ import net.stormdev.mario.signUtils.SignManager;
 import net.stormdev.mario.sound.MusicManager;
 import net.stormdev.mario.tracks.RaceTimes;
 import net.stormdev.mario.tracks.RaceTrackManager;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
-
-import com.rosaloves.bitlyj.Bitly;
-import com.rosaloves.bitlyj.Url;
-import com.useful.uCarsAPI.uCarsAPI;
-import com.useful.ucars.Colors;
-import com.useful.ucars.ucars;
 
 public class MarioKart extends JavaPlugin {
 	public static MarioKart plugin;
@@ -136,6 +137,9 @@ public class MarioKart extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		System.gc();
+		
+		int pluginId = 11769;
+        Metrics metrics = new Metrics(this, pluginId);
 		
 		if (listeners != null || logger != null
 				|| msgs != null || powerupManager != null || economy != null) {
