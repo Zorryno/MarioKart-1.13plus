@@ -270,10 +270,20 @@ public class RaceScheduler {
 					return; //Cancel - Not enough memory
 				}
 				//Memory should be available
+				queuedTracks.add(queue.getTrack());		//Track-Reservation
 				queue.setStarting(true);
+				
+				// Wait half the grace time (for resourcepack load)
+ 				double graceS = MarioKart.config
+						.getDouble("general.raceGracePeriod");
+				long grace = (long) (graceS * 10);
+				String msg = MarioKart.msgs.get("race.que.resourcepackload");
+				msg = msg.replaceAll(Pattern.quote("%time%"), "" + graceS/2);
+				queue.broadcast(MarioKart.colors.getInfo() + msg);
+				
 				final List<Player> q = new ArrayList<Player>(queue.getPlayers());
-				Bukkit.getScheduler().runTask(MarioKart.plugin, new Runnable(){
-
+				MarioKart.plugin.getServer().getScheduler()
+				.runTaskLater(MarioKart.plugin, new Runnable() {
 					@Override
 					public void run() {
 						for (Player p : q) {
@@ -293,7 +303,8 @@ public class RaceScheduler {
 							MarioKart.plugin.raceQueues.removeQueue(queue);
 						}
 						return;
-					}});
+					}}, grace);
+				
 			} else if (queue.playerCount() >= queue.getTrack().getMinPlayers()
 					&& !isTrackInUse(queue.getTrack(), queue.getRaceMode())
 					&& getRacesRunning() < raceLimit
@@ -420,7 +431,7 @@ public class RaceScheduler {
 				users.remove(user);
 				Location loc = grid.get(i);
 				if (race.getType() == RaceType.TIME_TRIAL) {
-					loc = grid.get(MarioKart.plugin.random.nextInt(grid.size()));
+					loc = grid.get(0);				//Let them start in the first position. I mean... Who would want to start with a random grid position
 				}
 				if (p != null) {
 					if (p.getVehicle() != null) {
@@ -634,7 +645,7 @@ public class RaceScheduler {
 	public synchronized void lockdown(){
 		//Running out of system memory!
 		this.lockdown = true;
-		MarioKart.logger.info("[WANRING] Memory resources low, MarioKart has locked down all queues "
+		MarioKart.logger.info("[WARNING] Memory resources low, MarioKart has locked down all queues "
 				+ "and may start to terminate races if condition persists!");
 		return;
 	}
@@ -662,10 +673,10 @@ public class RaceScheduler {
 		for (UUID id : races.keySet()) {
 			Race r = races.get(id);
 			if (r.getTrackName().equals(track.getTrackName())) {
-				if (type == RaceType.TIME_TRIAL
+				/* if (type == RaceType.TIME_TRIAL
 						&& r.getType() == RaceType.TIME_TRIAL) {
 					return false;
-				}
+				} */
 				return true;
 			}
 		}
@@ -679,7 +690,7 @@ public class RaceScheduler {
 			if (update) {
 				r.updateUser(player);
 			}
-			List<User> users = r.getUsersIn(); // Exclude those that have
+			List<User> users = r.getUsersIn();  // Exclude those that have
 												// finished the race
 			for (User u : users) {
 				if (u.getPlayerName().equals(player.getName())) {

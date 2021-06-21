@@ -372,6 +372,9 @@ public class RaceExecutor {
 		MarioKart.plugin.raceScheduler.recalculateQueues();
 		return;
 	}
+	
+	
+	
 	public static void onRaceUpdate(final Race game){
 		if (!game.getRunning()) {
 			try {

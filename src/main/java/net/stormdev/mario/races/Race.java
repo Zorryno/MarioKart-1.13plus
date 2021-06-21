@@ -485,7 +485,7 @@ public class Race {
 
 					@Override
 					public void run() {
-						if (!(type == RaceType.TIME_TRIAL)) {
+						if (type != RaceType.TIME_TRIAL) {
 							SortedMap<String, Double> sorted = game
 									.getRaceOrder();
 							Object[] keys = sorted.keySet().toArray();

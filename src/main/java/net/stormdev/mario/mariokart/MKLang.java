@@ -229,8 +229,11 @@ public class MKLang {
 		}
 		if (!lang.contains("race.que.players")) {
 			lang.set(
-					"race.que.players",
-					"Acquired minimum players for race! Waiting %time% seconds for additional players to join...");
+					"race.que.players", "Acquired minimum players for race! Waiting %time% seconds for additional players to join...");
+		}
+		if (!lang.contains("race.que.resourcepackload")) {
+			lang.set(
+					"race.que.resourcepackload", "Race is starting. Waiting %time% seconds for resourcepack to load...");
 		}
 		if (!lang.contains("race.que.preparing")) {
 			lang.set("race.que.preparing", "Preparing race...");
