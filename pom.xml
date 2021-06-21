@@ -47,7 +47,7 @@
     </repositories>
 
     <build>
-      <finalName>MarioKart</finalName>
+      <!--<finalName>MarioKart</finalName>-->
       <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
       <resources>
         <resource>
