@@ -15,13 +15,13 @@ import net.stormdev.mario.tracks.TrackCreator;
 public class TrackEventsListener implements Listener {
 	@SuppressWarnings("unused")
 	private MarioKart plugin;
-
+	
 	public TrackEventsListener(MarioKart plugin){
 		this.plugin = plugin;
 		Bukkit.getPluginManager().registerEvents(this, plugin);
 	}
-
-	@EventHandler (priority = EventPriority.HIGHEST)
+	
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onWandClickEvent(PlayerInteractEvent event) {
 		if (!event.getAction().equals(Action.RIGHT_CLICK_AIR)
 				&& !event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
@@ -34,9 +34,9 @@ public class TrackEventsListener implements Listener {
 		if (!TrackCreator.trackCreators.containsKey(player.getName())) {
 			return;
 		}
-
+		
 		event.setCancelled(true);
-
+		
 		TrackCreator creator = TrackCreator.trackCreators.get(player.getName());
 		Boolean wand = false;
 		if(player.getInventory().getItemInMainHand() != null) {

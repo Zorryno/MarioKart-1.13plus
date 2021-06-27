@@ -66,6 +66,7 @@ import net.stormdev.mario.signUtils.SignManager;
 import net.stormdev.mario.sound.MusicManager;
 import net.stormdev.mario.tracks.RaceTimes;
 import net.stormdev.mario.tracks.RaceTrackManager;
+import net.stormdev.mario.utils.WinnerSQLManager;
 
 public class MarioKart extends JavaPlugin {
 	public static MarioKart plugin;
@@ -102,6 +103,7 @@ public class MarioKart extends JavaPlugin {
 	Map<String, Unlockable> unlocks = null;
 
 	public UnlockableManager upgradeManager = null;
+	public WinnerSQLManager winnerSQLManager = null;
 	public SignManager signManager = null;
 
 	public BukkitTask lagReducer = null;
@@ -247,6 +249,11 @@ public class MarioKart extends JavaPlugin {
 				+ File.separator
 				+ "upgradesData.mkdata"),
 				config.getBoolean("general.upgrades.useSQL"));
+		
+		if(MarioKart.config.getBoolean("general.winlist.enable")) {
+			this.winnerSQLManager = new WinnerSQLManager();
+		}
+		
 		this.hotBarManager = new HotBarManager(config.getBoolean("general.upgrades.enable"));
 		this.lagReducer = getServer().getScheduler().runTaskTimer(this,
 				new DynamicLagReducer(), 100L, 1L);

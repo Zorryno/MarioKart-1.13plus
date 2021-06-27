@@ -148,15 +148,14 @@ public class RaceEventsListener implements Listener {
 		if(!(event.getEntity() instanceof Player)) {
 			return;
 		}
-		
-		if(event.getCause() == DamageCause.FALL) {
-			event.setCancelled(true);
-			return;
-		}
-		
 		Player player = (Player) event.getEntity();
 		Race r = plugin.raceMethods.inAGame(player, false);
 		if(player.getHealth() < event.getDamage() && r != null) {
+			if(event.getCause() == DamageCause.FALL) {
+				event.setCancelled(true);
+				return;
+			}
+			
 			Minecart car = (Minecart) player.getVehicle();
 			plugin.raceMethods.playerRespawn(player,car);
 			

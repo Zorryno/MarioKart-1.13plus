@@ -3,9 +3,9 @@ package net.stormdev.mario.tracks;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
-import net.stormdev.mario.mariokart.MarioKart;
-
 import org.bukkit.entity.Player;
+
+import net.stormdev.mario.mariokart.MarioKart;
 
 public class TrackCreator {
 	public static HashMap<String, TrackCreator> trackCreators = new HashMap<String, TrackCreator>();

@@ -37,6 +37,12 @@ public class PluginConfigurator {
 		if(!config.contains("general.server.control")){
 			config.set("general.server.control", false);
 		}
+		if(!config.contains("general.server.votetime")){
+			config.set("general.server.votetime", 120);
+		}
+		if(!config.contains("general.server.showTips")){
+			config.set("general.server.showTips", true);
+		}
 		if(!config.contains("general.server.restartStopsServer")){
 			config.set("general.server.restartStopsServer", false);
 		}
@@ -111,6 +117,24 @@ public class PluginConfigurator {
 		}
 		if (!config.contains("general.race.lavaDamage.tracks")) {
 			config.set("general.race.lavaDamage.tracks", new String[]{"TrackName", "TrackName"});
+		}
+		if(!config.contains("general.winlist.enable")){
+			config.set("general.winlist.enable", false);
+		}
+		if (!config.contains("general.winlist.sqlHostName")) {
+			config.set("general.winlist.sqlHostName", "localhost");
+		}
+		if (!config.contains("general.winlist.sqlPort")) {
+			config.set("general.winlist.sqlPort", "3306");
+		}
+		if (!config.contains("general.winlist.sqlDataBaseName")) {
+			config.set("general.winlist.sqlDataBaseName", "myDataBase");
+		}
+		if (!config.contains("general.winlist.sqlUsername")) {
+			config.set("general.winlist.sqlUsername", "root");
+		}
+		if (!config.contains("general.winlist.sqlPassword")) {
+			config.set("general.winlist.sqlPassword", "password123");
 		}
 		if(!config.contains("general.upgrades.enable")){
 			config.set("general.upgrades.enable", true);

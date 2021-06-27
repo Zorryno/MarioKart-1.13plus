@@ -64,10 +64,15 @@ public class UnlockableManager implements Listener {
 			} catch (Exception e) {
 				sql = false;
 			}
-			if (sql) { // Check that it loaded okay...
-				sqlManager.createTable(SQL_TABLE, new String[] {
-						SQL_KEY, SQL_VAL_KEY }, new String[] {
-						"varchar(255) NOT NULL PRIMARY KEY", "varchar(255)" });
+			
+			try { // Check that it loaded okay... catch fail
+				if (sql) {
+					sqlManager.createTable(SQL_TABLE, new String[] {
+							SQL_KEY, SQL_VAL_KEY }, new String[] {
+							"varchar(255) NOT NULL PRIMARY KEY", "varchar(255)" });
+			}
+			} catch (Exception e) {
+				sql = false;
 			}
 		}
 		// SQL setup...

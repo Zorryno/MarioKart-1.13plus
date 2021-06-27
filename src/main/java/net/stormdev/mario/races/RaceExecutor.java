@@ -204,7 +204,7 @@ public class RaceExecutor {
 												(String) pls[i]);
 										if (p != null) {
 											String msg = "";
-											if (!timed) {
+											if (!timed) {								//MARK Topliste mit SQL?
 												//Normal race, or cup
 												msg = MarioKart.msgs.get("race.end.position");
 												if ((i + 1) <= 4
@@ -267,7 +267,7 @@ public class RaceExecutor {
 								if (player != null) {
 									int position = game.getFinishPosition(player.getName());
 									String msg = "";
-									if (!timed) {
+									if (!timed) {										//MARK Topliste mit SQL?
 										msg = MarioKart.msgs.get("race.end.position");
 										if (position <= 4 && position != game.getUsers().size()) {
 											//Win sound
@@ -465,6 +465,11 @@ public class RaceExecutor {
 								}
 								game.finish(user);
 								if (won && game.getType() != RaceType.TIME_TRIAL) {
+									//If enabled -> Give win in SQL
+									if(MarioKart.plugin.winnerSQLManager != null && MarioKart.plugin.winnerSQLManager.isActive()) {		
+										MarioKart.plugin.winnerSQLManager.giveWin(game.getTrackName(), player);
+									}
+									
 									for (User u : game.getUsers()) {
 										Player p;
 										try {

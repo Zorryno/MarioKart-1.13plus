@@ -29,7 +29,7 @@ public class VoteHandler {
 	private  String VOTE_META;
 	private final String VOTE_META_KEY = "mariokart.vote";
 	private final String VOTE_MESSAGE = ChatColor.GOLD+"Use \"/mvote <TrackName>\" to cast your vote!";
-	private static final int VOTE_TIME = 120;
+	private static int VOTE_TIME = 120;
 	private Map<String, Integer> votes = new HashMap<String, Integer>();
 	private Scoreboard board;
 	private Objective obj;
@@ -47,6 +47,7 @@ public class VoteHandler {
 		obj = board.registerNewObjective("votes", "dummy");
 		obj.setDisplayName(ChatColor.BOLD+""+ChatColor.RED+"Votes:");
 		obj.setDisplaySlot(DisplaySlot.SIDEBAR);
+		VOTE_TIME = MarioKart.config.getInt("general.server.votetime");
 		calculateMapList();
 		
 		Collection<? extends Player> online = Bukkit.getOnlinePlayers();
@@ -148,7 +149,7 @@ public class VoteHandler {
 						}
 						
 						player.setLevel(rem);
-						if(rem < 20){
+						if(rem < 5){
 							player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, Integer.MAX_VALUE);
 						}
 					}});
@@ -266,11 +267,11 @@ public class VoteHandler {
 		boolean f = true;
 		for(String t:tracks){
 			if(f){
-				avail.append(ChatColor.WHITE+t);
+				avail.append(ChatColor.WHITE+t+" (MinPlayers: "+MarioKart.plugin.trackManager.getRaceTrack(t).getMinPlayers()+")");
 				f = false;
 				continue;
 			}
-			avail.append(ChatColor.GOLD).append(", ").append(ChatColor.WHITE).append(t);
+			avail.append(ChatColor.GOLD).append(", ").append(ChatColor.WHITE).append(t).append(" (MinPlayers: "+MarioKart.plugin.trackManager.getRaceTrack(t).getMinPlayers()+")");
 		}
 		return avail.toString();
 	}

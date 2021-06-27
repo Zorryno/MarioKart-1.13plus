@@ -493,7 +493,7 @@ public class Race {
 								int pos = i + 1;
 								String pname = (String) keys[i];
 								User u = getUser(pname);
-								try { //MARK
+								try {
 									Player pl = u.getPlayer();
 									if(pl != null){
 										game.scores.getScore(pl.getDisplayName()).setScore(pos);

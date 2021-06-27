@@ -167,7 +167,10 @@ public class FullServerManager {
 				return;
 			}}, 30*20l, 30*20l);
 		changeServerStage(ServerStage.WAITING);
-		tipsHandler();
+		
+		if(MarioKart.config.getBoolean("general.server.showTips")) {
+			tipsHandler();
+		}
 	}
 	
 	private void tipsHandler(){
@@ -259,14 +262,23 @@ public class FullServerManager {
 		voter = null; //Stop voting stuff working
 		
 		int online = Bukkit.getOnlinePlayers().size();
-		if(online < 2){
-			mode = RaceType.TIME_TRIAL;
-		}
-		else {
-			mode = RaceType.RACE;
-		}
-		
 		track = MarioKart.plugin.trackManager.getRaceTrack(trackName);
+		
+		if(online >= track.getMinPlayers()) {			//Check for min-Players on that track
+			if(online < 2){
+				mode = RaceType.TIME_TRIAL;
+			}
+			else {
+				mode = RaceType.RACE;
+			}
+		} else {
+			Bukkit.broadcastMessage(ChatColor.BOLD+""+ChatColor.DARK_RED+"------------------------------");
+			String msg = MarioKart.msgs.get("race.que.notEnoughPlayers");
+			Bukkit.broadcastMessage(ChatColor.BOLD+""+ChatColor.DARK_RED+msg);
+			changeServerStage(ServerStage.WAITING);
+			return;
+		}
+			
 		if(track == null){
 			changeServerStage(ServerStage.WAITING);
 			return;

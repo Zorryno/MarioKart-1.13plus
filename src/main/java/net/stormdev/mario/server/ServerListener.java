@@ -4,10 +4,6 @@ import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.stormdev.mario.mariokart.MarioKart;
-import net.stormdev.mario.races.MarioKartRaceEndEvent;
-import net.stormdev.mario.utils.MetaValue;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -35,7 +31,12 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.server.ServerListPingEvent;
+import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.inventory.ItemStack;
+
+import net.stormdev.mario.mariokart.MarioKart;
+import net.stormdev.mario.races.MarioKartRaceEndEvent;
+import net.stormdev.mario.utils.MetaValue;
 
 public class ServerListener implements Listener {
 	private FullServerManager fsm;
@@ -46,7 +47,7 @@ public class ServerListener implements Listener {
 		Bukkit.getScheduler().runTaskTimer(MarioKart.plugin, new Runnable(){
 
 			@Override
-			public void run() {
+			public void run() {			//Testing if player has moved - every 9 seconds
 				if(fsm.getStage().equals(ServerStage.BUILDING)){
 					return;
 				}
@@ -65,7 +66,7 @@ public class ServerListener implements Listener {
 						continue;
 					}
 					long diff = System.currentTimeMillis()-moved;
-					if(diff > 50000 && diff < 60000){ //They havent moved for 
+					if(diff > 50000 && diff < 60000){ //They haven't moved for about 50 seconds
 						//They are afk!
 						player.sendMessage(ChatColor.RED+"WARNING: If you do not move in the next 10 seconds, you'll be afk kicked!");
 						continue;
@@ -101,6 +102,14 @@ public class ServerListener implements Listener {
 		player.setMetadata(MOVE_META, new MetaValue(System.currentTimeMillis(), MarioKart.plugin));
 	}
 	
+	@EventHandler
+	void onCarMove(VehicleMoveEvent event) {
+		if(event.getVehicle().getPassengers() != null && event.getVehicle().getPassengers().get(0) != null) {
+			Player player = (Player) event.getVehicle().getPassengers().get(0);
+			player.removeMetadata(MOVE_META, MarioKart.plugin);
+			player.setMetadata(MOVE_META, new MetaValue(System.currentTimeMillis(), MarioKart.plugin));
+		}
+	}
 	
 	@EventHandler
 	void invClick(InventoryClickEvent event){

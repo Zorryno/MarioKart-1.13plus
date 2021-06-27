@@ -690,7 +690,7 @@ public class RaceScheduler {
 			if (update) {
 				r.updateUser(player);
 			}
-			List<User> users = r.getUsersIn();  // Exclude those that have
+			List<User> users = r.getUsersIn(); 	// Exclude those that have
 												// finished the race
 			for (User u : users) {
 				if (u.getPlayerName().equals(player.getName())) {
