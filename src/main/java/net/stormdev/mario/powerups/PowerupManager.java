@@ -206,72 +206,28 @@ public class PowerupManager {
 		} else if (event instanceof VehicleUpdateEvent) {
 			VehicleUpdateEvent evt = (VehicleUpdateEvent) event;
 			Minecart car = (Minecart) evt.getVehicle();
-			Block under = car.getLocation().add(0, -1, 0).getBlock();
 			if (timed) {
 				return;
 			}
-			if (under.getType() == Material.COAL_BLOCK) {
-				Sign sign = null;
-				Location uu = under.getRelative(BlockFace.DOWN)
-						.getLocation();
-				Location first = uu;
-				try {
-					sign = (Sign) uu.getBlock().getState();
-				} catch (Exception e) {
-					try {
-						uu = uu.getBlock().getRelative(BlockFace.SOUTH)
-								.getLocation();
-						sign = (Sign) uu.getBlock().getState();
-					} catch (Exception e1) {
-						try {
-							uu = uu.getBlock().getRelative(BlockFace.EAST)
-									.getLocation();
-							sign = (Sign) uu.getBlock().getState();
-						} catch (Exception e2) {
-							try {
-								uu = uu.getBlock().getRelative(BlockFace.NORTH)
-										.getLocation();
-								sign = (Sign) uu.getBlock().getState();
-							} catch (Exception e3) {
-								try {
-									uu = uu.getBlock()
-											.getRelative(BlockFace.WEST)
-											.getLocation();
-									sign = (Sign) uu.getBlock().getState();
-								} catch (Exception e4) {
-									try {
-										uu = uu.getBlock()
-												.getRelative(BlockFace.SOUTH)
-												.getLocation();
-										sign = (Sign) uu.getBlock().getState();
-									} catch (Exception e5) {
-										try {
-											uu = first
-													.getBlock()
-													.getRelative(
-															BlockFace.NORTH)
-													.getLocation();
-											sign = (Sign) uu.getBlock()
-													.getState();
-										} catch (Exception e6) {
-											try {
-												uu = first
-														.getBlock()
-														.getRelative(
-																BlockFace.EAST)
-														.getLocation();
-												sign = (Sign) uu.getBlock()
-														.getState();
-											} catch (Exception e7) {
-												return;
-											}
-										}
-									}
-								}
-							}
-						}
-					}
+			
+			Location signLoc = null;
+			List<Entity> near = car.getNearbyEntities(0.0, 1, 0.0);		//Get all entities near/in vehicle
+			Entity crystal = null;
+			for(Entity e:near){
+				if(e.getType().equals(EntityType.ENDER_CRYSTAL)){
+					signLoc = e.getLocation().clone().add(0,-2,0);	//Sign should be 2 Blocks underneath crystal
+					crystal = e;
 				}
+			}
+			
+			if (signLoc != null) {	
+				Sign sign = null;
+				try {
+					sign = (Sign) signLoc.getBlock().getState();
+				} catch (Exception e) {
+					return;
+				}
+				
 				final String[] lines = sign.getLines();
 				if (ChatColor.stripColor(lines[0]).equalsIgnoreCase(
 						"[MarioKart]")
@@ -283,7 +239,7 @@ public class PowerupManager {
 							return;
 						}
 						final Race r = race;
-						final Location signLoc = sign.getLocation();
+						signLoc = sign.getLocation();
 						if (r.reloadingItemBoxes.contains(signLoc)) {
 							return; // Box is reloading
 						}
@@ -373,28 +329,26 @@ public class PowerupManager {
 										return;
 									}
 								});
-						List<Entity> ents = ply.getNearbyEntities(0.5, 3, 0.5);
 						r.reloadingItemBoxes.add(signLoc);
 						MarioKart.plugin.raceScheduler.updateRace(r);
-						Location eLoc = null;
-						for (Entity ent : ents) {
-							if (ent instanceof EnderCrystal) {
-								eLoc = ent.getLocation();
-								ent.remove();
-							}
-						}
-						if (eLoc == null) {
+						Location cLoc = null;
+						
+						cLoc = crystal.getLocation();
+						crystal.remove();
+						
+						if (cLoc == null) {
 							// Set crystal spawn loc from signLoc
-							eLoc = signLoc.clone().add(0, 2.4, 0);
+							cLoc = signLoc.clone().add(0, 2.4, 0);
 						}
-						final Location loc = eLoc;
+						final Location loc = cLoc;
+						final Location signFLoc = signLoc;
 						plugin.getServer().getScheduler()
 								.runTaskLater(plugin, new Runnable() {
 
 									@Override
 									public void run() {
 										if (!r.reloadingItemBoxes
-												.contains(signLoc)) {
+												.contains(signFLoc)) {
 											return; // ItemBox has been
 													// respawned
 										}
@@ -402,12 +356,12 @@ public class PowerupManager {
 										if (!c.isLoaded()) {
 											c.load(true);
 										}
-										r.reloadingItemBoxes.remove(signLoc);
+										r.reloadingItemBoxes.remove(signFLoc);
 										spawnItemPickupBox(loc);
 										MarioKart.plugin.raceScheduler.updateRace(r);
 										return;
 									}
-								}, 200l);
+								}, 100l);
 					}
 				}
 			}
@@ -605,22 +559,12 @@ public class PowerupManager {
 						EntityType.ENDER_CRYSTAL);
 				newC.setShowingBottom(false);
 				
-				List<Entity> previous = newC.getNearbyEntities(0.3, 3, 0.3);
+				List<Entity> previous = newC.getNearbyEntities(0, 3, 0);
 				for(Entity e:previous){ //Remove old item boxes
 					if(e.getType().equals(EntityType.ENDER_CRYSTAL) && !e.equals(newC)){
 						e.remove();
 					}
 				}
-				
-				above.subtract(0, 0.25, 0);
-				above.getBlock().setType(Material.COAL_BLOCK);
-				above.getBlock().getRelative(BlockFace.WEST)
-						.setType(Material.COAL_BLOCK);
-				above.getBlock().getRelative(BlockFace.NORTH)
-						.setType(Material.COAL_BLOCK);
-				above.getBlock().getRelative(BlockFace.NORTH_WEST)
-						.setType(Material.COAL_BLOCK);
-				newC.setFireTicks(0);
 				newC.setMetadata("race.pickup", new StatValue(true, plugin));
 				
 				return;

@@ -1,12 +1,17 @@
 package net.stormdev.mario.events;
 
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.block.Block;
+import org.bukkit.Location;
 import org.bukkit.block.Sign;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -35,18 +40,16 @@ public class SignEventsListener implements Listener {
 		}
 		final Sign sign = (Sign) event.getClickedBlock().getState();
 		String[] lines = sign.getLines();
-		MarioKart.plugin.getServer().getScheduler().runTaskAsynchronously(MarioKart.plugin, new Runnable(){
-
-			@Override
-			public void run() {
-				if(plugin.signManager.isQueueSign(sign)){
-					String trackName = ChatColor.stripColor(sign.getLine(0));
-					MarioKart.plugin.raceCommandExecutor.urace(event.getPlayer(), new String[] {
-						"join", trackName, "auto" },
-						event.getPlayer());
-				}
-				return;
-			}});
+		MarioKart.plugin.getServer().getScheduler().runTaskAsynchronously(MarioKart.plugin, () -> {
+			if(plugin.signManager.isQueueSign(sign)){
+				String trackName = ChatColor.stripColor(sign.getLine(0));
+				MarioKart.plugin.raceCommandExecutor.urace(event.getPlayer(), new String[] {
+					"join", trackName, "auto" },
+					event.getPlayer());
+			}
+			return;
+		});
+		
 		if (!ChatColor.stripColor(lines[0]).equalsIgnoreCase("[MarioKart]")) {
 			return;
 		}
@@ -93,6 +96,34 @@ public class SignEventsListener implements Listener {
 					lines[1] = "items";
 					event.getPlayer().sendMessage("Creating item box...");
 					MarioKart.powerupManager.spawnItemPickupBox(event.getBlock().getLocation());
+				}
+			} else {
+				return;
+			}
+		} else {
+			return;
+		}
+	}
+	
+	@EventHandler
+	void signDestroyer(BlockBreakEvent event) {
+		if(event.getBlock().getState() instanceof Sign) {
+			Sign sign = (Sign) event.getBlock().getState();
+			String[] lines = sign.getLines();
+			
+			if (ChatColor.stripColor(lines[0]).equalsIgnoreCase("[MarioKart]")) {
+				if (ChatColor.stripColor(lines[1]).toLowerCase().contains("items")) {
+					lines[1] = "items";
+					event.getPlayer().sendMessage("Destroying item box...");
+					
+					//Remove Box
+					Location signLoc = sign.getLocation();
+					List<Entity> near = (List<Entity>) signLoc.getWorld().getNearbyEntities(signLoc.clone().add(0,2,0), 0.3, 0.5, 0.3);
+					for(Entity e:near) {
+						if(e.getType().equals(EntityType.ENDER_CRYSTAL)){
+							e.remove();
+						}
+					}
 				}
 			} else {
 				return;

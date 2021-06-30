@@ -10,7 +10,6 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
@@ -31,21 +30,21 @@ public class VoteHandler {
 	private final String VOTE_MESSAGE = ChatColor.GOLD+"Use \"/mvote <TrackName>\" to cast your vote!";
 	private static int VOTE_TIME = 120;
 	private Map<String, Integer> votes = new HashMap<String, Integer>();
+	private Map<UUID, String> playerVotes = new HashMap<UUID, String>();
 	private Scoreboard board;
 	private Objective obj;
 	private boolean closed = false;
 	private BukkitTask voteCountdown = null;
 	private long startTime;
-	OfflinePlayer line1;
-	OfflinePlayer line2;
 	private List<String> maps;
+	private List<Score> scores = new ArrayList<Score>();
+	private Integer minPlayers;
 	
 	public VoteHandler(){
 		startTime = System.currentTimeMillis();
 		VOTE_META = UUID.randomUUID().toString();
 		board = Bukkit.getScoreboardManager().getNewScoreboard();
-		obj = board.registerNewObjective("votes", "dummy");
-		obj.setDisplayName(ChatColor.BOLD+""+ChatColor.RED+"Votes:");
+		obj = board.registerNewObjective("votes", "dummy", ChatColor.BOLD+""+ChatColor.RED+"Votes:");
 		obj.setDisplaySlot(DisplaySlot.SIDEBAR);
 		VOTE_TIME = MarioKart.config.getInt("general.server.votetime");
 		calculateMapList();
@@ -64,14 +63,7 @@ public class VoteHandler {
 			}
 		}
 		
-		line1 = Bukkit.getOfflinePlayer(ChatColor.GRAY+"Nobody has");
-		line2 = Bukkit.getOfflinePlayer(ChatColor.GRAY+"voted yet!");
-		
-		obj.getScore(line1)
-			.setScore(-1);
-		obj.getScore(line2)
-			.setScore(-2);
-		
+		reloadScoreboardValues();
 		
 		voteCountdown = Bukkit.getScheduler().runTaskTimer(MarioKart.plugin, new Runnable(){
 
@@ -103,6 +95,9 @@ public class VoteHandler {
 		if(all.size() <= 5){
 			for(RaceTrack track:all){
 				maps.add(track.getTrackName());
+				votes.put(track.getTrackName(), 0);
+				if(minPlayers == null) { minPlayers = track.getMinPlayers(); } 					//If first Map set this as minPlayers
+				if(minPlayers > track.getMinPlayers()) { minPlayers = track.getMinPlayers(); }	//Otherwise check if this track has a lower minPlayer-Number
 			}
 			return;
 		}
@@ -112,6 +107,9 @@ public class VoteHandler {
 				continue;
 			}
 			maps.add(rand.getTrackName());
+			votes.put(rand.getTrackName(), 0);
+			if(minPlayers == null) { minPlayers = rand.getMinPlayers(); } 					//If first Map set this as minPlayers
+			if(minPlayers > rand.getMinPlayers()) { minPlayers = rand.getMinPlayers(); }	//Otherwise check if this track has a lower minPlayer-Number
 		}
 	}
 	
@@ -183,7 +181,7 @@ public class VoteHandler {
 	
 	public int getVoteTimeRemaining(){
 		int fullS = getTotalTime();
-		if(Bukkit.getOnlinePlayers().size() < 1){
+		if(Bukkit.getOnlinePlayers().size() < minPlayers){
 			startTime = System.currentTimeMillis();
 			return fullS;
 		}
@@ -277,9 +275,6 @@ public class VoteHandler {
 	}
 	
 	private synchronized void incrementVote(String tName){
-		board.resetScores(line1);
-		board.resetScores(line2);
-		
 		int score = 0;
 		if(votes.containsKey(tName)){
 			score = votes.get(tName);
@@ -287,13 +282,17 @@ public class VoteHandler {
 		score++;
 		votes.put(tName, score);
 		
-		String sName = ChatColor.GOLD+tName;
-		if(sName.length() > 16){
-			sName = sName.substring(0, 16);
-		}
+		reloadScoreboardValues();
+	}
+	
+	public synchronized void decrementVote(UUID uuid){
+		String tName = playerVotes.get(uuid);
 		
-		Score sscore = obj.getScore(Bukkit.getOfflinePlayer(sName));
-		sscore.setScore(score);
+		int score = votes.get(tName);
+		score--;
+		votes.put(tName, score);
+		
+		reloadScoreboardValues();
 	}
 	
 	public boolean castVote(Player player, String trackName){
@@ -305,6 +304,9 @@ public class VoteHandler {
 			player.sendMessage(ChatColor.RED+"You have already voted!");
 			return false;
 		}
+		if(minPlayers > Bukkit.getOnlinePlayers().size()) {
+			player.sendMessage(ChatColor.RED+"Not enough players!");
+		}
 		if(!MarioKart.plugin.trackManager.raceTrackExists(trackName)){
 			player.sendMessage(ChatColor.RED+"That track doesn't exist! ("+trackName+")");
 			player.sendMessage(getAvailTracksString());
@@ -315,16 +317,43 @@ public class VoteHandler {
 			player.sendMessage(ChatColor.RED+"That track is not being voted on, sorry.");
 			return false;
 		}
-		Bukkit.getScheduler().runTaskAsynchronously(MarioKart.plugin, new Runnable(){
-
-			@Override
-			public void run() {
+		Bukkit.getScheduler().runTaskAsynchronously(MarioKart.plugin, () -> {
 				incrementVote(name);
 				return;
-			}});
+		});
+	
 		player.setMetadata(VOTE_META_KEY, new MetaValue(VOTE_META, MarioKart.plugin));
+		
+		playerVotes.put(player.getUniqueId(), name);				//Store who voted for what		
 		player.sendMessage(ChatColor.GREEN+"Cast your vote!");
 		return true;
+	}
+	
+	public void reloadScoreboardValues() {
+		if(scores.size() > 0) {
+			for(Score s : scores) {						//Clear scores
+				board.resetScores(s.getEntry());
+			}
+			scores.clear();
+		}
+		
+		if(minPlayers > Bukkit.getOnlinePlayers().size()) {						//Not enough players anyway -> Just... say that?
+			ChatColor color = ChatColor.GRAY;
+			String msg = MarioKart.msgs.get("server.notEnoughPlayers");
+			Score line = obj.getScore(color + msg);
+			line.setScore(0);
+			scores.add(line);
+		} else {
+			for(Map.Entry<String, Integer> entry : votes.entrySet()) {			//Add every Score again
+				ChatColor color = ChatColor.GRAY;
+				if(entry.getValue() > 0) {
+					color = ChatColor.GOLD;
+				}
+				Score score = obj.getScore(color + entry.getKey());
+				score.setScore(entry.getValue());
+		        scores.add(score);
+			}
+		}
 	}
 	
 	public boolean hasVoted(Player player){

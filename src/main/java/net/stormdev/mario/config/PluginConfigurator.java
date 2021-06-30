@@ -61,6 +61,9 @@ public class PluginConfigurator {
 		if (!config.contains("general.raceTickrate")) {
 			config.set("general.raceTickrate", 10l);
 		}
+		if (!config.contains("general.countdownAsTitle")) {
+			config.set("general.countdownAsTitle", false);
+		}
 		if (!config.contains("general.checkpointRadius")) {
 			config.set("general.checkpointRadius", 15.0);
 		}

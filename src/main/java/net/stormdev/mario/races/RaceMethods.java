@@ -32,11 +32,9 @@ import com.useful.ucarsCommon.StatValue;
 public class RaceMethods {
 	@SuppressWarnings("unused")
 	private MarioKart plugin = null;
-	private boolean fairCars = true;
 
 	public RaceMethods() {
 		this.plugin = MarioKart.plugin;
-		fairCars = MarioKart.config.getBoolean("general.ensureEqualCarSpeed");
 	}
 
 	public void createExplode(final Location loc){
@@ -109,7 +107,7 @@ public class RaceMethods {
 					car.getUniqueId());
 		}
 
-		if(fairCars){
+		if(MarioKart.fairCars){
 			uCarsAPI.getAPI().setUseRaceControls(car.getUniqueId(), MarioKart.plugin);
 		}
 
@@ -174,7 +172,9 @@ public class RaceMethods {
 	public synchronized Minecart spawnKart(Location loc) {
 		Minecart car = (Minecart) loc.getWorld().spawnEntity(
 				loc, EntityType.MINECART);
-		car.setMetadata("kart.racing", new StatValue(null, MarioKart.plugin));
+		if(MarioKart.fairCars) {
+			car.setMetadata("kart.racing", new StatValue(null, MarioKart.plugin));
+		}
 		/* 1.16+ Jigsaw-Fun
 		Jigsaw saw = (Jigsaw) Material.JIGSAW.createBlockData();
 

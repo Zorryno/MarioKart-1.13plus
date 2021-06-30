@@ -1,10 +1,5 @@
 package net.stormdev.mario.events;
 
-import net.stormdev.mario.lesslag.DynamicLagReducer;
-import net.stormdev.mario.mariokart.MarioKart;
-import net.stormdev.mario.queues.RaceQueue;
-import net.stormdev.mario.races.Race;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -26,6 +21,14 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+
+import com.useful.ucars.ucars;
+import com.useful.ucarsCommon.StatValue;
+
+import net.stormdev.mario.lesslag.DynamicLagReducer;
+import net.stormdev.mario.mariokart.MarioKart;
+import net.stormdev.mario.queues.RaceQueue;
+import net.stormdev.mario.races.Race;
 
 public class ServerEventsListener implements Listener {
 	private MarioKart plugin;
@@ -111,6 +114,9 @@ public class ServerEventsListener implements Listener {
 			return;
 		}
 		Entity crystal = event.getEntity();
+		if(crystal.hasMetadata("mario.crystal.damage")) {
+			return;
+		}
 		// if(crystal.hasMetadata("race.pickup")){
 		event.setCancelled(true);
 		event.setYield(0);
@@ -119,6 +125,21 @@ public class ServerEventsListener implements Listener {
 			crystal.remove();
 		}
 
+		return;
+	}
+
+	@EventHandler
+	void crystalDamage(EntityDamageEvent event) {
+		if (!(event.getEntity() instanceof EnderCrystal)) {
+			return;
+		}
+		Entity crystal = event.getEntity();
+		// if(crystal.hasMetadata("race.pickup")){
+		Location newL = crystal.getLocation();
+		crystal.remove();
+		if(!MarioKart.powerupManager.spawnItemPickupBox(newL)) {
+			crystal.setMetadata("mario.crystal.damage", new StatValue(1, ucars.plugin));
+		}
 		return;
 	}
 	

@@ -25,7 +25,6 @@ import net.stormdev.mario.mariokart.MarioKart;
 import net.stormdev.mario.races.Race;
 import net.stormdev.mario.rewards.RewardConfiguration;
 import net.stormdev.mario.server.FullServerManager;
-import net.stormdev.mario.server.PlayerServerSender;
 import net.stormdev.mario.server.ServerStage;
 import net.stormdev.mario.tracks.RaceTrack;
 import net.stormdev.mario.tracks.TrackCreator;
@@ -417,6 +416,7 @@ public class AdminCommandExecutor implements CommandExecutor {
 				MarioKart.config = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder()
 						+ File.separator + "config.yml"));
 				((RaceEventsListener)MarioKart.plugin.listeners.get(2)).reloadRaceListener();
+				MarioKart.plugin.reloadVariables();
 				MarioKart.msgs = new MKLang(MarioKart.plugin);
 				
 				sender.sendMessage(ChatColor.YELLOW+"Configs reloaded");

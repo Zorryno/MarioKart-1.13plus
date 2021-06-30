@@ -292,6 +292,9 @@ public class MKLang {
 		if (!lang.contains("race.upgrades.use")) {
 			lang.set("race.upgrades.use", "&c[-]&6 Consumed Upgrade");
 		}
+		if (!lang.contains("server.notEnoughPlayers")) {
+			lang.set("server.notEnoughPlayers", "Not enough players!");
+		}
 		if (!lang.contains("mario.hit")) {
 			lang.set("mario.hit", "You were hit by a %name%!");
 		}

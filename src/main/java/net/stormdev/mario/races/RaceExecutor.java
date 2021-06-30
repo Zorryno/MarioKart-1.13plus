@@ -96,6 +96,10 @@ public class RaceExecutor {
 				pla.setCustomName(ChatColor.stripColor(player
 						.getCustomName()));
 				pla.setCustomNameVisible(false);
+				if(pla.isOnline()) {
+					pla.getInventory().clear();
+				}
+				
 				if (pla.getVehicle() != null) {
 					Entity e = pla.getVehicle();
 					List<Entity> stack = new ArrayList<Entity>();
@@ -112,10 +116,7 @@ public class RaceExecutor {
 				final Location loc = game.getTrack().getExit(MarioKart.plugin.getServer());
 				final Player pl = pla;
 				
-				MarioKart.plugin.getServer().getScheduler().runTaskLater(MarioKart.plugin, new Runnable(){
-
-					@Override
-					public void run() {
+				MarioKart.plugin.getServer().getScheduler().runTaskLater(MarioKart.plugin, () -> {
 						if (loc == null) {
 							pl.teleport(pl.getLocation().getWorld()
 									.getSpawnLocation());
@@ -123,20 +124,16 @@ public class RaceExecutor {
 							pl.teleport(loc);
 						}
 						if (pl.isOnline()) {
-							pl.getInventory().clear();
 							pl.getInventory().setContents(user.getOldInventory());
 							player.setScoreboard(MarioKart.plugin.getServer()
 									.getScoreboardManager().getMainScoreboard());
 							pl.setGameMode(user.getOldGameMode());
 						}
 						return;
-					}}, 4l);
+					}, 4l);
 			}
 			
-			Bukkit.getScheduler().runTaskLater(MarioKart.plugin, new Runnable(){
-
-				@Override
-				public void run() {
+			Bukkit.getScheduler().runTaskLater(MarioKart.plugin, () -> {
 					if (game.finished.contains(user.getPlayerName())) {
 						finished.setValue(true);;
 					} else {
@@ -187,10 +184,7 @@ public class RaceExecutor {
 						player.getInventory().setContents(user.getOldInventory());
 					}
 					if (!finished.getValue()) {
-						Bukkit.getScheduler().runTaskLater(MarioKart.plugin, new Runnable(){
-
-							@Override
-							public void run() {
+						Bukkit.getScheduler().runTaskLater(MarioKart.plugin, () -> {
 								//Auto finish
 								DoubleValueComparator com = new DoubleValueComparator(scores);
 								SortedMap<String, Double> sorted = new TreeMap<String, Double>(
@@ -229,14 +223,11 @@ public class RaceExecutor {
 												msg = msg.replaceAll("%position%", "" + pos);
 												final MarioKartRaceFinishEvent evt = new MarioKartRaceFinishEvent(
 														player, (i + 1), pos, game.getTrack().getRewardConfig(), game);
-												Bukkit.getScheduler().runTaskLater(MarioKart.plugin, new Runnable(){
-
-													@Override
-													public void run() {
+												Bukkit.getScheduler().runTaskLater(MarioKart.plugin, () -> {
 														MarioKart.plugin.getServer().getPluginManager()
 														.callEvent(evt);
 														return;
-													}}, 2l);
+													}, 2l);
 											} else {
 												//Time trial
 												double tim = (game.endTimeMS - game.startTimeMS) / 10;
@@ -257,12 +248,9 @@ public class RaceExecutor {
 									}
 								}
 								return;
-							}}, 2l);
+							}, 2l);
 					} else {
-						Bukkit.getScheduler().runTaskLater(MarioKart.plugin, new Runnable(){
-
-							@Override
-							public void run() {
+						Bukkit.getScheduler().runTaskLater(MarioKart.plugin, () -> {
 								//Finish as is they-crossed-the-line
 								if (player != null) {
 									int position = game.getFinishPosition(player.getName());
@@ -292,14 +280,11 @@ public class RaceExecutor {
 										}
 										final MarioKartRaceFinishEvent evt = new MarioKartRaceFinishEvent(
 												player, position, pos, game.getTrack().getRewardConfig(), game);
-										Bukkit.getScheduler().runTaskLater(MarioKart.plugin, new Runnable(){
-
-											@Override
-											public void run() {
+										Bukkit.getScheduler().runTaskLater(MarioKart.plugin, () -> {
 												MarioKart.plugin.getServer().getPluginManager()
 												.callEvent(evt);
 												return;
-											}}, 2l);
+											}, 2l);
 										
 									} else {
 										// Time trial
@@ -312,19 +297,16 @@ public class RaceExecutor {
 										MarioKart.plugin.raceTimes.addRaceTime(game.getTrack()
 												.getTrackName(), player.getName(), t);
 										if(MarioKart.fullServer){
-											Bukkit.getScheduler().runTaskLater(MarioKart.plugin, new Runnable(){
-
-												@Override
-												public void run() {
+											Bukkit.getScheduler().runTaskLater(MarioKart.plugin, () -> {
 													FullServerManager.get().restart();
 													return;
-												}}, 2l);
+												}, 2l);
 										}
 									}
 									player.sendMessage(MarioKart.colors.getSuccess() + msg);
 								}
 								return;
-							}}, 2l);
+							}, 2l);
 					}
 					game.leave(user, false);
 					if (game.getUsersIn().size() < 1 && !game.ended && !gameEnded) {
@@ -332,7 +314,7 @@ public class RaceExecutor {
 						game.end();
 					}
 					return;
-				}}, 2l);
+				}, 2l);
 			return;
 		} catch (Exception e) {
 			// Player has left

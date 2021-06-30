@@ -5,22 +5,22 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
 import net.stormdev.mario.mariokart.MarioKart;
 import net.stormdev.mario.races.Race;
 import net.stormdev.mario.races.RaceType;
 import net.stormdev.mario.tracks.RaceTrack;
 import net.stormdev.mario.utils.LocationStrings;
 import net.stormdev.mario.utils.ObjectWrapper;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.Damageable;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 public class FullServerManager {
 	public static String BUILD_PERM = "mariokart.join.build";
@@ -52,15 +52,11 @@ public class FullServerManager {
 	}
 	
 	public ServerStage getStage(){
-		Bukkit.getScheduler().runTaskLater(MarioKart.plugin, new Runnable(){
-
-			@Override
-			public void run() {
+		Bukkit.getScheduler().runTaskLater(MarioKart.plugin, () -> {
 				if(stage.equals(ServerStage.PLAYING) && Bukkit.getOnlinePlayers().size() < 1){
 					restart();
 				}
-				return;
-			}}, 2l);
+			}, 2l);
 		
 		return stage;
 	}
@@ -98,12 +94,13 @@ public class FullServerManager {
 			if(voter == null){
 				voter = new VoteHandler();
 			}
+			starting = false;
 			spectators.endSpectating();
 			Collection<? extends Player> online = Bukkit.getOnlinePlayers();
 			for(Player player:online){
 				BossBar.removeBar(player);
 				player.getInventory().clear();
-				player.getInventory().addItem(item.clone());
+				player.getInventory().setItem(8, item.clone());
 				player.teleport(lobbyLoc);
 				if(spectators.isSpectating(player)){
 					spectators.stopSpectating(player);
@@ -211,7 +208,7 @@ public class FullServerManager {
 	}
 	
 	public void sendToLobby(Player player){
-		player.setHealth(((Damageable)player).getMaxHealth());
+		player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
 		player.setFoodLevel(20);
 		player.getInventory().clear();
 		PlayerServerSender.sendToServer(player, BUNGEE_LOBBY_ID);

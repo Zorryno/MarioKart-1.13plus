@@ -9,7 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Damageable;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -104,7 +104,7 @@ public class ServerListener implements Listener {
 	
 	@EventHandler
 	void onCarMove(VehicleMoveEvent event) {
-		if(event.getVehicle().getPassengers() != null && event.getVehicle().getPassengers().get(0) != null) {
+		if(!event.getVehicle().getPassengers().isEmpty() && event.getVehicle().getPassengers().get(0) != null) {
 			Player player = (Player) event.getVehicle().getPassengers().get(0);
 			player.removeMetadata(MOVE_META, MarioKart.plugin);
 			player.setMetadata(MOVE_META, new MetaValue(System.currentTimeMillis(), MarioKart.plugin));
@@ -208,7 +208,7 @@ public class ServerListener implements Listener {
 	void playerJoin(PlayerJoinEvent event){
 		event.setJoinMessage(null);
 		final Player player = event.getPlayer();
-		player.setHealth(((Damageable)player).getMaxHealth());
+		player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
 		player.setFoodLevel(20);
 		player.getInventory().clear();
 		
@@ -273,7 +273,7 @@ public class ServerListener implements Listener {
 		player.setGameMode(GameMode.SURVIVAL);
 		
 		if(fsm.getStage().equals(ServerStage.WAITING)){
-			player.getInventory().addItem(FullServerManager.item.clone());
+			player.getInventory().setItem(8,FullServerManager.item.clone());
 			if(fsm.voter == null){
 				showVoteMsg = false;
 				fsm.changeServerStage(ServerStage.WAITING);
@@ -334,5 +334,22 @@ public class ServerListener implements Listener {
 	@EventHandler
 	void itemDrop(PlayerDropItemEvent event){
 		event.setCancelled(true);
+	}
+	
+	@EventHandler
+	void join(PlayerJoinEvent e){
+		fsm.voter.reloadScoreboardValues();
+	}
+	
+	@EventHandler
+	void leave(PlayerQuitEvent e){
+		if(fsm.voter != null) {
+			if(fsm.voter.hasVoted(e.getPlayer())) {
+				fsm.voter.decrementVote(e.getPlayer().getUniqueId());
+				e.getPlayer().removeMetadata("mariokart.vote", MarioKart.plugin);
+			} else {
+				fsm.voter.reloadScoreboardValues();
+			}
+		}
 	}
 }

@@ -99,6 +99,7 @@ public class MarioKart extends JavaPlugin {
 	public MusicManager musicManager = null;
 	
 	public static boolean dynamicLagReduce = true;
+	public static boolean fairCars = true;
 
 	Map<String, Unlockable> unlocks = null;
 
@@ -216,59 +217,14 @@ public class MarioKart extends JavaPlugin {
 				+ File.separator + "Data" + File.separator
 				+ "raceTimes.uracetimes"),
 				config.getBoolean("general.race.timed.log"));
-		if (config.getBoolean("general.race.rewards.enable") && !config.getBoolean("general.race.rewards.command.enable")) {
-			try {
-				vault = this.vaultInstalled();
-				if (!setupEconomy()) {
-					plugin.getLogger()
-							.warning(
-									"Attempted to enable rewards but Vault/Economy NOT found. Please install vault to use this feature!");
-					plugin.getLogger().warning("Disabling reward system...");
-					config.set("general.race.rewards.enable", false);
-				}
-			} catch (Exception e) {
-				plugin.getLogger()
-						.warning(
-								"Attempted to enable rewards and shop but Vault/Economy NOT found. Please install vault to use these features!");
-				plugin.getLogger().warning("Disabling reward system...");
-				plugin.getLogger().warning("Disabling shop system...");
-				MarioKart.config.set("general.race.rewards.enable", false);
-				MarioKart.config.set("general.upgrades.enable", false);
-			}
-		}
 		
-		this.globalRewards = new RewardConfiguration(
-				config.getDouble("general.race.rewards.win"),
-				config.getDouble("general.race.rewards.second"),
-				config.getDouble("general.race.rewards.third"));
-		
-		this.upgradeManager = new UnlockableManager(new File(getDataFolder()
-				.getAbsolutePath()
-				+ File.separator
-				+ "Data"
-				+ File.separator
-				+ "upgradesData.mkdata"),
-				config.getBoolean("general.upgrades.useSQL"));
-		
-		if(MarioKart.config.getBoolean("general.winlist.enable")) {
-			this.winnerSQLManager = new WinnerSQLManager();
-		}
+		reloadVariables();
 		
 		this.hotBarManager = new HotBarManager(config.getBoolean("general.upgrades.enable"));
 		this.lagReducer = getServer().getScheduler().runTaskTimer(this,
 				new DynamicLagReducer(), 100L, 1L);
 		
 		this.signManager = new SignManager(queueSignFile);
-		dynamicLagReduce = config.getBoolean("general.optimiseAtRuntime");
-		
-		if(!dynamicLagReduce){
-			logger.info(ChatColor.RED+"[WARNING] The plugin's self optimisation has been disabled,"
-					+ " this is risky as if one config value isn't set optimally - MarioKart has a chance"
-					+ " of crashing your server! I recommend you turn it back on!");
-			try {
-				Thread.sleep(1000); //Show it to then for 1s
-			} catch (InterruptedException e) {}
-		}
 		
 		Bukkit.getScheduler().runTaskLaterAsynchronously(this, new Runnable(){
 
@@ -403,5 +359,58 @@ public class MarioKart extends JavaPlugin {
 			economy = new VaultEco(economyProvider.getProvider());
 		}
 		return (economy != null);
+	}
+	
+	public void reloadVariables() {
+		fairCars = MarioKart.config.getBoolean("general.ensureEqualCarSpeed");
+		
+		if (config.getBoolean("general.race.rewards.enable") && !config.getBoolean("general.race.rewards.command.enable")) {
+			try {
+				vault = this.vaultInstalled();
+				if (!setupEconomy()) {
+					plugin.getLogger()
+							.warning(
+									"Attempted to enable rewards but Vault/Economy NOT found. Please install vault to use this feature!");
+					plugin.getLogger().warning("Disabling reward system...");
+					config.set("general.race.rewards.enable", false);
+				}
+			} catch (Exception e) {
+				plugin.getLogger()
+						.warning(
+								"Attempted to enable rewards and shop but Vault/Economy NOT found. Please install vault to use these features!");
+				plugin.getLogger().warning("Disabling reward system...");
+				plugin.getLogger().warning("Disabling shop system...");
+				MarioKart.config.set("general.race.rewards.enable", false);
+				MarioKart.config.set("general.upgrades.enable", false);
+			}
+		}
+		
+		this.globalRewards = new RewardConfiguration(
+				config.getDouble("general.race.rewards.win"),
+				config.getDouble("general.race.rewards.second"),
+				config.getDouble("general.race.rewards.third"));
+		
+		this.upgradeManager = new UnlockableManager(new File(getDataFolder()
+				.getAbsolutePath()
+				+ File.separator
+				+ "Data"
+				+ File.separator
+				+ "upgradesData.mkdata"),
+				config.getBoolean("general.upgrades.useSQL"));
+		
+		if(MarioKart.config.getBoolean("general.winlist.enable")) {
+			this.winnerSQLManager = new WinnerSQLManager();
+		}
+
+		dynamicLagReduce = config.getBoolean("general.optimiseAtRuntime");
+		
+		if(!dynamicLagReduce){
+			logger.info(ChatColor.RED+"[WARNING] The plugin's self optimisation has been disabled,"
+					+ " this is risky as if one config value isn't set optimally - MarioKart has a chance"
+					+ " of crashing your server! I recommend you turn it back on!");
+			try {
+				Thread.sleep(1000); //Show it to then for 1s
+			} catch (InterruptedException e) {}
+		}
 	}
 }
