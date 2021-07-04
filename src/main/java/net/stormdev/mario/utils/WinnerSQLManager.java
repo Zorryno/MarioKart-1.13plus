@@ -15,7 +15,7 @@ public class WinnerSQLManager {
 	private boolean sql = true;
 	
 	private static final String SQL_TABLE = "WinList";
-	private static final String SQL_KEY = "playerid,trackname";
+	private static final String SQL_KEY = "playerIdWithTrackname";
 	private static final String SQL_VAL_KEY = "wins";
 	
 	public WinnerSQLManager() {		
@@ -36,7 +36,7 @@ public class WinnerSQLManager {
 			if (sql) { 
 				sqlManager.createTable(SQL_TABLE, new String[] {
 						SQL_KEY, SQL_VAL_KEY }, new String[] {
-						"varchar(255) NOT NULL PRIMARY KEY", "integer" });
+						"VARCHAR(255) NOT NULL PRIMARY KEY", "INTEGER" });
 			}
 		} catch (Exception e) {
 			sql = false;
@@ -44,7 +44,7 @@ public class WinnerSQLManager {
 	}
 	
 	public void giveWin(String trackname, Player player) {
-		String id = PlayerIDFinder.getMojangID(player).getID() + "," + trackname;
+		String id = PlayerIDFinder.getMojangID(player).getID() + "|" + trackname;
 		
 		Bukkit.getScheduler().runTaskAsynchronously(MarioKart.plugin, new Runnable(){
 
@@ -54,11 +54,12 @@ public class WinnerSQLManager {
 					Object o = sqlManager.searchTable(SQL_TABLE, SQL_KEY, id, SQL_VAL_KEY);
 					if(o == null){
 						sqlManager.setInTable(SQL_TABLE, SQL_KEY, id, SQL_VAL_KEY, 1);
+					} else {
+						int wins = (int) o;
+						wins++;
+						
+						sqlManager.setInTable(SQL_TABLE, SQL_KEY, id, SQL_VAL_KEY, wins);
 					}
-					int wins = (int) o;
-					wins++;
-					
-					sqlManager.setInTable(SQL_TABLE, SQL_KEY, id, SQL_VAL_KEY, wins);
 				} catch (SQLException e) {
 					//BUGZ
 					e.printStackTrace();

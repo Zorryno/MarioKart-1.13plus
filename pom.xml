@@ -5,7 +5,7 @@
     <artifactId>MK</artifactId>
     <name>MarioKart</name>
     <description>The MarioKart bukkit plugin found at http://dev.bukkit.org/bukkit-plugins/MarioKart</description>
-    <version>1.13plus-1.5.0-pre3</version>
+    <version>1.13plus-1.5.0</version>
     <packaging>jar</packaging>
     <url>https://github.com/Jakllp/MarioKart-1.13plus</url>
     <issueManagement>
@@ -47,7 +47,7 @@
     </repositories>
 
     <build>
-      <!--<finalName>MarioKart</finalName>-->
+      <!-- <finalName>MarioKart</finalName> -->
       <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
       <resources>
         <resource>
@@ -110,7 +110,7 @@
       <dependency>
         <groupId>mysql</groupId>
         <artifactId>mysql-connector-java</artifactId>
-        <version>5.1.41</version>
+        <version>8.0.20</version>
       </dependency>
       <dependency>
         <groupId>org.spigotmc</groupId>

@@ -449,7 +449,11 @@ public class RaceExecutor {
 								if (won && game.getType() != RaceType.TIME_TRIAL) {
 									//If enabled -> Give win in SQL
 									if(MarioKart.plugin.winnerSQLManager != null && MarioKart.plugin.winnerSQLManager.isActive()) {		
-										MarioKart.plugin.winnerSQLManager.giveWin(game.getTrackName(), player);
+										try {
+											MarioKart.plugin.winnerSQLManager.giveWin(game.getTrackName(), player);
+										} catch (Exception e) {
+											
+										}
 									}
 									
 									for (User u : game.getUsers()) {

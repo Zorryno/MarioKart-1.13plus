@@ -33,7 +33,11 @@ public class RaceQueue {
 		}
 		this.type = type;
 		this.queueId = UUID.randomUUID();
-		this.playerLimit = track.getMaxPlayers();
+		if(type != RaceType.TIME_TRIAL) {
+			this.playerLimit = track.getMaxPlayers();
+		} else {
+			this.playerLimit = 1;
+		}
 		this.players.add(creator);
 		LinkedHashMap<UUID, RaceQueue> trackQueues = new LinkedHashMap<UUID, RaceQueue>();
 		if (MarioKart.plugin.queues.containsKey(getTrackName())) {
