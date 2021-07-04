@@ -1,11 +1,10 @@
 package org.stormdev.mkstormapi.SQL;
 
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import org.bukkit.plugin.Plugin;
-
-import com.mysql.jdbc.Connection;
 
 /**
  * 
@@ -33,7 +32,7 @@ public class MySQL {
 		this.user = user;
 		this.password = password;
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
+			Class.forName("com.mysql.cj.jdbc.Driver");
 			con = (Connection) DriverManager.getConnection(url, user, password);
 		} catch (ClassNotFoundException e) {
 			plugin.getLogger().info("JDBC SQL driver not found! Please install the"
@@ -49,11 +48,8 @@ public class MySQL {
 	 */
 	public void connect(){
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
+			Class.forName("com.mysql.cj.jdbc.Driver");
 			con = (Connection) DriverManager.getConnection(url, user, password);
-			con.setAutoReconnect(true);
-			con.setAutoReconnectForConnectionPools(true);
-			con.setAutoReconnectForPools(true);
 		} catch (ClassNotFoundException e) {
 			plugin.getLogger().info("JDBC SQL driver not found! Please install the"
 					+ " version required for your OS to run the plugin!");

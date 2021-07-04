@@ -15,7 +15,7 @@ import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-//import org.bukkit.block.data.type.Jigsaw;
+import org.bukkit.block.data.type.Jigsaw;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
@@ -36,7 +36,7 @@ public class RaceMethods {
 	public RaceMethods() {
 		this.plugin = MarioKart.plugin;
 	}
-
+	
 	public void createExplode(final Location loc){
 		Runnable run = new Runnable(){
 
@@ -59,7 +59,7 @@ public class RaceMethods {
 			Bukkit.getScheduler().runTask(MarioKart.plugin, run);
 		}
 	}
-
+	
 	public void playerRespawn(Player player, Minecart car) {
 		List<MetadataValue> metas = null;
 		if (player.hasMetadata("car.stayIn")) {
@@ -68,20 +68,22 @@ public class RaceMethods {
 				player.removeMetadata("car.stayIn", val.getOwningPlugin());
 			}
 		}
-
+		
 		car.eject();
-
+		
 		UUID carId = car.getUniqueId();
-
+		
+		Jigsaw saw = (Jigsaw) car.getDisplayBlockData();
+		
 		car.remove();
-
+		
 		final Race race = plugin.raceMethods.inAGame(player, false);
-		User u = race.updateUser(player);
+		User u = race.updateUser(player);				
 		int checkpoint = u.getCheckpoint();
-		//race.updateUser(u);
+		//race.updateUser(u);				
 		Location toTele = race.getTrack().getCheckpoint(checkpoint)
 				.getLocation(plugin.getServer()).clone().add(0, 2, 0);
-
+		
 		Chunk ch = toTele.getChunk();
 		if (!ch.isLoaded()) {
 			ch.load(true);
@@ -89,8 +91,9 @@ public class RaceMethods {
 		car = (Minecart) car.getWorld().spawnEntity(toTele, EntityType.MINECART);
 		uCarRespawnEvent evnt = new uCarRespawnEvent(car, carId, car.getUniqueId(),
 				CarRespawnReason.TELEPORT);
-		//car.setDisplayBlockData(saw);
-		//car.setDisplayBlockOffset(0);
+		car.setDisplayBlockData(saw);
+		car.setDisplayBlockOffset(0);
+		
 		plugin.getServer().getPluginManager().callEvent(evnt);
 		if(evnt.isCancelled()){
 			car.remove();
@@ -106,16 +109,17 @@ public class RaceMethods {
 			uCarsAPI.getAPI().updateUcarMeta(carId,
 					car.getUniqueId());
 		}
-
+		
 		if(MarioKart.fairCars){
 			uCarsAPI.getAPI().setUseRaceControls(car.getUniqueId(), MarioKart.plugin);
 		}
-
+		
 		plugin.hotBarManager.updateHotBar(player);
 		player.updateInventory();
-
+		
 		player.setScoreboard(race.board);
 		player.setMetadata("car.stayIn", new StatValue(null, MarioKart.plugin));
+		
 		Bukkit.getScheduler().runTaskAsynchronously(MarioKart.plugin, new Runnable(){
 
 			@Override
@@ -124,7 +128,7 @@ public class RaceMethods {
 				return;
 			}});
 	}
-
+	
 	public void createExplode(final Location loc, final int size){
 		Runnable run = new Runnable(){
 
@@ -140,8 +144,8 @@ public class RaceMethods {
 				ParticleEffects.sendToLocation(ParticleEffects.FIREWORK_SPARK, loc, 0, 0, 0, 1, size);
 				return;
 			}};
-
-
+		
+		
 		if(Bukkit.isPrimaryThread()){
 			run.run();
 		}
@@ -168,16 +172,17 @@ public class RaceMethods {
 		}
 		return null;
 	}
-
+	
 	public synchronized Minecart spawnKart(Location loc) {
 		Minecart car = (Minecart) loc.getWorld().spawnEntity(
 				loc, EntityType.MINECART);
+		
 		if(MarioKart.fairCars) {
 			car.setMetadata("kart.racing", new StatValue(null, MarioKart.plugin));
 		}
-		/* 1.16+ Jigsaw-Fun
+		
 		Jigsaw saw = (Jigsaw) Material.JIGSAW.createBlockData();
-
+		
 		int rand = MarioKart.plugin.random.nextInt(11); // 0-11 random
 		switch(rand) {
 			case 0:
@@ -218,8 +223,8 @@ public class RaceMethods {
 				break;
 		}
 		car.setDisplayBlockData(saw);
-		car.setDisplayBlockOffset(0); */
-
+		car.setDisplayBlockOffset(0);
+		
 		return car;
 	}
 }

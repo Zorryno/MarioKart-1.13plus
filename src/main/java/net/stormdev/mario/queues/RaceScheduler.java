@@ -192,7 +192,6 @@ public class RaceScheduler {
 				Matcher.quoteReplacement(ChatColor.RESET + ""));
 		player.sendMessage(MarioKart.colors.getInfo() + msg);
 		player.sendMessage(rl); //new line
-		//TODO Use setResourePack, but would remove old version support
 		if(!MarioKart.plugin.resourcedPlayers.contains(player.getName()) 
 				&& MarioKart.plugin.fullPackUrl != null
 				&& MarioKart.plugin.fullPackUrl.length() > 0){
@@ -342,7 +341,7 @@ public class RaceScheduler {
 
 							@Override
 							public void run() {
-								if (queue.playerCount() < queue.getTrack().getMinPlayers()) {
+								if (queue.playerCount() < queue.getTrack().getMinPlayers() && getRacesRunning() == raceLimit) {
 									queue.setStarting(false);
 									return;
 								}
@@ -368,9 +367,7 @@ public class RaceScheduler {
 						}, grace);
 			} else {
 				// Race unable to be started (Unavailable etc...)
-				if (queue.getRaceMode() != RaceType.TIME_TRIAL) {
-					queuedTracks.add(queue.getTrack());
-				}
+				queuedTracks.add(queue.getTrack());
 			}
 			if (getRacesRunning() >= raceLimit) {
 				MarioKart.logger.info("[INFO] Max races running");
