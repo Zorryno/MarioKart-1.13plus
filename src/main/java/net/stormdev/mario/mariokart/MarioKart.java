@@ -36,6 +36,7 @@ import com.useful.ucars.ucars;
 
 import net.milkbowl.vault.economy.Economy;
 import net.stormdev.RPManager.RPManager;
+import net.stormdev.barapi_1_17.BarAPI;
 import net.stormdev.mario.commands.AdminCommandExecutor;
 import net.stormdev.mario.commands.ForceStartCommandExecutor;
 import net.stormdev.mario.commands.RaceCommandExecutor;
@@ -274,7 +275,7 @@ public class MarioKart extends JavaPlugin {
 			
 		}
 		
-		net.stormdev.barapi_1_8.BarAPI1_8.onEnable();
+		BarAPI.onEnable();
 		
 		System.gc();
 		logger.info("MarioKart v" + plugin.getDescription().getVersion()
@@ -310,7 +311,7 @@ public class MarioKart extends JavaPlugin {
 		
 		this.upgradeManager.unloadSQL();
 		
-		net.stormdev.barapi_1_8.BarAPI1_8.onDisable();
+		BarAPI.onDisable();
 		
 		logger.info("MarioKart has been disabled!");
 		System.gc();
