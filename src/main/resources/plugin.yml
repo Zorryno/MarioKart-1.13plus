@@ -2,7 +2,7 @@ name: MarioKart
 main: net.stormdev.mario.mariokart.MarioKart
 version: ${project.version}
 api-version: 1.13
-softdepend: [Vault, BarAPI]
+softdepend: [Vault]
 depend: [uCars]
 commands:
    marioRaceAdmin:

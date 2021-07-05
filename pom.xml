@@ -5,7 +5,7 @@
     <artifactId>MK</artifactId>
     <name>MarioKart</name>
     <description>The MarioKart bukkit plugin found at http://dev.bukkit.org/bukkit-plugins/MarioKart</description>
-    <version>1.16plus-1.5.0</version>
+    <version>1.16plus-1.5.1</version>
     <packaging>jar</packaging>
     <url>https://github.com/Jakllp/MarioKart-1.13plus</url>
     <issueManagement>
@@ -39,10 +39,6 @@
       <repository>
         <id>jitpack.io</id>
         <url>https://jitpack.io</url>
-      </repository>
-      <repository>
-        <id>confuser-repo</id>
-        <url>http://ci.frostcast.net/plugin/repository/everything</url>
       </repository>
     </repositories>
 
@@ -133,11 +129,6 @@
         <artifactId>ucars</artifactId>
         <version>LATEST</version>
       </dependency>
-      <dependency>
-  			<groupId>com.github.confuser</groupId>
-  			<artifactId>BarAPI</artifactId>
-  			<version>v3.5</version>
-		  </dependency>
       <dependency>
         <groupId>org.bstats</groupId>
         <artifactId>bstats-bukkit</artifactId>
