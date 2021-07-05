@@ -14,6 +14,6 @@ Up to v1.5.0:
 - COAL_BLOCK needs to be road block when using road blocks (when using powerups)
 
 Up to v1.5.1:
-- [BarAPI](https://github.com/confuser/BarAPI)
+- [BarAPI](https://github.com/confuser/BarAPI)    
 Since 1.5.1:
 - BarAPI has been implemented directly into MarioKart under the [CC-Non-Commercial-License](https://github.com/confuser/BarAPI/blob/master/licence.txt)
