@@ -4,18 +4,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import net.stormdev.mario.mariokart.MarioKart;
-import net.stormdev.mario.players.User;
-import net.stormdev.mario.queues.RaceQueue;
-import net.stormdev.mario.utils.ParticleEffects;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Effect;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.block.data.type.Jigsaw;
+//import org.bukkit.block.data.type.Jigsaw;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
@@ -25,9 +19,12 @@ import org.bukkit.metadata.MetadataValue;
 import com.useful.uCarsAPI.CarRespawnReason;
 import com.useful.uCarsAPI.uCarRespawnEvent;
 import com.useful.uCarsAPI.uCarsAPI;
-import com.useful.ucars.ucars;
-import com.useful.ucars.util.UEntityMeta;
 import com.useful.ucarsCommon.StatValue;
+
+import net.stormdev.mario.mariokart.MarioKart;
+import net.stormdev.mario.players.User;
+import net.stormdev.mario.queues.RaceQueue;
+import net.stormdev.mario.utils.ParticleEffects;
 
 public class RaceMethods {
 	@SuppressWarnings("unused")
@@ -73,7 +70,7 @@ public class RaceMethods {
 		
 		UUID carId = car.getUniqueId();
 		
-		Jigsaw saw = (Jigsaw) car.getDisplayBlockData();
+		//Jigsaw saw = (Jigsaw) car.getDisplayBlockData();
 		
 		car.remove();
 		
@@ -91,8 +88,8 @@ public class RaceMethods {
 		car = (Minecart) car.getWorld().spawnEntity(toTele, EntityType.MINECART);
 		uCarRespawnEvent evnt = new uCarRespawnEvent(car, carId, car.getUniqueId(),
 				CarRespawnReason.TELEPORT);
-		car.setDisplayBlockData(saw);
-		car.setDisplayBlockOffset(0);
+		//car.setDisplayBlockData(saw);
+		//car.setDisplayBlockOffset(0);
 		
 		plugin.getServer().getPluginManager().callEvent(evnt);
 		if(evnt.isCancelled()){
@@ -181,6 +178,7 @@ public class RaceMethods {
 			car.setMetadata("kart.racing", new StatValue(null, MarioKart.plugin));
 		}
 		
+		/*1.16 Jigsaw-Fun
 		Jigsaw saw = (Jigsaw) Material.JIGSAW.createBlockData();
 		
 		int rand = MarioKart.plugin.random.nextInt(11); // 0-11 random
@@ -223,7 +221,7 @@ public class RaceMethods {
 				break;
 		}
 		car.setDisplayBlockData(saw);
-		car.setDisplayBlockOffset(0);
+		car.setDisplayBlockOffset(0); */
 		
 		return car;
 	}
