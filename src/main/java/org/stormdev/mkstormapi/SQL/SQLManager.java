@@ -1,6 +1,7 @@
 package org.stormdev.mkstormapi.SQL;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -277,5 +278,41 @@ public class SQLManager {
 		res.close();
 		statement.close();
 		return list;
+	}
+	
+	/**
+	 * Check if a table has the specified column
+	 * 
+	 * @param tableName
+	 * @param column
+	 * @return
+	 * @throws SQLException
+	 */
+	
+	public synchronized boolean hasColumn(String tableName, String column) throws SQLException {
+		checkConnection();
+		DatabaseMetaData md = c.getMetaData();
+		ResultSet rs = md.getColumns(null, null, tableName, column);
+		if(rs.next()) {
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Execute an SQL-Statement
+	 * 
+	 * @param statement
+	 * @throws SQLException
+	 */
+	
+	public synchronized void executeStatement(String statement) throws SQLException {
+		checkConnection();
+		Statement stmt = c.createStatement();
+		stmt.execute(statement);
+	}
+	
+	public MySQL getSQL() {
+		return sqlConnection;
 	}
 }

@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -67,7 +68,7 @@ import net.stormdev.mario.signUtils.SignManager;
 import net.stormdev.mario.sound.MusicManager;
 import net.stormdev.mario.tracks.RaceTimes;
 import net.stormdev.mario.tracks.RaceTrackManager;
-import net.stormdev.mario.utils.WinnerSQLManager;
+import net.stormdev.mario.utils.FinishSQLManager;
 
 public class MarioKart extends JavaPlugin {
 	public static MarioKart plugin;
@@ -105,7 +106,7 @@ public class MarioKart extends JavaPlugin {
 	Map<String, Unlockable> unlocks = null;
 
 	public UnlockableManager upgradeManager = null;
-	public WinnerSQLManager winnerSQLManager = null;
+	public FinishSQLManager finishSQLManager = null;
 	public SignManager signManager = null;
 
 	public BukkitTask lagReducer = null;
@@ -264,6 +265,10 @@ public class MarioKart extends JavaPlugin {
 			}}, 20l);
 		
 		fullServer = config.getBoolean("general.server.control");
+        metrics.addCustomChart(new SimplePie("full-server", () -> {
+			return String.valueOf(fullServer);
+		}));
+        
 		if(fullServer){
 			Bukkit.getScheduler().runTask(MarioKart.plugin, new Runnable(){
 
@@ -400,7 +405,7 @@ public class MarioKart extends JavaPlugin {
 				config.getBoolean("general.upgrades.useSQL"));
 		
 		if(MarioKart.config.getBoolean("general.winlist.enable")) {
-			this.winnerSQLManager = new WinnerSQLManager();
+			this.finishSQLManager = new FinishSQLManager();
 		}
 
 		dynamicLagReduce = config.getBoolean("general.optimiseAtRuntime");

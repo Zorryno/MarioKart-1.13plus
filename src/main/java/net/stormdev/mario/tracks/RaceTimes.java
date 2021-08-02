@@ -12,6 +12,11 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import net.stormdev.mario.mariokart.MarioKart;
+import net.stormdev.mario.races.Race;
 import net.stormdev.mario.utils.LowHighDoubleValueComparator;
 
 public class RaceTimes {
@@ -33,8 +38,9 @@ public class RaceTimes {
 		this.saved = saved;
 	}
 
-	public void addRaceTime(String trackName, String playerName, double time) {
+	public void addRaceTime(String trackName, Player player, double time, Race game) {
 		if (saved) {
+			String playerName = player.getName();
 			ConcurrentHashMap<String, Double> scores = new ConcurrentHashMap<String, Double>();
 			scores = getTimes(trackName);
 			Boolean prev = false;
@@ -42,6 +48,14 @@ public class RaceTimes {
 			if (scores.containsKey(playerName)) {
 				prev = true;
 				previous = scores.get(playerName);
+			}
+			//Store in Database if enabled
+			if(MarioKart.plugin.finishSQLManager != null && MarioKart.plugin.finishSQLManager.isActive()) {		
+				try {
+					MarioKart.plugin.finishSQLManager.setTime(game.getTrackName(), player, time);
+				} catch (Exception e) {
+					
+				}
 			}
 			if (time < previous || !prev) {
 				scores.put(playerName, time);
