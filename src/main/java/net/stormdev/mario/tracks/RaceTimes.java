@@ -12,10 +12,8 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import net.stormdev.mario.mariokart.MarioKart;
 import net.stormdev.mario.races.Race;
 import net.stormdev.mario.utils.LowHighDoubleValueComparator;
 
@@ -48,14 +46,6 @@ public class RaceTimes {
 			if (scores.containsKey(playerName)) {
 				prev = true;
 				previous = scores.get(playerName);
-			}
-			//Store in Database if enabled
-			if(MarioKart.plugin.finishSQLManager != null && MarioKart.plugin.finishSQLManager.isActive()) {		
-				try {
-					MarioKart.plugin.finishSQLManager.setTime(game.getTrackName(), player, time);
-				} catch (Exception e) {
-					
-				}
 			}
 			if (time < previous || !prev) {
 				scores.put(playerName, time);

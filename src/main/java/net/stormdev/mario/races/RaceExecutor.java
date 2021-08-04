@@ -240,6 +240,15 @@ public class RaceExecutor {
 												if(!gameEnded){
 													MarioKart.plugin.raceTimes.addRaceTime(game
 															.getTrack().getTrackName(), player, t, game);
+
+													//Store in Database if enabled
+													if(MarioKart.plugin.finishSQLManager != null && MarioKart.plugin.finishSQLManager.isActive()) {		
+														try {
+															MarioKart.plugin.finishSQLManager.setTime(game.getTrackName(), player, t);
+														} catch (Exception e) {
+															
+														}
+													}
 												}
 											}
 											p.sendMessage(MarioKart.colors.getSuccess() + msg);
@@ -295,6 +304,16 @@ public class RaceExecutor {
 										MarioKart.plugin.musicManager.playCustomSound(player, MarioKartSound.RACE_WIN);
 										MarioKart.plugin.raceTimes.addRaceTime(game.getTrack()
 												.getTrackName(), player, t, game);
+
+										//Store in Database if enabled
+										if(MarioKart.plugin.finishSQLManager != null && MarioKart.plugin.finishSQLManager.isActive()) {		
+											try {
+												MarioKart.plugin.finishSQLManager.setTime(game.getTrackName(), player, t);
+											} catch (Exception e) {
+												
+											}
+										}
+										
 										if(MarioKart.fullServer){
 											Bukkit.getScheduler().runTaskLater(MarioKart.plugin, () -> {
 													FullServerManager.get().restart();

@@ -11,7 +11,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+
+import net.stormdev.mario.mariokart.MarioKart;
 
 /**
  * 
@@ -104,9 +107,7 @@ public class SQLManager {
 		Object found;
 		try {
 			found = null;
-			if(res.getString(keyName) == null) {
-				found = null;
-			} else {
+			if(res.getString(keyName) != null) {
 				found = res.getObject(valueName);
 			}
 		} catch (Exception e) {
@@ -116,6 +117,39 @@ public class SQLManager {
 		statement.close();
 		return found;
 	}
+	
+	/**
+	 * Search the table for the value in a column
+	 * that meets two conditions
+	 * 
+	 * @param tableName
+	 * @param key1Name
+	 * @param key1Value
+	 * @param key2Name
+	 * @param key2Value
+	 * @param valueName
+	 * @return
+	 * @throws SQLException
+	 */
+	public synchronized Object searchTable(String tableName, String key1Name, String key1Value, String key2Name, String key2Value, String valueName) throws SQLException {
+		checkConnection();
+		Statement statement = c.createStatement();
+		ResultSet res = statement.executeQuery("SELECT * FROM "+tableName+" WHERE "+key1Name+" = '" + key1Value + "' AND " +key2Name+ " = '" + key2Value + "';");
+		res.next();
+		Object found;
+		try {
+			found = null;
+			if(res.getString(key1Name) != null) {
+				found = res.getObject(valueName);
+			}
+		} catch (Exception e) {
+			found = null;
+		}
+		res.close();
+		statement.close();
+		return found;
+	}
+	
 	/**
 	 * Execute an SQL statement on the database
 	 * 
@@ -160,6 +194,53 @@ public class SQLManager {
 		*/
 		return true;
 	}
+	
+	/**
+	 * Set's a list of keys and values into the table
+	 * 
+	 * @param tableName
+	 * @param keys
+	 * @param values
+	 * @return
+	 * @throws SQLException
+	 */
+	public synchronized Boolean setInTable(String tableName, List<String> keys, List<Object> values) throws SQLException{
+		checkConnection();
+		String set = "INSERT INTO "+tableName+" (`";
+		
+		boolean first = true;
+		for(String key:keys) {
+			if(first) {
+				first = false;
+				set += key;
+			} else {
+				set += "`, `" + key;
+			}
+		}
+		set+="`) VALUES ('";
+		first = true;
+		for(Object val:values) {
+			if(first) {
+				first = false;
+				set += val;
+			} else {
+				set += "', '" + val;
+			}
+		}
+		set+="');";
+		
+		PreparedStatement placeStatement = c.prepareStatement(set);
+		try {
+			placeStatement.executeUpdate();
+		} catch(SQLException e) {
+			plugin.getLogger().info("Error in query:");
+			plugin.getLogger().info("Query: "+set);
+			plugin.getLogger().info("Error: "+e.getMessage());
+		}
+		placeStatement.close();
+		return true;
+	}
+	
 	/**
 	 * Creates a table, if not already existing, of the desired specification.
 	 * 
@@ -186,6 +267,27 @@ public class SQLManager {
 			}
 			query = query + ");";
 			//Query is assembles
+			Statement statement = c.createStatement();
+			statement.executeUpdate(query);
+			statement.close();
+		} catch (SQLException e) {
+			plugin.getLogger().info("Error in query:");
+			plugin.getLogger().info("Query: "+query);
+			plugin.getLogger().info("Error: "+e.getMessage());
+		}
+	}
+	/**
+	 * Removes a table.
+	 * 
+	 * @param tableName The table's name
+	 * @param columns The columns of the table's names
+	 * @param types The types of the columns
+	 */
+	public synchronized void deleteTable(String tableName){
+		checkConnection();
+		String query = null;
+		try {
+			query = "DROP TABLE "+tableName+";";
 			Statement statement = c.createStatement();
 			statement.executeUpdate(query);
 			statement.close();
@@ -300,16 +402,55 @@ public class SQLManager {
 	}
 	
 	/**
-	 * Execute an SQL-Statement
+	 * Get's an entire table
 	 * 
-	 * @param statement
+	 * @param tableName
+	 * @param columns
+	 * @return
 	 * @throws SQLException
 	 */
-	
-	public synchronized void executeStatement(String statement) throws SQLException {
+	public synchronized List<Map<Object, Object>> getAll(String tableName, List<String> columns) throws SQLException{
 		checkConnection();
-		Statement stmt = c.createStatement();
-		stmt.execute(statement);
+		String query = "SELECT * FROM "+tableName+";";
+		PreparedStatement placeStatement = c.prepareStatement(query);
+		ResultSet res = placeStatement.executeQuery();
+		List<Map<Object, Object>> list = new ArrayList<Map<Object, Object>>();
+		while(res.next()){
+			try {
+				Map<Object, Object> obs = new HashMap<Object, Object>();
+				for(String col:columns){
+					try {
+						Object o = res.getObject(col);
+						obs.put(col, o);
+					} catch (Exception e) {
+						continue;
+					}
+				}
+				list.add(obs);
+			} catch (Exception e) {
+				plugin.getLogger().info("Error in query:");
+				plugin.getLogger().info("Query: "+query);
+				plugin.getLogger().info("Error: "+e.getMessage());
+			}
+		}
+		res.close();
+		placeStatement.close();
+		return list;
+	}
+	
+	/**
+	 * Checks if a table exists
+	 * 
+	 * @param tableName
+	 * @return
+	 * @throws SQLException 
+	 */
+	public synchronized boolean tableExists(String tableName) throws SQLException {
+		checkConnection();
+		DatabaseMetaData meta = c.getMetaData();
+	    ResultSet resultSet = meta.getTables(null, null, tableName, new String[] {"TABLE"});
+
+	    return resultSet.next();
 	}
 	
 	public MySQL getSQL() {
