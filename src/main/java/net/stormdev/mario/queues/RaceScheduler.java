@@ -184,14 +184,18 @@ public class RaceScheduler {
 			chunk.load(true);
 		}
 		player.teleport(l);
-		String rl = MarioKart.plugin.packUrl;
-		player.sendMessage(MarioKart.colors.getInfo()
-				+ MarioKart.msgs.get("resource.download"));
-		String msg = MarioKart.msgs.get("resource.downloadHelp");
-		msg = msg.replaceAll(Pattern.quote("%url%"),
-				Matcher.quoteReplacement(ChatColor.RESET + ""));
-		player.sendMessage(MarioKart.colors.getInfo() + msg);
-		player.sendMessage(rl); //new line
+		
+		if(!MarioKart.reducedText) {
+			String rl = MarioKart.plugin.packUrl;
+			player.sendMessage(MarioKart.colors.getInfo()
+					+ MarioKart.msgs.get("resource.download"));
+			String msg = MarioKart.msgs.get("resource.downloadHelp");
+			msg = msg.replaceAll(Pattern.quote("%url%"),
+					Matcher.quoteReplacement(ChatColor.RESET + ""));
+			player.sendMessage(MarioKart.colors.getInfo() + msg);
+			player.sendMessage(rl); //new line
+		}
+		
 		if(!MarioKart.plugin.resourcedPlayers.contains(player.getName()) 
 				&& MarioKart.plugin.fullPackUrl != null
 				&& MarioKart.plugin.fullPackUrl.length() > 0){

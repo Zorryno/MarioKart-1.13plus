@@ -228,19 +228,23 @@ public class ServerListener implements Listener {
 			return;
 		}
 		
-		player.sendMessage(ChatColor.BOLD+""+ChatColor.GOLD+"------------------------------");
-		player.sendMessage(ChatColor.DARK_RED+"Welcome to MarioKart, "+ChatColor.WHITE+player.getName()+ChatColor.DARK_RED+"!");
-		player.sendMessage(ChatColor.BOLD+""+ChatColor.GOLD+"------------------------------");
+		if(!MarioKart.reducedText) {
+			player.sendMessage(ChatColor.BOLD+""+ChatColor.GOLD+"------------------------------");
+			player.sendMessage(ChatColor.DARK_RED+"Welcome to MarioKart, "+ChatColor.WHITE+player.getName()+ChatColor.DARK_RED+"!");
+			player.sendMessage(ChatColor.BOLD+""+ChatColor.GOLD+"------------------------------");
+		}
 		
 		//Enable resource pack for them:
-		String rl = MarioKart.plugin.packUrl;                           //Send them the download url, etc for if they haven't get server RPs enabled
-		player.sendMessage(MarioKart.colors.getInfo()
-				+ MarioKart.msgs.get("resource.download"));
-		String msg = MarioKart.msgs.get("resource.downloadHelp");
-		msg = msg.replaceAll(Pattern.quote("%url%"),
-				Matcher.quoteReplacement(ChatColor.RESET + ""));
-		player.sendMessage(MarioKart.colors.getInfo() + msg);
-		player.sendMessage(rl); //new line
+		if(!MarioKart.reducedText) {
+			String rl = MarioKart.plugin.packUrl;                           //Send them the download url, etc for if they haven't get server RPs enabled
+			player.sendMessage(MarioKart.colors.getInfo()
+					+ MarioKart.msgs.get("resource.download"));
+			String msg = MarioKart.msgs.get("resource.downloadHelp");
+			msg = msg.replaceAll(Pattern.quote("%url%"),
+					Matcher.quoteReplacement(ChatColor.RESET + ""));
+			player.sendMessage(MarioKart.colors.getInfo() + msg);
+			player.sendMessage(rl); //new line
+		}
 		
 		if(!MarioKart.plugin.resourcedPlayers.contains(player.getName()) //Send them the RP for if they have got server RPs enabled
 				&& MarioKart.plugin.fullPackUrl != null

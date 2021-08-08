@@ -77,6 +77,7 @@ public class MarioKart extends JavaPlugin {
 	public static CustomLogger logger = null;
 	public static ucars ucars = null;
 	public static boolean fullServer = false;
+	public static boolean reducedText = false;
 	public AdminCommandExecutor adminCommandExecutor = null;
 	public RaceCommandExecutor raceCommandExecutor = null;
 	public RaceTimeCommandExecutor raceTimeCommandExecutor = null;
@@ -409,6 +410,7 @@ public class MarioKart extends JavaPlugin {
 		}
 
 		dynamicLagReduce = config.getBoolean("general.optimiseAtRuntime");
+		reducedText = config.getBoolean("general.reducedText");
 		
 		if(!dynamicLagReduce){
 			logger.info(ChatColor.RED+"[WARNING] The plugin's self optimisation has been disabled,"

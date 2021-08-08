@@ -199,6 +199,10 @@ public class MKLang {
 			lang.set("setup.create.done",
 					"Successfully created Race Track %name%!");
 		}
+		if (!lang.contains("setup.create.reminder")) {
+			lang.set("setup.create.reminder",
+					"Don't forget to create Item-Boxes! (/mra itembox)");
+		}
 		if (!lang.contains("setup.fail.queueSign")) {
 			lang.set("setup.fail.queueSign",
 					"That track doesn't exist!");

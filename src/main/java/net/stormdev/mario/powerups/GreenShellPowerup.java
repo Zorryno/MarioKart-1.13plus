@@ -211,44 +211,38 @@ public class GreenShellPowerup extends ShellPowerup {
 		super.setCooldown(3); //No cooldown for tracking shells
 		super.setExpiry(50); //Expire after moving 33 times
 		
-		task = Bukkit.getScheduler().runTaskAsynchronously(MarioKart.plugin, new Runnable(){
-
-			@Override
-			public void run() {
-				while(!remove()){
-					Item item = getFiredItem();
-					item.setTicksLived(1);
-					item.setPickupDelay(Integer.MAX_VALUE);
+		task = Bukkit.getScheduler().runTaskAsynchronously(MarioKart.plugin, () -> {
+			while(!remove()){
+				Item item = getFiredItem();
+				item.setTicksLived(1);
+				item.setPickupDelay(Integer.MAX_VALUE);
 					
-					//Move the item
-					move();
+				//Move the item
+				move();
 				
-					Bukkit.getScheduler().runTaskLater(MarioKart.plugin, new Runnable(){
-
-						@Override
-						public void run() {
-							List<Entity> near = item.getNearbyEntities(1, 2, 1);
-							for(Entity e:near){
-								if(e instanceof Player){
-									collide((Player) e);
-								}
+				Bukkit.getScheduler().runTaskLater(MarioKart.plugin, () -> {
+						List<Entity> near = item.getNearbyEntities(1, 2, 1);
+						for(Entity e:near){
+							if(e instanceof Player){
+								collide((Player) e);
 							}
-							return;
-						}}, 4l);
-					
-					
-					//Decrease the cooldown and expiry
-					decrementCooldown();
-					decrementExpiry();
-					
-					try {
-						Thread.sleep(150);
-					} catch (InterruptedException e) {
+						}
 						return;
-					}
+					}, 4l);
+					
+					
+				//Decrease the cooldown and expiry
+				decrementCooldown();
+				decrementExpiry();
+					
+				try {
+					Thread.sleep(150);
+				} catch (InterruptedException e) {
+					return;
 				}
-				return;
-			}});
+			}
+			return;
+		});
 	}
 
 	@Override
@@ -283,7 +277,7 @@ public class GreenShellPowerup extends ShellPowerup {
 			return false;
 		}
 		if(super.item != null)
-			super.item.remove();
+			super.remove();
 		super.item = null;
 		super.owner = null;
 		if(task != null){

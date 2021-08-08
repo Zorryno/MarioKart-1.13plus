@@ -55,6 +55,9 @@ public class PluginConfigurator {
 		if (!config.contains("general.logger.colour")) {
 			config.set("general.logger.colour", true);
 		}
+		if (!config.contains("general.reducedText")) {
+			config.set("general.reducedText", false);
+		}
 		if (!config.contains("general.raceLimit")) {
 			config.set("general.raceLimit", 3);
 		}

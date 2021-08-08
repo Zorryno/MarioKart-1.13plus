@@ -22,8 +22,8 @@ public class FinishSQLManager {
 	private SQLManager sqlManager = null;
 	private boolean sql = true;
 	
-	private static final String SQL_WIN_TABLE = "WinList";
-	private static final String SQL_TIME_TABLE = "TimeList";
+	private static final String SQL_WIN_TABLE = "MK_WinList";
+	private static final String SQL_TIME_TABLE = "MK_TimeList";
 	
 	private static final String SQL_KEY = "id";
 	private static final String SQL_UUID_KEY = "playerid";
@@ -51,15 +51,11 @@ public class FinishSQLManager {
 		
 		try { // Check that it loaded okay... catch fail
 			if (this.isActive()) {
-				boolean timeNeedsFill = sqlManager.tableExists(SQL_TIME_TABLE);
-				
-				if(!sqlManager.tableExists(SQL_WIN_TABLE) || !timeNeedsFill) {
+				if(!checkIfOldAndFix()) {	//If it fixed something it would have returned true
 					createTables();
-					if(!timeNeedsFill) {
+					if(!sqlManager.tableExists(SQL_TIME_TABLE)) {		//IF there was a time-table it doesn't need filling
 						fillTimes();
 					}
-				} else if(checkIfOld()) {
-					updateTables();
 				}
 			}
 		} catch (Exception e) {
@@ -127,25 +123,63 @@ public class FinishSQLManager {
 		return sql;
 	}
 	
-	private boolean checkIfOld() throws SQLException {
-		//Add date-column to winlist
-		if(sqlManager.hasColumn(SQL_WIN_TABLE, "playerIdWithTrackname")) {
-			return true;
+	private boolean checkIfOldAndFix() throws SQLException {
+		String SQL_WIN_TABLE_OLD = "WinList";
+		String SQL_TIME_TABLE_OLD = "TimeList";
+		
+		if(sqlManager.tableExists(SQL_WIN_TABLE)) {
+			//Newest version - proceed with normal checks
+			return false;
 		}
+		
+		if(sqlManager.tableExists(SQL_WIN_TABLE_OLD)) {
+			if(!sqlManager.tableExists(SQL_TIME_TABLE_OLD)) {
+				//Very old, hasn't got times-list
+				updateTables(false);
+				return true;
+			} else if(sqlManager.hasColumn(SQL_WIN_TABLE_OLD, "playerIdWithTrackName")) {
+				//Middle-Child - still needs full update
+				updateTables(false);
+				return true;
+			} else {
+				//Only need to rename tables, everything else should be fine
+				updateTables(true);
+				return true;
+			}
+		}
+		//NOTHING whatsoever
 		return false;
 	}
 	
-	private void updateTables() throws SQLException {
+	private void updateTables(boolean onlyRename) throws SQLException {
+		String SQL_WIN_TABLE_OLD = "WinList";
+		String SQL_TIME_TABLE_OLD = "TimeList";
+		if(onlyRename) {
+			String statement = "ALTER TABLE"+SQL_WIN_TABLE_OLD+"RENAME TO"+SQL_WIN_TABLE+";";
+			sqlManager.exec(statement);
+			
+			//We know that the winlist needs renaming but maybe the timelist doesn't even exist
+			if(sqlManager.tableExists(SQL_TIME_TABLE)) {
+				statement = "ALTER TABLE"+SQL_TIME_TABLE_OLD+"RENAME TO"+SQL_TIME_TABLE+";";
+				sqlManager.exec(statement);
+			} else {
+				createTables();
+				fillTimes();
+			}
+			return;
+		}
+		
+		
 		List<Map<Object,Object>> winListOld = null;
 		MarioKart.logger.info("Trying to update the database. This might take a while");
 		
-		if(sqlManager.tableExists(SQL_WIN_TABLE)) {
-			winListOld = sqlManager.getAll(SQL_WIN_TABLE , Arrays.asList(new String[]{"playerIdWithTrackname", "wins", "set_on"}));
-			sqlManager.deleteTable(SQL_WIN_TABLE);
+		if(sqlManager.tableExists(SQL_WIN_TABLE_OLD)) {
+			winListOld = sqlManager.getAll(SQL_WIN_TABLE_OLD , Arrays.asList(new String[]{"playerIdWithTrackname", "wins", "set_on"}));
+			sqlManager.deleteTable(SQL_WIN_TABLE_OLD);
 		}
 		
-		if(sqlManager.tableExists(SQL_TIME_TABLE)) {
-			sqlManager.deleteTable(SQL_TIME_TABLE);
+		if(sqlManager.tableExists(SQL_TIME_TABLE_OLD)) {
+			sqlManager.deleteTable(SQL_TIME_TABLE_OLD);
 		}
 		
 		createTables();
