@@ -61,8 +61,9 @@ public class BombPowerup extends PowerupBase {
 	public void doLeftClickAction(User user, Player player, Minecart car,
 			Location carLoc, Race race, ItemStack inHand) {
 		inHand.setAmount(inHand.getAmount() - 1);
+		final Vector dir = player.getEyeLocation().getDirection().multiply(-2);
 		final TNTPrimed tnt = (TNTPrimed) car.getLocation().getWorld()
-				.spawnEntity(car.getLocation(), EntityType.PRIMED_TNT);
+				.spawnEntity(car.getLocation().add(dir), EntityType.PRIMED_TNT);
 		tnt.setFuseTicks(60);
 		tnt.setMetadata("explosion.none", new StatValue(null, MarioKart.plugin));
 		MarioKart.plugin.getServer().getScheduler()

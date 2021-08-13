@@ -89,8 +89,12 @@ public class RaceExecutor {
 				}
 			}
 			final Player player = pla;
-			pla.setResourcePack("https://www.google.de");
-			MarioKart.plugin.resourcedPlayers.remove(player.getName());
+			if(MarioKart.plugin.resourcedPlayers.contains(player.getName()) && !MarioKart.fullServer 
+					&& MarioKart.plugin.emptyPackUrl != null
+					&& MarioKart.plugin.emptyPackUrl.length() > 0){
+				pla.setResourcePack(MarioKart.plugin.emptyPackUrl);
+				MarioKart.plugin.resourcedPlayers.remove(pla.getName());
+			}
 			if (pla != null) {
 				pla.removeMetadata("car.stayIn", MarioKart.plugin);
 				pla.setCustomName(ChatColor.stripColor(player
@@ -202,7 +206,7 @@ public class RaceExecutor {
 												//Normal race, or cup
 												msg = MarioKart.msgs.get("race.end.position");
 												if ((i + 1) <= 4
-														&& (i + 1) != game.getUsers().size()) {
+														&& ((i + 1) != game.getUsers().size() || game.getUsers().size() == 1)) {
 													//Winning sound
 													MarioKart.plugin.musicManager.playCustomSound(player, MarioKartSound.RACE_WIN);
 												} else {
@@ -265,7 +269,7 @@ public class RaceExecutor {
 									String msg = "";
 									if (!timed) {
 										msg = MarioKart.msgs.get("race.end.position");
-										if (position <= 4 && position != game.getUsers().size()) {
+										if (position <= 4 && (position != game.getUsers().size() || game.getUsers().size() == 1)) {
 											//Win sound
 											MarioKart.plugin.musicManager.playCustomSound(player, MarioKartSound.RACE_WIN);
 										} else {

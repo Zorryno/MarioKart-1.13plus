@@ -155,12 +155,12 @@ public class FinishSQLManager {
 		String SQL_WIN_TABLE_OLD = "WinList";
 		String SQL_TIME_TABLE_OLD = "TimeList";
 		if(onlyRename) {
-			String statement = "ALTER TABLE"+SQL_WIN_TABLE_OLD+"RENAME TO"+SQL_WIN_TABLE+";";
+			String statement = "ALTER TABLE "+SQL_WIN_TABLE_OLD+" RENAME TO "+SQL_WIN_TABLE+";";
 			sqlManager.exec(statement);
 			
 			//We know that the winlist needs renaming but maybe the timelist doesn't even exist
-			if(sqlManager.tableExists(SQL_TIME_TABLE)) {
-				statement = "ALTER TABLE"+SQL_TIME_TABLE_OLD+"RENAME TO"+SQL_TIME_TABLE+";";
+			if(sqlManager.tableExists(SQL_TIME_TABLE_OLD)) {
+				statement = "ALTER TABLE "+SQL_TIME_TABLE_OLD+" RENAME TO "+SQL_TIME_TABLE+";";
 				sqlManager.exec(statement);
 			} else {
 				createTables();

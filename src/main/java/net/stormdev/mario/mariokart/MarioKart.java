@@ -15,6 +15,8 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
@@ -91,11 +93,13 @@ public class MarioKart extends JavaPlugin {
 	public Random random = null;
 	public static PowerupManager powerupManager = null;
 	public RaceTimes raceTimes = null;
-	public String packUrl = "https://media.forgecdn.net/files/3119/588/mariocart.zip";
-	public String fullPackUrl = "https://media.forgecdn.net/files/3119/588/mariocart.zip";
+	public String packUrl = "https://media.forgecdn.net/files/3424/662/mariocart.zip";
+	public String fullPackUrl = "https://media.forgecdn.net/files/3424/662/mariocart.zip";
+	public String emptyPackUrl = "https://media.forgecdn.net/files/3424/509/empty.zip";
 	public HotBarManager hotBarManager = null;
 	public double checkpointRadiusSquared = 10.0;
 	public List<String> resourcedPlayers = new ArrayList<String>();
+	public static ArrayList<Integer> MCVersion = new ArrayList<Integer>();
 	
 	public RewardConfiguration globalRewards = null;
 	
@@ -143,6 +147,15 @@ public class MarioKart extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		System.gc();
+		
+		Pattern pattern = Pattern.compile(".v(.*?)_R");		//Get MC-Version
+		Matcher matcher = pattern.matcher(Bukkit.getServer().getClass().getPackage().getName());
+		if(matcher.find()) {
+			String[] MCVersionStr = matcher.group(1).split("_");
+			for(String s:MCVersionStr) {
+				MCVersion.add(Integer.parseInt(s));
+			}
+		}
 		
 		int pluginId = 11769;
         Metrics metrics = new Metrics(this, pluginId);
@@ -236,6 +249,7 @@ public class MarioKart extends JavaPlugin {
 				String rl = MarioKart.config.getString("mariokart.resourcePack");
 				rl = RPManager.getRPUrl(rl);
 				fullPackUrl = rl;
+				emptyPackUrl = RPManager.getEmptyRPUrl(MarioKart.config.getString("mariokart.emptyPack"));
 				
 				if(rl.length() > 0){ //Using a resource pack
 					Boolean valid = true;

@@ -190,6 +190,11 @@ public class PluginConfigurator {
 					"mariokart.resourcePack",
 					"DEFAULT_CURSEFORGE_PACK");
 		}
+		if (!config.contains("mariokart.emptyPack")) {
+			config.set(
+					"mariokart.emptyPack",
+					"DEFAULT_EMPTY_PACK");
+		}
 		if (!config.contains("mariokart.enable")) {
 			config.set("mariokart.enable", true);
 		}
