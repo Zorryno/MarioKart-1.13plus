@@ -10,7 +10,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
@@ -19,6 +18,7 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.entity.Vehicle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -365,6 +365,8 @@ public class RaceEventsListener implements Listener {
 			
 			plugin.raceMethods.createExplode(loc);
 			
+			MarioKart.powerupManager.removeTNT((TNTPrimed) event.getEntity());
+			
 			event.setCancelled(true);
 			double radius = 6;
 			//loc.getWorld().createExplosion(loc, 0);
@@ -628,6 +630,7 @@ public class RaceEventsListener implements Listener {
 		Vector Velocity = car.getVelocity();
 		Double X = Math.abs(Velocity.getX());
 		Double Z = Math.abs(Velocity.getZ());
+		player.sendMessage(""+Velocity.getY());
 		double speed = (Math.sqrt(Math.pow(X,2) + Math.pow(Z,2))) * 40;
 		if (speed < 1) {
 			speed = Velocity.getY();
@@ -638,7 +641,7 @@ public class RaceEventsListener implements Listener {
 		if (speed < 0) {
 			speed = 0;
 		}
-		player.setLevel((int) speed);
+		
 		float xpBar = (float) (speed / 100);
 		if (xpBar >= 1) {
 			xpBar = 0.999f;
@@ -646,7 +649,17 @@ public class RaceEventsListener implements Listener {
 		if (xpBar < 0) {
 			xpBar = 0.001f;
 		}
+		
+		//Multiply 1,82 when falling/climbing to account for reduction in applied acceleration when climbing/falling
+		//(And yes, only above 0.1 is somehow real climbing. It should always be > 0.2 actually but this looks prettier and I wanna be 100% sure)
+		//(Man... Who reads these comments)
+		if(car.getFallDistance() > 0.0 || Velocity.getY() > 0.1) {
+			player.setExp(xpBar * 1.82f);
+			player.setLevel((int) (speed * 1.82));
+			return;
+		}
 		player.setExp(xpBar);
+		player.setLevel((int) speed);
 		return;
 	}
 	
