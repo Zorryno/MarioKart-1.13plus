@@ -36,15 +36,25 @@ public class FullServerManager {
 	public SpectatorMode spectators = null;
 	private boolean starting = false;
 	
-	public static final ItemStack item;
+	public static final ItemStack exitItem;
+	public static final ItemStack voteItem;
 	
 	static {
-		item = new ItemStack(Material.BOOK);
-		ItemMeta im = item.getItemMeta();
+		exitItem = new ItemStack(Material.BARRIER);
+		ItemMeta im = exitItem.getItemMeta();
 		im.setDisplayName(ChatColor.DARK_RED+"Exit to lobby");
 		im.setLore(Arrays.asList(new String[]{ChatColor.GRAY+"Right click to use"}));
 		
-		item.setItemMeta(im);
+		exitItem.setItemMeta(im);
+	}
+	
+	static {
+		voteItem = new ItemStack(Material.BOOK);
+		ItemMeta im = voteItem.getItemMeta();
+		im.setDisplayName(ChatColor.GREEN+"Vote for Track");
+		im.setLore(Arrays.asList(new String[]{ChatColor.GRAY+"Right click to use"}));
+		
+		voteItem.setItemMeta(im);
 	}
 	
 	public static FullServerManager get(){
@@ -100,7 +110,8 @@ public class FullServerManager {
 			for(Player player:online){
 				BossBar.removeBar(player);
 				player.getInventory().clear();
-				player.getInventory().setItem(8, item.clone());
+				player.getInventory().setItem(0, voteItem.clone());
+				player.getInventory().setItem(8, exitItem.clone());
 				player.teleport(lobbyLoc);
 				if(spectators.isSpectating(player)){
 					spectators.stopSpectating(player);

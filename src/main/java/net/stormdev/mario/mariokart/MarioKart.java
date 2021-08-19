@@ -70,6 +70,7 @@ import net.stormdev.mario.signUtils.SignManager;
 import net.stormdev.mario.sound.MusicManager;
 import net.stormdev.mario.tracks.RaceTimes;
 import net.stormdev.mario.tracks.RaceTrackManager;
+import net.stormdev.mario.ui.UIManager;
 import net.stormdev.mario.utils.FinishSQLManager;
 
 public class MarioKart extends JavaPlugin {
@@ -142,6 +143,7 @@ public class MarioKart extends JavaPlugin {
 		listeners.add(new SignEventsListener(this));
 		listeners.add(new TrackEventsListener(this));
 	}
+	private UIManager UIManager;
 	
 	
 	@Override
@@ -285,14 +287,14 @@ public class MarioKart extends JavaPlugin {
 		}));
         
 		if(fullServer){
-			Bukkit.getScheduler().runTask(MarioKart.plugin, new Runnable(){
-
-				@Override
-				public void run() {
-					new FullServerManager();
-					return;
-				}});
+			//UIManager
+			this.UIManager = new UIManager(this);
+			this.getServer().getPluginManager().registerEvents(this.UIManager, this);
 			
+			Bukkit.getScheduler().runTask(MarioKart.plugin, () -> {
+				new FullServerManager();
+				return;
+			});
 		}
 		
 		BarAPI.onEnable();
@@ -434,5 +436,13 @@ public class MarioKart extends JavaPlugin {
 				Thread.sleep(1000); //Show it to then for 1s
 			} catch (InterruptedException e) {}
 		}
+	}
+	
+	public UIManager getUIManager() {
+		return UIManager;
+	}
+
+	public void setUIManager(UIManager UIManager) {
+		this.UIManager = UIManager;
 	}
 }

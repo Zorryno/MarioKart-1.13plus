@@ -36,6 +36,7 @@ import org.bukkit.inventory.ItemStack;
 
 import net.stormdev.mario.mariokart.MarioKart;
 import net.stormdev.mario.races.MarioKartRaceEndEvent;
+import net.stormdev.mario.ui.VoteUI;
 import net.stormdev.mario.utils.MetaValue;
 
 public class ServerListener implements Listener {
@@ -122,8 +123,12 @@ public class ServerListener implements Listener {
 			return;
 		}
 		ItemStack clicked = event.getCurrentItem();
-		if(!clicked.isSimilar(FullServerManager.item)
-				|| !(clicked.getItemMeta().getDisplayName().equals(FullServerManager.item.getItemMeta().getDisplayName()))){
+		if(!clicked.isSimilar(FullServerManager.exitItem)
+				|| !(clicked.getItemMeta().getDisplayName().equals(FullServerManager.exitItem.getItemMeta().getDisplayName()))){
+			return;
+		}
+		if(!clicked.isSimilar(FullServerManager.voteItem)
+				|| !(clicked.getItemMeta().getDisplayName().equals(FullServerManager.voteItem.getItemMeta().getDisplayName()))){
 			return;
 		}
 		
@@ -146,20 +151,23 @@ public class ServerListener implements Listener {
 	}
 	
 	@EventHandler
-	void useLobbyTP(PlayerInteractEvent event){
+	void useWaitingHotBarItem(PlayerInteractEvent event){
 		Player player = event.getPlayer();
 		ItemStack inHand = player.getInventory().getItemInMainHand();
 		if(!fsm.getStage().equals(ServerStage.WAITING)){
 			return;
 			
 		}
-		if(!inHand.isSimilar(FullServerManager.item)
-				|| !(inHand.getItemMeta().getDisplayName().equals(FullServerManager.item.getItemMeta().getDisplayName()))){
-			return;
+		if(inHand.isSimilar(FullServerManager.exitItem)
+				|| (inHand.getItemMeta().getDisplayName().equals(FullServerManager.exitItem.getItemMeta().getDisplayName()))){
+			player.teleport(fsm.lobbyLoc); //For when they next login
+			player.sendMessage(ChatColor.GRAY+"Teleporting...");
+			fsm.sendToLobby(player);
 		}
-		player.teleport(fsm.lobbyLoc); //For when they next login
-		player.sendMessage(ChatColor.GRAY+"Teleporting...");
-		fsm.sendToLobby(player);
+		if(inHand.isSimilar(FullServerManager.voteItem)
+				|| (inHand.getItemMeta().getDisplayName().equals(FullServerManager.voteItem.getItemMeta().getDisplayName()))){
+			MarioKart.plugin.getUIManager().assignUI(player, new VoteUI());
+		}
 	}
 	
 	@EventHandler
@@ -277,7 +285,8 @@ public class ServerListener implements Listener {
 		player.setGameMode(GameMode.SURVIVAL);
 		
 		if(fsm.getStage().equals(ServerStage.WAITING)){
-			player.getInventory().setItem(8,FullServerManager.item.clone());
+			player.getInventory().setItem(0,FullServerManager.voteItem.clone());
+			player.getInventory().setItem(8,FullServerManager.exitItem.clone());
 			if(fsm.voter == null){
 				showVoteMsg = false;
 				fsm.changeServerStage(ServerStage.WAITING);
