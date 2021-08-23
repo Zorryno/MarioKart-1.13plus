@@ -430,7 +430,7 @@ public class AdminCommandExecutor implements CommandExecutor {
 				Block block = player.getWorld().getBlockAt(player.getLocation());
 				
 				if(!(block.getState() instanceof Sign)) {
-				    block.setType(Material.OAK_SIGN);
+				    block.setType(Material.SIGN);
 				}
 
 				Sign sign = (Sign) block.getState();
