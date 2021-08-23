@@ -118,7 +118,9 @@ public abstract class ShellPowerup implements Powerup, Shell {
 		if(!isExpired()){
 			return false;
 		}
-		item.remove();
+		final Item itm = item;
+		Bukkit.getScheduler().runTask(MarioKart.plugin, () -> {
+			itm.remove();});
 		item = null;
 		owner = null;
 		return true;

@@ -15,8 +15,11 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -67,7 +70,8 @@ import net.stormdev.mario.signUtils.SignManager;
 import net.stormdev.mario.sound.MusicManager;
 import net.stormdev.mario.tracks.RaceTimes;
 import net.stormdev.mario.tracks.RaceTrackManager;
-import net.stormdev.mario.utils.WinnerSQLManager;
+import net.stormdev.mario.ui.UIManager;
+import net.stormdev.mario.utils.FinishSQLManager;
 
 public class MarioKart extends JavaPlugin {
 	public static MarioKart plugin;
@@ -76,6 +80,7 @@ public class MarioKart extends JavaPlugin {
 	public static CustomLogger logger = null;
 	public static ucars ucars = null;
 	public static boolean fullServer = false;
+	public static boolean reducedText = false;
 	public AdminCommandExecutor adminCommandExecutor = null;
 	public RaceCommandExecutor raceCommandExecutor = null;
 	public RaceTimeCommandExecutor raceTimeCommandExecutor = null;
@@ -89,11 +94,13 @@ public class MarioKart extends JavaPlugin {
 	public Random random = null;
 	public static PowerupManager powerupManager = null;
 	public RaceTimes raceTimes = null;
-	public String packUrl = "https://media.forgecdn.net/files/3119/588/mariocart.zip";
-	public String fullPackUrl = "https://media.forgecdn.net/files/3119/588/mariocart.zip";
+	public String packUrl = "https://media.forgecdn.net/files/3424/662/mariocart.zip";
+	public String fullPackUrl = "https://media.forgecdn.net/files/3424/662/mariocart.zip";
+	public String emptyPackUrl = "https://media.forgecdn.net/files/3424/509/empty.zip";
 	public HotBarManager hotBarManager = null;
 	public double checkpointRadiusSquared = 10.0;
 	public List<String> resourcedPlayers = new ArrayList<String>();
+	public static ArrayList<Integer> MCVersion = new ArrayList<Integer>();
 	
 	public RewardConfiguration globalRewards = null;
 	
@@ -105,7 +112,7 @@ public class MarioKart extends JavaPlugin {
 	Map<String, Unlockable> unlocks = null;
 
 	public UnlockableManager upgradeManager = null;
-	public WinnerSQLManager winnerSQLManager = null;
+	public FinishSQLManager finishSQLManager = null;
 	public SignManager signManager = null;
 
 	public BukkitTask lagReducer = null;
@@ -136,11 +143,21 @@ public class MarioKart extends JavaPlugin {
 		listeners.add(new SignEventsListener(this));
 		listeners.add(new TrackEventsListener(this));
 	}
+	private UIManager UIManager;
 	
 	
 	@Override
 	public void onEnable() {
 		System.gc();
+		
+		Pattern pattern = Pattern.compile(".v(.*?)_R");		//Get MC-Version
+		Matcher matcher = pattern.matcher(Bukkit.getServer().getClass().getPackage().getName());
+		if(matcher.find()) {
+			String[] MCVersionStr = matcher.group(1).split("_");
+			for(String s:MCVersionStr) {
+				MCVersion.add(Integer.parseInt(s));
+			}
+		}
 		
 		int pluginId = 11769;
         Metrics metrics = new Metrics(this, pluginId);
@@ -234,6 +251,7 @@ public class MarioKart extends JavaPlugin {
 				String rl = MarioKart.config.getString("mariokart.resourcePack");
 				rl = RPManager.getRPUrl(rl);
 				fullPackUrl = rl;
+				emptyPackUrl = RPManager.getEmptyRPUrl(MarioKart.config.getString("mariokart.emptyPack"));
 				
 				if(rl.length() > 0){ //Using a resource pack
 					Boolean valid = true;
@@ -264,15 +282,19 @@ public class MarioKart extends JavaPlugin {
 			}}, 20l);
 		
 		fullServer = config.getBoolean("general.server.control");
+        metrics.addCustomChart(new SimplePie("full-server", () -> {
+			return String.valueOf(fullServer);
+		}));
+        
 		if(fullServer){
-			Bukkit.getScheduler().runTask(MarioKart.plugin, new Runnable(){
-
-				@Override
-				public void run() {
-					new FullServerManager();
-					return;
-				}});
+			//UIManager
+			this.UIManager = new UIManager(this);
+			this.getServer().getPluginManager().registerEvents(this.UIManager, this);
 			
+			Bukkit.getScheduler().runTask(MarioKart.plugin, () -> {
+				new FullServerManager();
+				return;
+			});
 		}
 		
 		BarAPI.onEnable();
@@ -400,10 +422,11 @@ public class MarioKart extends JavaPlugin {
 				config.getBoolean("general.upgrades.useSQL"));
 		
 		if(MarioKart.config.getBoolean("general.winlist.enable")) {
-			this.winnerSQLManager = new WinnerSQLManager();
+			this.finishSQLManager = new FinishSQLManager();
 		}
 
 		dynamicLagReduce = config.getBoolean("general.optimiseAtRuntime");
+		reducedText = config.getBoolean("general.reducedText");
 		
 		if(!dynamicLagReduce){
 			logger.info(ChatColor.RED+"[WARNING] The plugin's self optimisation has been disabled,"
@@ -413,5 +436,13 @@ public class MarioKart extends JavaPlugin {
 				Thread.sleep(1000); //Show it to then for 1s
 			} catch (InterruptedException e) {}
 		}
+	}
+	
+	public UIManager getUIManager() {
+		return UIManager;
+	}
+
+	public void setUIManager(UIManager UIManager) {
+		this.UIManager = UIManager;
 	}
 }

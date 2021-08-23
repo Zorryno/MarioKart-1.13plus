@@ -36,6 +36,7 @@ import org.bukkit.inventory.ItemStack;
 
 import net.stormdev.mario.mariokart.MarioKart;
 import net.stormdev.mario.races.MarioKartRaceEndEvent;
+import net.stormdev.mario.ui.VoteUI;
 import net.stormdev.mario.utils.MetaValue;
 
 public class ServerListener implements Listener {
@@ -122,8 +123,12 @@ public class ServerListener implements Listener {
 			return;
 		}
 		ItemStack clicked = event.getCurrentItem();
-		if(!clicked.isSimilar(FullServerManager.item)
-				|| !(clicked.getItemMeta().getDisplayName().equals(FullServerManager.item.getItemMeta().getDisplayName()))){
+		if(!clicked.isSimilar(FullServerManager.exitItem)
+				|| !(clicked.getItemMeta().getDisplayName().equals(FullServerManager.exitItem.getItemMeta().getDisplayName()))){
+			return;
+		}
+		if(!clicked.isSimilar(FullServerManager.voteItem)
+				|| !(clicked.getItemMeta().getDisplayName().equals(FullServerManager.voteItem.getItemMeta().getDisplayName()))){
 			return;
 		}
 		
@@ -146,20 +151,23 @@ public class ServerListener implements Listener {
 	}
 	
 	@EventHandler
-	void useLobbyTP(PlayerInteractEvent event){
+	void useWaitingHotBarItem(PlayerInteractEvent event){
 		Player player = event.getPlayer();
 		ItemStack inHand = player.getInventory().getItemInMainHand();
 		if(!fsm.getStage().equals(ServerStage.WAITING)){
 			return;
 			
 		}
-		if(!inHand.isSimilar(FullServerManager.item)
-				|| !(inHand.getItemMeta().getDisplayName().equals(FullServerManager.item.getItemMeta().getDisplayName()))){
-			return;
+		if(inHand.isSimilar(FullServerManager.exitItem)
+				|| (inHand.getItemMeta().getDisplayName().equals(FullServerManager.exitItem.getItemMeta().getDisplayName()))){
+			player.teleport(fsm.lobbyLoc); //For when they next login
+			player.sendMessage(ChatColor.GRAY+"Teleporting...");
+			fsm.sendToLobby(player);
 		}
-		player.teleport(fsm.lobbyLoc); //For when they next login
-		player.sendMessage(ChatColor.GRAY+"Teleporting...");
-		fsm.sendToLobby(player);
+		if(inHand.isSimilar(FullServerManager.voteItem)
+				|| (inHand.getItemMeta().getDisplayName().equals(FullServerManager.voteItem.getItemMeta().getDisplayName()))){
+			MarioKart.plugin.getUIManager().assignUI(player, new VoteUI());
+		}
 	}
 	
 	@EventHandler
@@ -228,19 +236,23 @@ public class ServerListener implements Listener {
 			return;
 		}
 		
-		player.sendMessage(ChatColor.BOLD+""+ChatColor.GOLD+"------------------------------");
-		player.sendMessage(ChatColor.DARK_RED+"Welcome to MarioKart, "+ChatColor.WHITE+player.getName()+ChatColor.DARK_RED+"!");
-		player.sendMessage(ChatColor.BOLD+""+ChatColor.GOLD+"------------------------------");
+		if(!MarioKart.reducedText) {
+			player.sendMessage(ChatColor.BOLD+""+ChatColor.GOLD+"------------------------------");
+			player.sendMessage(ChatColor.DARK_RED+"Welcome to MarioKart, "+ChatColor.WHITE+player.getName()+ChatColor.DARK_RED+"!");
+			player.sendMessage(ChatColor.BOLD+""+ChatColor.GOLD+"------------------------------");
+		}
 		
 		//Enable resource pack for them:
-		String rl = MarioKart.plugin.packUrl;                           //Send them the download url, etc for if they haven't get server RPs enabled
-		player.sendMessage(MarioKart.colors.getInfo()
-				+ MarioKart.msgs.get("resource.download"));
-		String msg = MarioKart.msgs.get("resource.downloadHelp");
-		msg = msg.replaceAll(Pattern.quote("%url%"),
-				Matcher.quoteReplacement(ChatColor.RESET + ""));
-		player.sendMessage(MarioKart.colors.getInfo() + msg);
-		player.sendMessage(rl); //new line
+		if(!MarioKart.reducedText) {
+			String rl = MarioKart.plugin.packUrl;                           //Send them the download url, etc for if they haven't get server RPs enabled
+			player.sendMessage(MarioKart.colors.getInfo()
+					+ MarioKart.msgs.get("resource.download"));
+			String msg = MarioKart.msgs.get("resource.downloadHelp");
+			msg = msg.replaceAll(Pattern.quote("%url%"),
+					Matcher.quoteReplacement(ChatColor.RESET + ""));
+			player.sendMessage(MarioKart.colors.getInfo() + msg);
+			player.sendMessage(rl); //new line
+		}
 		
 		if(!MarioKart.plugin.resourcedPlayers.contains(player.getName()) //Send them the RP for if they have got server RPs enabled
 				&& MarioKart.plugin.fullPackUrl != null
@@ -273,7 +285,8 @@ public class ServerListener implements Listener {
 		player.setGameMode(GameMode.SURVIVAL);
 		
 		if(fsm.getStage().equals(ServerStage.WAITING)){
-			player.getInventory().setItem(8,FullServerManager.item.clone());
+			player.getInventory().setItem(0,FullServerManager.voteItem.clone());
+			player.getInventory().setItem(8,FullServerManager.exitItem.clone());
 			if(fsm.voter == null){
 				showVoteMsg = false;
 				fsm.changeServerStage(ServerStage.WAITING);

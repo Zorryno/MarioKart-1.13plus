@@ -6,16 +6,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.stormdev.mario.mariokart.MarioKart;
-import net.stormdev.mario.players.PlayerQuitException;
-import net.stormdev.mario.players.User;
-import net.stormdev.mario.races.Race;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+
+import net.stormdev.mario.mariokart.MarioKart;
+import net.stormdev.mario.players.PlayerQuitException;
+import net.stormdev.mario.players.User;
+import net.stormdev.mario.races.Race;
 
 public class MusicManager {
 	private MarioKart plugin;

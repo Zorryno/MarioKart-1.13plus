@@ -8,7 +8,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.EnderCrystal;
@@ -16,13 +15,13 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.vehicle.VehicleUpdateEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.useful.ucars.ucarUpdateEvent;
 import com.useful.ucars.ucars;
 import com.useful.ucarsCommon.StatValue;
 
@@ -37,6 +36,7 @@ public class PowerupManager {
 	MarioKart plugin = null;
 	Boolean enabled = true;
 	public ItemStack respawn = null;
+	private ArrayList<TNTPrimed> tntlist = new ArrayList<TNTPrimed>();
 
 	public PowerupManager(MarioKart plugin) {
 		this.plugin = plugin;
@@ -213,10 +213,18 @@ public class PowerupManager {
 			Location signLoc = null;
 			List<Entity> near = car.getNearbyEntities(0.0, 1, 0.0);		//Get all entities near/in vehicle
 			Entity crystal = null;
-			for(Entity e:near){
-				if(e.getType().equals(EntityType.ENDER_CRYSTAL)){
-					signLoc = e.getLocation().clone().add(0,-2,0);	//Sign should be 2 Blocks underneath crystal
+			for(Entity e:near) {
+				if(e.getType().equals(EntityType.ENDER_CRYSTAL)){		//For itemboxes
+					signLoc = e.getLocation().clone().add(0,-2,0);		//Sign should be 2 Blocks underneath crystal
 					crystal = e;
+				}
+				
+				if(e.getType().equals(EntityType.PRIMED_TNT)) {			//If bomb (impact -> explosion)
+					TNTPrimed tnt = (TNTPrimed) e;
+					
+					if(tntlist.contains(tnt) && tnt.getFuseTicks() <= 50) {	//Prevent drivers from immediately blowing up in their own bombs
+						tnt.setFuseTicks(0); //explode.
+					}
 				}
 			}
 			
@@ -571,6 +579,14 @@ public class PowerupManager {
 			}
 		}, 4l);
 		return true;
+	}
+	
+	public void addTNT(TNTPrimed tnt) {
+		this.tntlist.add(tnt);
+	}
+	
+	public void removeTNT(TNTPrimed tnt) {
+		this.tntlist.remove(tnt);
 	}
 	
 	/*

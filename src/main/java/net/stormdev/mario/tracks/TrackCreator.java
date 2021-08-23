@@ -133,6 +133,9 @@ public class TrackCreator {
 		String msg = MarioKart.msgs.get("setup.create.done");
 		msg = msg.replaceAll(Pattern.quote("%name%"), track.getTrackName());
 		player.sendMessage(MarioKart.colors.getSuccess() + msg);
+		
+		String reminder = MarioKart.msgs.get("setup.create.reminder");
+		player.sendMessage(MarioKart.colors.getInfo() + msg);
 		trackCreators.remove(player.getName());
 		return;
 	}

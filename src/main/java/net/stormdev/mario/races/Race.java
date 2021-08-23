@@ -177,8 +177,12 @@ public class Race {
 		}
 		if(player != null){
 			player.setLevel(user.getOldLevel());
-			player.setResourcePack("https://www.google.de");
-			MarioKart.plugin.resourcedPlayers.remove(player.getName());
+			if(MarioKart.plugin.resourcedPlayers.contains(player.getName()) && !MarioKart.fullServer 
+					&& MarioKart.plugin.emptyPackUrl != null
+					&& MarioKart.plugin.emptyPackUrl.length() > 0){
+				player.setResourcePack(MarioKart.plugin.emptyPackUrl);
+				MarioKart.plugin.resourcedPlayers.remove(player.getName());
+			}
 			player.setExp(user.getOldExp());
 		}
 		return;

@@ -113,7 +113,6 @@ public class SignEventsListener implements Listener {
 			
 			if (ChatColor.stripColor(lines[0]).equalsIgnoreCase("[MarioKart]")) {
 				if (ChatColor.stripColor(lines[1]).toLowerCase().contains("items")) {
-					lines[1] = "items";
 					event.getPlayer().sendMessage("Destroying item box...");
 					
 					//Remove Box

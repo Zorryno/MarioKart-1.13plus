@@ -1,14 +1,15 @@
 package net.stormdev.mario.commands;
 
-import net.stormdev.mario.mariokart.MarioKart;
-import net.stormdev.mario.server.FullServerManager;
-import net.stormdev.mario.server.ServerStage;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import net.stormdev.mario.mariokart.MarioKart;
+import net.stormdev.mario.server.FullServerManager;
+import net.stormdev.mario.server.ServerStage;
+import net.stormdev.mario.ui.VoteUI;
 
 public class VoteCommandExecutor implements CommandExecutor {
 
@@ -24,8 +25,7 @@ public class VoteCommandExecutor implements CommandExecutor {
 			return true;
 		}
 		if(args.length < 1){
-			sender.sendMessage(ChatColor.GRAY+"Usage: /vote <TrackName>");
-			sender.sendMessage(FullServerManager.get().voter.getAvailTracksString());
+			MarioKart.plugin.getUIManager().assignUI((Player) sender, new VoteUI());
 			return true;
 		}
 		if(!FullServerManager.get().getStage().equals(ServerStage.WAITING)){

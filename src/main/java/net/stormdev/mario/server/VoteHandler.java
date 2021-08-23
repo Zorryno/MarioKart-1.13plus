@@ -85,28 +85,28 @@ public class VoteHandler {
 	}
 	
 	private void calculateMapList(){
-		if(maps != null){
-			maps.clear();
+		if(getMaps() != null){
+			getMaps().clear();
 		}
 		else {
-			maps = new ArrayList<String>();
+			setMaps(new ArrayList<String>());
 		}
 		List<RaceTrack> all = new ArrayList<RaceTrack>(MarioKart.plugin.trackManager.getRaceTracks());
 		if(all.size() <= 5){
 			for(RaceTrack track:all){
-				maps.add(track.getTrackName());
+				getMaps().add(track.getTrackName());
 				votes.put(track.getTrackName(), 0);
 				if(minPlayers == null) { minPlayers = track.getMinPlayers(); } 					//If first Map set this as minPlayers
 				if(minPlayers > track.getMinPlayers()) { minPlayers = track.getMinPlayers(); }	//Otherwise check if this track has a lower minPlayer-Number
 			}
 			return;
 		}
-		while(maps.size() < 5){
+		while(getMaps().size() < 5){
 			RaceTrack rand = all.get(MarioKart.plugin.random.nextInt(all.size()));
-			if(maps.contains(rand.getTrackName())){
+			if(getMaps().contains(rand.getTrackName())){
 				continue;
 			}
-			maps.add(rand.getTrackName());
+			getMaps().add(rand.getTrackName());
 			votes.put(rand.getTrackName(), 0);
 			if(minPlayers == null) { minPlayers = rand.getMinPlayers(); } 					//If first Map set this as minPlayers
 			if(minPlayers > rand.getMinPlayers()) { minPlayers = rand.getMinPlayers(); }	//Otherwise check if this track has a lower minPlayer-Number
@@ -114,7 +114,7 @@ public class VoteHandler {
 	}
 	
 	public boolean isBeingVotedOn(String track){
-		return maps.contains(track);
+		return getMaps().contains(track);
 	}
 	
 	public void bossBar(final Player player){
@@ -261,7 +261,7 @@ public class VoteHandler {
 	
 	public String getAvailTracksString(){
 		StringBuilder avail = new StringBuilder(ChatColor.BOLD+""+ChatColor.DARK_RED+"Available tracks: ");
-		List<String> tracks = maps;
+		List<String> tracks = getMaps();
 		boolean f = true;
 		for(String t:tracks){
 			if(f){
@@ -356,6 +356,13 @@ public class VoteHandler {
 		}
 	}
 	
+	public int getVotes(String track) {
+		if(votes.get(track) == null ) {
+			return 0;
+		}
+		return votes.get(track);
+	}
+	
 	public boolean hasVoted(Player player){
 		if(!player.hasMetadata(VOTE_META_KEY)){
 			return false;
@@ -366,5 +373,13 @@ public class VoteHandler {
 			player.removeMetadata(VOTE_META_KEY, MarioKart.plugin);
 		}
 		return has;
+	}
+
+	public List<String> getMaps() {
+		return maps;
+	}
+
+	public void setMaps(List<String> maps) {
+		this.maps = maps;
 	}
 }

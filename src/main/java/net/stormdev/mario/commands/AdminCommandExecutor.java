@@ -10,6 +10,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -422,7 +424,23 @@ public class AdminCommandExecutor implements CommandExecutor {
 				sender.sendMessage(ChatColor.YELLOW+"Configs reloaded");
 				return true;
 			} else if (command.equalsIgnoreCase("version")) {
-				sender.sendMessage(ChatColor.YELLOW+"You are running MarioKart "+plugin.getDescription().getVersion());
+				sender.sendMessage(MarioKart.colors.getInfo()+"You are running MarioKart "+plugin.getDescription().getVersion());
+				return true;
+			} else if (command.equalsIgnoreCase("itemsign") || command.equalsIgnoreCase("itembox")) {
+				Block block = player.getWorld().getBlockAt(player.getLocation());
+				
+				if(!(block.getState() instanceof Sign)) {
+				    block.setType(Material.OAK_SIGN);
+				}
+
+				Sign sign = (Sign) block.getState();
+
+				sign.setLine(0, MarioKart.colors.getTitle()+"[MarioKart]");
+				sign.setLine(1, "items");
+
+				sign.update();
+				player.sendMessage("Creating item box...");
+				MarioKart.powerupManager.spawnItemPickupBox(block.getLocation());
 				return true;
 			}
 			return false;

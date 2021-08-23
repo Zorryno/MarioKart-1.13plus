@@ -89,8 +89,12 @@ public class RaceExecutor {
 				}
 			}
 			final Player player = pla;
-			pla.setResourcePack("https://www.google.de");
-			MarioKart.plugin.resourcedPlayers.remove(player.getName());
+			if(MarioKart.plugin.resourcedPlayers.contains(player.getName()) && !MarioKart.fullServer 
+					&& MarioKart.plugin.emptyPackUrl != null
+					&& MarioKart.plugin.emptyPackUrl.length() > 0){
+				pla.setResourcePack(MarioKart.plugin.emptyPackUrl);
+				MarioKart.plugin.resourcedPlayers.remove(pla.getName());
+			}
 			if (pla != null) {
 				pla.removeMetadata("car.stayIn", MarioKart.plugin);
 				pla.setCustomName(ChatColor.stripColor(player
@@ -198,11 +202,11 @@ public class RaceExecutor {
 												(String) pls[i]);
 										if (p != null) {
 											String msg = "";
-											if (!timed) {								//MARK Topliste mit SQL?
+											if (!timed) {
 												//Normal race, or cup
 												msg = MarioKart.msgs.get("race.end.position");
 												if ((i + 1) <= 4
-														&& (i + 1) != game.getUsers().size()) {
+														&& ((i + 1) != game.getUsers().size() || game.getUsers().size() == 1)) {
 													//Winning sound
 													MarioKart.plugin.musicManager.playCustomSound(player, MarioKartSound.RACE_WIN);
 												} else {
@@ -239,8 +243,16 @@ public class RaceExecutor {
 												MarioKart.plugin.musicManager.playCustomSound(player, MarioKartSound.RACE_WIN);
 												if(!gameEnded){
 													MarioKart.plugin.raceTimes.addRaceTime(game
-															.getTrack().getTrackName(), player
-															.getName(), t);
+															.getTrack().getTrackName(), player, t, game);
+
+													//Store in Database if enabled
+													if(MarioKart.plugin.finishSQLManager != null && MarioKart.plugin.finishSQLManager.isActive()) {		
+														try {
+															MarioKart.plugin.finishSQLManager.setTime(game.getTrackName(), player, t);
+														} catch (Exception e) {
+															
+														}
+													}
 												}
 											}
 											p.sendMessage(MarioKart.colors.getSuccess() + msg);
@@ -255,9 +267,9 @@ public class RaceExecutor {
 								if (player != null) {
 									int position = game.getFinishPosition(player.getName());
 									String msg = "";
-									if (!timed) {										//MARK Topliste mit SQL?
+									if (!timed) {
 										msg = MarioKart.msgs.get("race.end.position");
-										if (position <= 4 && position != game.getUsers().size()) {
+										if (position <= 4 && (position != game.getUsers().size() || game.getUsers().size() == 1)) {
 											//Win sound
 											MarioKart.plugin.musicManager.playCustomSound(player, MarioKartSound.RACE_WIN);
 										} else {
@@ -295,7 +307,17 @@ public class RaceExecutor {
 										msg = msg.replaceAll(Pattern.quote("%time%"), t + "");
 										MarioKart.plugin.musicManager.playCustomSound(player, MarioKartSound.RACE_WIN);
 										MarioKart.plugin.raceTimes.addRaceTime(game.getTrack()
-												.getTrackName(), player.getName(), t);
+												.getTrackName(), player, t, game);
+
+										//Store in Database if enabled
+										if(MarioKart.plugin.finishSQLManager != null && MarioKart.plugin.finishSQLManager.isActive()) {		
+											try {
+												MarioKart.plugin.finishSQLManager.setTime(game.getTrackName(), player, t);
+											} catch (Exception e) {
+												
+											}
+										}
+										
 										if(MarioKart.fullServer){
 											Bukkit.getScheduler().runTaskLater(MarioKart.plugin, () -> {
 													FullServerManager.get().restart();
@@ -448,9 +470,9 @@ public class RaceExecutor {
 								game.finish(user);
 								if (won && game.getType() != RaceType.TIME_TRIAL) {
 									//If enabled -> Give win in SQL
-									if(MarioKart.plugin.winnerSQLManager != null && MarioKart.plugin.winnerSQLManager.isActive()) {		
+									if(MarioKart.plugin.finishSQLManager != null && MarioKart.plugin.finishSQLManager.isActive()) {		
 										try {
-											MarioKart.plugin.winnerSQLManager.giveWin(game.getTrackName(), player);
+											MarioKart.plugin.finishSQLManager.giveWin(game.getTrackName(), player);
 										} catch (Exception e) {
 											
 										}

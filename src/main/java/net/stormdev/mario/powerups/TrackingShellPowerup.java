@@ -298,7 +298,7 @@ public abstract class TrackingShellPowerup extends ShellPowerup implements Track
 		}
 		target = null;
 		if(super.item != null)
-			super.item.remove();
+			super.remove();
 		super.item = null;
 		super.owner = null;
 		if(task != null){

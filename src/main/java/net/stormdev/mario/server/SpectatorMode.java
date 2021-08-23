@@ -29,7 +29,7 @@ public class SpectatorMode implements Listener {
 	private static final ItemStack item;
 	
 	static {
-		item = new ItemStack(Material.BOOK);
+		item = new ItemStack(Material.BARRIER);
 		ItemMeta im = item.getItemMeta();
 		im.setDisplayName(ChatColor.DARK_RED+"Exit to lobby");
 		im.setLore(Arrays.asList(new String[]{ChatColor.GRAY+"Right click to use"}));
