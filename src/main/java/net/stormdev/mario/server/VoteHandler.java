@@ -356,6 +356,13 @@ public class VoteHandler {
 		}
 	}
 	
+	public int getVotes(String track) {
+		if(votes.get(track) == null ) {
+			return 0;
+		}
+		return votes.get(track);
+	}
+	
 	public boolean hasVoted(Player player){
 		if(!player.hasMetadata(VOTE_META_KEY)){
 			return false;

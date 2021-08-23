@@ -5,7 +5,7 @@
     <artifactId>MK</artifactId>
     <name>MarioKart</name>
     <description>The MarioKart bukkit plugin found at http://dev.bukkit.org/bukkit-plugins/MarioKart</description>
-    <version>1.16plus-1.6.0-dev5</version>
+    <version>1.16plus-1.6.0</version>
     <packaging>jar</packaging>
     <url>https://github.com/Jakllp/MarioKart-1.13plus</url>
     <issueManagement>
