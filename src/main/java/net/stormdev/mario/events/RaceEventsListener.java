@@ -630,7 +630,6 @@ public class RaceEventsListener implements Listener {
 		Vector Velocity = car.getVelocity();
 		Double X = Math.abs(Velocity.getX());
 		Double Z = Math.abs(Velocity.getZ());
-		player.sendMessage(""+Velocity.getY());
 		double speed = (Math.sqrt(Math.pow(X,2) + Math.pow(Z,2))) * 40;
 		if (speed < 1) {
 			speed = Velocity.getY();
