@@ -183,7 +183,9 @@ public class RaceScheduler {
 		if (!chunk.isLoaded()) {
 			chunk.load(true);
 		}
-		player.teleport(l);
+		Bukkit.getScheduler().runTask(MarioKart.plugin, () -> {
+			player.teleport(l);
+		});
 		
 		if(!MarioKart.reducedText) {
 			String rl = MarioKart.plugin.packUrl;
