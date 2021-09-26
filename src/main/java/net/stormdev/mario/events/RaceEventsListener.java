@@ -642,21 +642,23 @@ public class RaceEventsListener implements Listener {
 		}
 		
 		float xpBar = (float) (speed / 100);
+
+		//Multiply 1,82 when falling/climbing to account for reduction in applied acceleration when climbing/falling
+		//(And yes, only above 0.1 is somehow real climbing. It should always be > 0.2 actually but this looks prettier and I wanna be 100% sure)
+		//(Man... Who reads these comments)
+		if(car.getFallDistance() > 0.0 || Velocity.getY() > 0.1) {
+			xpBar *= 1.82f;
+			speed *= 1.82f;
+		}
+
+		//Boundary checks
 		if (xpBar >= 1) {
 			xpBar = 0.999f;
 		}
 		if (xpBar < 0) {
 			xpBar = 0.001f;
 		}
-		
-		//Multiply 1,82 when falling/climbing to account for reduction in applied acceleration when climbing/falling
-		//(And yes, only above 0.1 is somehow real climbing. It should always be > 0.2 actually but this looks prettier and I wanna be 100% sure)
-		//(Man... Who reads these comments)
-		if(car.getFallDistance() > 0.0 || Velocity.getY() > 0.1) {
-			player.setExp(xpBar * 1.82f);
-			player.setLevel((int) (speed * 1.82));
-			return;
-		}
+
 		player.setExp(xpBar);
 		player.setLevel((int) speed);
 		return;
