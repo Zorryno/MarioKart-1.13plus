@@ -15,7 +15,6 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import net.stormdev.mario.mariokart.MarioKart;
-import net.stormdev.uuidapi.PlayerIDFinder;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -334,10 +333,7 @@ public class UnlockableManager implements Listener {
 
 			@Override
 			public void run() {
-				String mojangUUID = PlayerIDFinder.getMojangID(player).getID();
-				if(mojangUUID == null || mojangUUID.equals("null")){
-					mojangUUID = player.getUniqueId().toString();
-				}
+				String mojangUUID = player.getUniqueId().toString();
 				player.setMetadata(UUID_META, new StatValue(mojangUUID, MarioKart.plugin));
 				load(mojangUUID);
 				return;

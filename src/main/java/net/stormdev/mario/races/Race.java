@@ -244,9 +244,14 @@ public class Race {
 				this.board.resetScores(player.getDisplayName());
 				player.getInventory().clear();
 				if (player.getVehicle() != null) {
-					Vehicle veh = (Vehicle) player.getVehicle();
-					veh.eject();
-					veh.remove();
+					try {
+						Vehicle veh = (Vehicle) player.getVehicle();
+						veh.eject();
+						veh.remove();
+					} catch (ArrayIndexOutOfBoundsException e) {
+						//Apparently triggered if someone tries to quit his minecraft (shift) on initial countdown
+						Bukkit.getLogger().warning("Failed to eject cleanly.");
+					}
 				}
 				player.removeMetadata("car.stayIn", MarioKart.plugin);
 				player.getInventory().setContents(user.getOldInventory());
