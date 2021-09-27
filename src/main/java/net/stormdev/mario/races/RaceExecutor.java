@@ -47,7 +47,7 @@ public class RaceExecutor {
 		}
 		MarioKart.plugin.raceScheduler.recalculateQueues();
 		MarioKartRaceEndEvent evt = new MarioKartRaceEndEvent(game);
-		Bukkit.getScheduler().runTask(MarioKart.plugin, () -> Bukkit.getPluginManager().callEvent(evt)); //MARK
+		Bukkit.getPluginManager().callEvent(evt); //MARK
 		return;
 	}
 

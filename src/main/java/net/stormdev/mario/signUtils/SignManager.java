@@ -250,12 +250,10 @@ public class SignManager {
 	}
 	
 	public void asyncSave(){
-		MarioKart.plugin.getServer().getScheduler().runTaskAsynchronously(MarioKart.plugin, new BukkitRunnable(){
-
-			public void run() {
-				save();
-				return;
-			}});
+		MarioKart.plugin.getServer().getScheduler().runTaskAsynchronously(MarioKart.plugin, () -> {
+			save();
+			return;
+		});
 		return;
 	}
 	public void load(){

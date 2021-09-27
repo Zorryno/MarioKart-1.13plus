@@ -16,7 +16,6 @@ import org.stormdev.mkstormapi.SQL.MySQL;
 import org.stormdev.mkstormapi.SQL.SQLManager;
 
 import net.stormdev.mario.mariokart.MarioKart;
-import net.stormdev.uuidapi.PlayerIDFinder;
 
 public class FinishSQLManager {
 	private SQLManager sqlManager = null;
@@ -66,7 +65,7 @@ public class FinishSQLManager {
 	public void giveWin(String trackname, Player player) {		
 		Bukkit.getScheduler().runTaskAsynchronously(MarioKart.plugin, () -> {
 			try {
-				String playerId = PlayerIDFinder.getMojangID(player).getID();
+				String playerId = player.getUniqueId().toString();
 				Integer id = (Integer) sqlManager.searchTable(SQL_WIN_TABLE, SQL_UUID_KEY, playerId, SQL_TRACK_KEY, trackname, SQL_KEY);
 				if(id == null){
 					int one = 1;
@@ -96,7 +95,7 @@ public class FinishSQLManager {
 	public void setTime(String trackname, Player player, double time) {
 		Bukkit.getScheduler().runTaskAsynchronously(MarioKart.plugin, () -> {
 			try {
-				String playerId = PlayerIDFinder.getMojangID(player).getID();
+				String playerId = player.getUniqueId().toString();
 				Integer id = (Integer) sqlManager.searchTable(SQL_TIME_TABLE, SQL_UUID_KEY, playerId, SQL_TRACK_KEY, trackname, SQL_KEY);
 				if(id == null) {
 					sqlManager.setInTable(SQL_TIME_TABLE, Arrays.asList(new String[]{SQL_UUID_KEY, SQL_NAME_KEY, SQL_TRACK_KEY, SQL_TIME_KEY, SQL_DATE_KEY}), 
