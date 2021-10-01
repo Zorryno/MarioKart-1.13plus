@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.block.Skull;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -201,17 +202,18 @@ public class SpectatorMode implements Listener {
 	void useExit(PlayerInteractEvent event){
 		Player player = event.getPlayer();
 		ItemStack inHand = event.getItem();
-		if(inHand == null || !(inHand.isSimilar(lobbyItem))){
+		if(inHand == null || !isSpectating(player)){
 			return;
 		}
-		if(!isSpectating(player)){
-			return;
-		}
-		player.getInventory().clear();
-		stopSpectating(player);
-		player.teleport(FullServerManager.get().lobbyLoc); //For when they next login
-		player.sendMessage(ChatColor.GRAY+"Teleporting...");
-		FullServerManager.get().sendToLobby(player);
+		if(inHand.isSimilar(lobbyItem)) {
+            player.getInventory().clear();
+            stopSpectating(player);
+            player.teleport(FullServerManager.get().lobbyLoc); //For when they next login
+            player.sendMessage(ChatColor.GRAY + "Teleporting...");
+            FullServerManager.get().sendToLobby(player);
+        } else if(inHand.isSimilar(teleporter)) {
+		    player.openInventory(teleporterInventory);
+        }
 	}
 	
 	@EventHandler
@@ -235,11 +237,20 @@ public class SpectatorMode implements Listener {
 		}
 		
 		Player player = (Player) event.getWhoClicked();
-		if(isSpectating(player)){
-			event.setCancelled(true);
+		if(!isSpectating(player)){
+			return;
 		}
-	}
 
-	//Todo: Inventory Click Teleporter
-    //Todo: Open Teleporter Inventory
+		event.setCancelled(true);
+		player.updateInventory();
+
+		if(event.getCurrentItem() != null) {
+            Player target = Bukkit.getPlayer(event.getCurrentItem().getItemMeta().getDisplayName());
+            if(target == null)
+                return;
+
+            player.teleport(target);
+            player.sendMessage(MarioKart.msgs.get("server.spectator.teleportToPlayer").replace("%name%", target.getName()));
+        }
+	}
 }
