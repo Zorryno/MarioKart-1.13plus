@@ -5,8 +5,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.block.Skull;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -30,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+//Todo Bugfixing
 public class SpectatorMode implements Listener {
     private static final ItemStack lobbyItem;
     private static final ItemStack teleporter;
@@ -55,7 +54,7 @@ public class SpectatorMode implements Listener {
         Bukkit.getPluginManager().registerEvents(this, MarioKart.plugin);
     }
 
-    public void add(final Player player) {
+    public void add(Player player) {
         if (isSpectating(player)) {
             return;
         }
@@ -70,6 +69,11 @@ public class SpectatorMode implements Listener {
         player.setAllowFlight(true);
         player.setFlying(true);
 
+        Bukkit.getScheduler().scheduleSyncDelayedTask(MarioKart.plugin, () -> {
+            player.sendMessage("AllowFlight: " + player.getAllowFlight());
+            player.sendMessage("isFlying: " + player.isFlying());
+
+        }, 40);
         PotionEffect invisibility = new PotionEffect(PotionEffectType.INVISIBILITY, 99999, 9999, true, false, false);
         player.addPotionEffect(invisibility);
 
@@ -99,12 +103,15 @@ public class SpectatorMode implements Listener {
     }
 
     private void show(Player player) {
-        for (Player allPlayers : new ArrayList<>(Bukkit.getOnlinePlayers())) {
-            allPlayers.showPlayer(MarioKart.plugin, player);
-        }
-        for (Player spec : specs) {
-            player.hidePlayer(MarioKart.plugin, spec);
-        }
+        Bukkit.getScheduler().callSyncMethod(MarioKart.plugin, () -> {
+            for (Player allPlayers : new ArrayList<>(Bukkit.getOnlinePlayers())) {
+                allPlayers.showPlayer(MarioKart.plugin, player);
+            }
+            for (Player spec : specs) {
+                player.hidePlayer(MarioKart.plugin, spec);
+            }
+            return null;
+        });
     }
 
     public void endSpectating() {
@@ -117,9 +124,14 @@ public class SpectatorMode implements Listener {
     }
 
     public void stopSpectating(final Player player) {
+        player.sendMessage("StopSpectating");
 
         player.getInventory().clear();
-        player.removePotionEffect(PotionEffectType.INVISIBILITY);
+        Bukkit.getScheduler().callSyncMethod(MarioKart.plugin, () -> {
+            for (PotionEffect effect : player.getActivePotionEffects())
+                player.removePotionEffect(effect.getType());
+            return null;
+        });
 
         specs.remove(player);
         show(player);
@@ -128,6 +140,7 @@ public class SpectatorMode implements Listener {
         player.setGameMode(GameMode.SURVIVAL);
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(MarioKart.plugin, () -> player.teleport(FullServerManager.get().lobbyLoc));
+        getSpecTeam().removeEntry(player.getName());
     }
 
     public boolean isSpectating(Player player) {
@@ -169,6 +182,7 @@ public class SpectatorMode implements Listener {
         player.getInventory().clear();
         player.getInventory().setItem(0, teleporter);
         player.getInventory().setItem(8, lobbyItem);
+        player.updateInventory();
     }
 
     public void updateTeleporterInventory() {
@@ -197,60 +211,60 @@ public class SpectatorMode implements Listener {
             stopSpectating(event.getPlayer());
         }
     }
-	
-	@EventHandler
-	void useExit(PlayerInteractEvent event){
-		Player player = event.getPlayer();
-		ItemStack inHand = event.getItem();
-		if(inHand == null || !isSpectating(player)){
-			return;
-		}
-		if(inHand.isSimilar(lobbyItem)) {
+
+    @EventHandler
+    void useExit(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        ItemStack inHand = event.getItem();
+        if (inHand == null || !isSpectating(player)) {
+            return;
+        }
+        if (inHand.isSimilar(lobbyItem)) {
             player.getInventory().clear();
             stopSpectating(player);
             player.teleport(FullServerManager.get().lobbyLoc); //For when they next login
             player.sendMessage(ChatColor.GRAY + "Teleporting...");
             FullServerManager.get().sendToLobby(player);
-        } else if(inHand.isSimilar(teleporter)) {
-		    player.openInventory(teleporterInventory);
+        } else if (inHand.isSimilar(teleporter)) {
+            player.openInventory(teleporterInventory);
         }
-	}
-	
-	@EventHandler
-	void dropItem(PlayerDropItemEvent event){
-		if(isSpectating(event.getPlayer())){
-			event.setCancelled(true);
-		}
-	}
+    }
 
-	@EventHandler
-    void swapHands(PlayerSwapHandItemsEvent event){
-        if(isSpectating(event.getPlayer())) {
+    @EventHandler
+    void dropItem(PlayerDropItemEvent event) {
+        if (isSpectating(event.getPlayer())) {
             event.setCancelled(true);
         }
     }
-	
-	@EventHandler
-	void invClick(InventoryClickEvent event){
-		if(!(event.getWhoClicked() instanceof Player)){
-			return;
-		}
-		
-		Player player = (Player) event.getWhoClicked();
-		if(!isSpectating(player)){
-			return;
-		}
 
-		event.setCancelled(true);
-		player.updateInventory();
+    @EventHandler
+    void swapHands(PlayerSwapHandItemsEvent event) {
+        if (isSpectating(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
 
-		if(event.getCurrentItem() != null) {
+    @EventHandler
+    void invClick(InventoryClickEvent event) {
+        if (!(event.getWhoClicked() instanceof Player)) {
+            return;
+        }
+
+        Player player = (Player) event.getWhoClicked();
+        if (!isSpectating(player)) {
+            return;
+        }
+
+        event.setCancelled(true);
+        player.updateInventory();
+
+        if (event.getCurrentItem() != null) {
             Player target = Bukkit.getPlayer(event.getCurrentItem().getItemMeta().getDisplayName());
-            if(target == null)
+            if (target == null)
                 return;
 
             player.teleport(target);
             player.sendMessage(MarioKart.msgs.get("server.spectator.teleportToPlayer").replace("%name%", target.getName()));
         }
-	}
+    }
 }
