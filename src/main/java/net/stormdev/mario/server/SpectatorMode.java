@@ -59,35 +59,23 @@ public class SpectatorMode implements Listener {
             return;
         }
 
-        player.sendMessage(ChatColor.BOLD + "" + ChatColor.DARK_RED + "------------------------------");
-        player.sendMessage(ChatColor.BOLD + "" + ChatColor.DARK_RED + "Info: " + ChatColor.GOLD + "You are now spectating, to go back to the lobby at anytime; do '/race quit'.");
-        player.sendMessage(ChatColor.BOLD + "" + ChatColor.DARK_RED + "------------------------------");
-
         specs.add(player);
 
-        player.setGameMode(GameMode.ADVENTURE);
-        player.setAllowFlight(true);
-        player.setFlying(true);
-
         Bukkit.getScheduler().scheduleSyncDelayedTask(MarioKart.plugin, () -> {
-            player.sendMessage("AllowFlight: " + player.getAllowFlight());
-            player.sendMessage("isFlying: " + player.isFlying());
+            player.setGameMode(GameMode.ADVENTURE);
+            player.setAllowFlight(true);
+            player.setFlying(true);
 
-        }, 40);
-        PotionEffect invisibility = new PotionEffect(PotionEffectType.INVISIBILITY, 99999, 9999, true, false, false);
-        player.addPotionEffect(invisibility);
+            PotionEffect invisibility = new PotionEffect(PotionEffectType.INVISIBILITY, 99999, 9999, true, false, false);
+            player.addPotionEffect(invisibility);
 
-        hide(player);
-        player.closeInventory();
-        spectateInv(player);
-        updateTeleporterInventory();
+            hide(player);
+            player.closeInventory();
+            spectateInv(player);
+            updateTeleporterInventory();
 
-        ScoreboardManager manager = Bukkit.getScoreboardManager();
-        if (manager != null) {
-            player.setScoreboard(manager.getMainScoreboard());
-        }
-
-        getSpecTeam().addEntry(player.getName());
+            getSpecTeam().addEntry(player.getName());
+        }, 1);
     }
 
     private void hide(Player player) {
@@ -124,23 +112,24 @@ public class SpectatorMode implements Listener {
     }
 
     public void stopSpectating(final Player player) {
-        player.sendMessage("StopSpectating");
-
-        player.getInventory().clear();
         Bukkit.getScheduler().callSyncMethod(MarioKart.plugin, () -> {
-            for (PotionEffect effect : player.getActivePotionEffects())
-                player.removePotionEffect(effect.getType());
+            player.getInventory().clear();
+            Bukkit.getScheduler().callSyncMethod(MarioKart.plugin, () -> {
+                for (PotionEffect effect : player.getActivePotionEffects())
+                    player.removePotionEffect(effect.getType());
+                return null;
+            });
+
+            specs.remove(player);
+            show(player);
+
+            player.setAllowFlight(false);
+            player.setGameMode(GameMode.SURVIVAL);
+
+            Bukkit.getScheduler().scheduleSyncDelayedTask(MarioKart.plugin, () -> player.teleport(FullServerManager.get().lobbyLoc));
+            getSpecTeam().removeEntry(player.getName());
             return null;
         });
-
-        specs.remove(player);
-        show(player);
-
-        player.setAllowFlight(false);
-        player.setGameMode(GameMode.SURVIVAL);
-
-        Bukkit.getScheduler().scheduleSyncDelayedTask(MarioKart.plugin, () -> player.teleport(FullServerManager.get().lobbyLoc));
-        getSpecTeam().removeEntry(player.getName());
     }
 
     public boolean isSpectating(Player player) {
