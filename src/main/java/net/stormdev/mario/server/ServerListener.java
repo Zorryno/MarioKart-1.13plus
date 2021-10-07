@@ -1,9 +1,16 @@
 package net.stormdev.mario.server;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.zorryno.zorrynosystems.minecraftutils.playerhead.chatmessageapi.ImageChar;
+import de.zorryno.zorrynosystems.minecraftutils.playerhead.chatmessageapi.ImageMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -38,6 +45,8 @@ import net.stormdev.mario.mariokart.MarioKart;
 import net.stormdev.mario.races.MarioKartRaceEndEvent;
 import net.stormdev.mario.ui.VoteUI;
 import net.stormdev.mario.utils.MetaValue;
+
+import javax.imageio.ImageIO;
 
 public class ServerListener implements Listener {
 	private FullServerManager fsm;
@@ -331,9 +340,29 @@ public class ServerListener implements Listener {
 	
 	@EventHandler
 	public void raceEnding(MarioKartRaceEndEvent event){
+		Player player = Bukkit.getPlayer(event.getRace().getWinner());
+
+		List<String> headText = new ArrayList<>();
+		for(int i = 1; i <= 8; i++) {
+			headText.add(MarioKart.msgs.get("race.end.playerHead." + i));
+		}
+		broadcastPlayerHeadAsync(player, headText);
 		fsm.restart();
 	}
-	
+
+	private static void broadcastPlayerHeadAsync(final Player p, final List<String> text) {
+		new Thread(() -> {
+			try {
+				Bukkit.broadcastMessage("");
+				BufferedImage bi = ImageIO.read(new URL("https://crafatar.com/avatars/" + p.getUniqueId() + ".png"));
+				(new ImageMessage(bi, 8, ImageChar.BLOCK.getChar()).appendText(text)).broadcast();
+				Bukkit.broadcastMessage("");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}).start();
+	}
+
 	@EventHandler
 	void foodChange(FoodLevelChangeEvent event){
 		Entity e = event.getEntity();

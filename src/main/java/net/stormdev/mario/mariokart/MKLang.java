@@ -2,6 +2,9 @@ package net.stormdev.mario.mariokart;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -290,6 +293,32 @@ public class MKLang {
 			lang.set("race.end.soon",
 					"You have 1 minute before the race ends!");
 		}
+
+		if(!lang.contains("race.end.playerHead.1")) {
+			lang.set("race.end.playerHead.1", " ");
+		}
+		if(!lang.contains("race.end.playerHead.2")) {
+			lang.set("race.end.playerHead.2", " ");
+		}
+		if(!lang.contains("race.end.playerHead.3")) {
+			lang.set("race.end.playerHead.3", " ");
+		}
+		if(!lang.contains("race.end.playerHead.4")) {
+			lang.set("race.end.playerHead.4", " &7Der Spieler &e%winner% ");
+		}
+		if(!lang.contains("race.end.playerHead.5")) {
+			lang.set("race.end.playerHead.5", " &7hat §bAura &agewonnen ");
+		}
+		if(!lang.contains("race.end.playerHead.6")) {
+			lang.set("race.end.playerHead.6", " ");
+		}
+		if(!lang.contains("race.end.playerHead.7")) {
+			lang.set("race.end.playerHead.7", " ");
+		}
+		if(!lang.contains("race.end.playerHead.8")) {
+			lang.set("race.end.playerHead.8", " ");
+		}
+
 		if (!lang.contains("race.end.position")) {
 			lang.set("race.end.position", "You finished %position%!");
 		}

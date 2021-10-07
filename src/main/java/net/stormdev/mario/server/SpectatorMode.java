@@ -28,7 +28,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-//Todo Bugfixing
 public class SpectatorMode implements Listener {
     private static final ItemStack lobbyItem;
     private static final ItemStack teleporter;

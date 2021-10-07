@@ -135,5 +135,11 @@
         <version>2.2.1</version>
         <scope>compile</scope>
       </dependency>
+      <dependency>
+        <groupId>com.github.Zorryno</groupId>
+        <artifactId>ZorrynoSystems</artifactId>
+        <version>1.2.6</version>
+        <scope>provided</scope>
+      </dependency>
     </dependencies>
 </project>
