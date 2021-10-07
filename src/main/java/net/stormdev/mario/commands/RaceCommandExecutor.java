@@ -93,10 +93,7 @@ public class RaceCommandExecutor implements CommandExecutor {
 			return true;
 		}
 		else if(command.equalsIgnoreCase("quit")){ //Quit to lobby
-			Bukkit.getScheduler().runTask(MarioKart.plugin, new Runnable(){
-
-				@Override
-				public void run() {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(MarioKart.plugin, () -> {
 					player.getInventory().clear();
 					if(FullServerManager.get().spectators != null && FullServerManager.get().spectators.isSpectating(player)){
 						FullServerManager.get().spectators.stopSpectating(player);
@@ -105,7 +102,7 @@ public class RaceCommandExecutor implements CommandExecutor {
 					player.sendMessage(ChatColor.GRAY+"Teleporting...");
 					FullServerManager.get().sendToLobby(player);
 					return;
-				}});
+				});
 			return true;
 		}
 		else if (command.equalsIgnoreCase("join")) {

@@ -299,6 +299,12 @@ public class MKLang {
 		if (!lang.contains("server.notEnoughPlayers")) {
 			lang.set("server.notEnoughPlayers", "Not enough players!");
 		}
+		if (!lang.contains("server.spectator.teleporterTitle")) {
+			lang.set("server.spectator.teleporterTitle", "Teleporter");
+		}
+		if (!lang.contains("server.spectator.teleportToPlayer")) {
+			lang.set("server.spectator.teleportToPlayer", "You have been teleportet to %name%!");
+		}
 		if (!lang.contains("mario.hit")) {
 			lang.set("mario.hit", "You were hit by a %name%!");
 		}
